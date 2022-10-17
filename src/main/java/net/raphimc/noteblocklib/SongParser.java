@@ -13,22 +13,18 @@ import java.nio.charset.StandardCharsets;
 
 public class SongParser {
 
-    public static Song parseSong(final File file) {
-        Song song = null;
-        try {
-            if (file.getName().toLowerCase().endsWith(".nbs")) {
-                song = NBSParser.parseFile(file);
-            } else if (file.getName().toLowerCase().endsWith(".txt")) {
-                song = TxtParser.parseFile(file);
-            } else if (file.getName().toLowerCase().endsWith(".notebot")) {
-                song = FutureParser.parseFile(file);
-            } else if (file.getName().toLowerCase().endsWith(".mid")) {
-                song = TxtParser.parse(file, new ReaderInputStream(new StringReader(MidiConverter.readMidi(file)), StandardCharsets.UTF_8));
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
+    public static Song parseSong(final File file) throws Exception {
+        if (file.getName().toLowerCase().endsWith(".nbs")) {
+            return NBSParser.parseFile(file);
+        } else if (file.getName().toLowerCase().endsWith(".txt")) {
+            return TxtParser.parseFile(file);
+        } else if (file.getName().toLowerCase().endsWith(".notebot")) {
+            return FutureParser.parseFile(file);
+        } else if (file.getName().toLowerCase().endsWith(".mid")) {
+            return TxtParser.parse(file, new ReaderInputStream(new StringReader(MidiConverter.readMidi(file)), StandardCharsets.UTF_8));
+        } else {
+            throw new IllegalStateException("Unknown file type: " + file.getName());
         }
-        return song;
     }
 
 }
