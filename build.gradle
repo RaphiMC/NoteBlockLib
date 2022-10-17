@@ -1,0 +1,52 @@
+plugins {
+    id "java-library"
+    id "maven-publish"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+compileJava.options.encoding = "UTF-8"
+
+group = project.maven_group
+archivesBaseName = project.maven_name
+version = project.maven_version
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Jitpack"
+        url = "https://jitpack.io"
+    }
+}
+
+dependencies {
+    api "it.unimi.dsi:fastutil:8.5.9"
+    api "com.google.guava:guava:31.1-jre"
+    api "commons-io:commons-io:2.11.0"
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "reposilite"
+            url = "https://maven.lenni0451.net/releases"
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = project.maven_group
+            artifactId = project.maven_name
+            version = project.maven_version
+
+            from components.java
+        }
+    }
+}
