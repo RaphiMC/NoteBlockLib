@@ -1,6 +1,7 @@
 package net.raphimc.noteblocklib.parser.future.note;
 
 import net.raphimc.noteblocklib.parser.Note;
+import net.raphimc.noteblocklib.util.Constants;
 import net.raphimc.noteblocklib.util.Instrument;
 
 public class FutureNote extends Note {
@@ -16,7 +17,7 @@ public class FutureNote extends Note {
 
     @Override
     public byte getKey() {
-        return (byte) (super.getKey() + 33);
+        return (byte) (super.getKey() + Constants.MC_LOWEST_KEY);
     }
 
 }

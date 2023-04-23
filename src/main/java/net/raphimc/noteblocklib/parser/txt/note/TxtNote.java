@@ -1,6 +1,7 @@
 package net.raphimc.noteblocklib.parser.txt.note;
 
 import net.raphimc.noteblocklib.parser.Note;
+import net.raphimc.noteblocklib.util.Constants;
 import net.raphimc.noteblocklib.util.Instrument;
 
 import java.util.Scanner;
@@ -22,7 +23,7 @@ public class TxtNote extends Note {
 
     @Override
     public byte getKey() {
-        return (byte) (super.getKey() + 33);
+        return (byte) (super.getKey() + Constants.MC_LOWEST_KEY);
     }
 
 }
