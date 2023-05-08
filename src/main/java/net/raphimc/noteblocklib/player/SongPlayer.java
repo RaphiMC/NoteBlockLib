@@ -1,12 +1,12 @@
 package net.raphimc.noteblocklib.player;
 
-import net.raphimc.noteblocklib.parser.Note;
-import net.raphimc.noteblocklib.parser.Song;
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.util.SleepTimer;
 
 public class SongPlayer implements Runnable {
 
-    private final Song song;
+    private final Song<?, ?, ?> song;
     private final ISongPlayerCallback callback;
     private final SleepTimer timer;
 
@@ -14,14 +14,13 @@ public class SongPlayer implements Runnable {
     private int tick = -1;
     private boolean paused;
 
-
-    public SongPlayer(final Song song, final ISongPlayerCallback callback) {
+    public SongPlayer(final Song<?, ?, ?> song, final ISongPlayerCallback callback) {
         this.song = song;
         this.callback = callback;
         this.timer = new SleepTimer((long) (1000F / this.song.getSpeed()));
     }
 
-    public Song getSong() {
+    public Song<?, ?, ?> getSong() {
         return this.song;
     }
 
@@ -33,7 +32,7 @@ public class SongPlayer implements Runnable {
         return this.tick;
     }
 
-    public void setTick(int tick) {
+    public void setTick(final int tick) {
         this.tick = tick;
     }
 

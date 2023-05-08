@@ -28,12 +28,16 @@ public class MinecraftOctave {
         return Math.max(MC_LOWEST_KEY, Math.min(MC_HIGHEST_KEY, nbsKey));
     }
 
-    public static int getAlignedNbsKey(int nbsKey) {
+    public static int getTransposedNbsKey(final int nbsKey) {
+        return getTransposedNbsKey(nbsKey, MC_KEYS);
+    }
+
+    public static int getTransposedNbsKey(int nbsKey, final int transposeAmount) {
         while (nbsKey < MC_LOWEST_KEY) {
-            nbsKey += MC_KEYS;
+            nbsKey += transposeAmount;
         }
         while (nbsKey > MC_HIGHEST_KEY) {
-            nbsKey -= MC_KEYS;
+            nbsKey -= transposeAmount;
         }
         return nbsKey;
     }

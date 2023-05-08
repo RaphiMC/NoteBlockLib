@@ -1,6 +1,6 @@
 package net.raphimc.noteblocklib.player;
 
-import net.raphimc.noteblocklib.parser.Note;
+import net.raphimc.noteblocklib.model.Note;
 
 public interface ISongPlayerCallback {
 

@@ -1,9 +1,9 @@
 package net.raphimc.noteblocklib.util;
 
-import net.raphimc.noteblocklib.parser.nbs.data.layer.NBSv0Layer;
-import net.raphimc.noteblocklib.parser.nbs.data.layer.NBSv2Layer;
-import net.raphimc.noteblocklib.parser.nbs.note.NBSNote;
-import net.raphimc.noteblocklib.parser.nbs.note.NBSv4Note;
+import net.raphimc.noteblocklib.format.nbs.data.layer.NBSv0Layer;
+import net.raphimc.noteblocklib.format.nbs.data.layer.NBSv2Layer;
+import net.raphimc.noteblocklib.format.nbs.note.NBSNote;
+import net.raphimc.noteblocklib.format.nbs.note.NBSv4Note;
 
 import static net.raphimc.noteblocklib.util.Constants.PITCHES_PER_KEY;
 

@@ -19,7 +19,6 @@ repositories {
 }
 
 dependencies {
-    api "it.unimi.dsi:fastutil:8.5.12"
     api "com.google.guava:guava:31.1-jre"
     api "commons-io:commons-io:2.11.0"
 }
