@@ -1,13 +1,17 @@
-package net.raphimc.noteblocklib.util;
+package net.raphimc.noteblocklib.format.nbs;
 
 import net.raphimc.noteblocklib.format.nbs.data.layer.NBSv0Layer;
 import net.raphimc.noteblocklib.format.nbs.data.layer.NBSv2Layer;
 import net.raphimc.noteblocklib.format.nbs.note.NBSNote;
 import net.raphimc.noteblocklib.format.nbs.note.NBSv4Note;
 
-import static net.raphimc.noteblocklib.util.Constants.PITCHES_PER_KEY;
+public class NBSDefinitions {
 
-public class NBSCalculations {
+    public static final int NBS_LOWEST_KEY = 0;
+    public static final int NBS_HIGHEST_KEY = 87;
+
+    public static final int KEYS_PER_OCTAVE = 12;
+    public static final int PITCHES_PER_KEY = 100;
 
     /**
      * Calculates the effective volume of a note. (0% - 100%)

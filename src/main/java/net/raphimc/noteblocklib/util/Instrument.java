@@ -4,7 +4,7 @@ public enum Instrument {
 
     HARP(0, 0),
     BASS(1, 4),
-    BASEDRUM(2, 1),
+    BASS_DRUM(2, 1),
     SNARE(3, 2),
     HAT(4, 3),
     GUITAR(5, 7),

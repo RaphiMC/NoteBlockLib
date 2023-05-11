@@ -1,8 +1,8 @@
 package net.raphimc.noteblocklib.format.txt.note;
 
 import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Constants;
 import net.raphimc.noteblocklib.util.Instrument;
+import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
 import java.util.Scanner;
 
@@ -23,7 +23,7 @@ public class TxtNote extends Note {
 
     @Override
     public byte getKey() {
-        return (byte) (super.getKey() + Constants.MC_LOWEST_KEY);
+        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
     }
 
 }
