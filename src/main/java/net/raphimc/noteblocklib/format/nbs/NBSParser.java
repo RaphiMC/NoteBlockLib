@@ -1,6 +1,5 @@
 package net.raphimc.noteblocklib.format.nbs;
 
-import com.google.common.io.ByteStreams;
 import com.google.common.io.LittleEndianDataInputStream;
 import net.raphimc.noteblocklib.format.nbs.data.NBSData;
 import net.raphimc.noteblocklib.format.nbs.header.NBSHeader;
@@ -10,22 +9,12 @@ import net.raphimc.noteblocklib.format.nbs.header.NBSv4Header;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 
 @SuppressWarnings("UnstableApiUsage")
 public class NBSParser {
 
-    public static NBSSong parseFile(final File file) throws IOException {
-        return parse(file, new ByteArrayInputStream(Files.readAllBytes(file.toPath())));
-    }
-
-    public static NBSSong parseStream(final InputStream is) throws IOException {
-        return parse(null, new ByteArrayInputStream(ByteStreams.toByteArray(is)));
-    }
-
-    public static NBSSong parse(final File sourceFile, final InputStream is) throws IOException {
-        final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(is);
+    public static NBSSong parse(final byte[] bytes, final File sourceFile) throws IOException {
+        final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(bytes));
         dis.mark(6);
         final int nbsVersion = new NBSHeader(dis).getNbsVersion();
         dis.reset();
