@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static javax.sound.midi.ShortMessage.NOTE_ON;
-import static javax.sound.midi.ShortMessage.PROGRAM_CHANGE;
+import static javax.sound.midi.ShortMessage.*;
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
 import static net.raphimc.noteblocklib.format.nbs.NBSDefinitions.*;
 
@@ -40,8 +39,9 @@ public class MidiData implements Data {
                 final MidiMessage message = event.getMessage();
                 if (message instanceof MetaMessage) {
                     final MetaMessage metaMessage = (MetaMessage) message;
-                    if (metaMessage.getType() == SET_TEMPO) {
-                        tempoEvents.add(new TempoEvent(event.getTick(), (double) this.getTempoMPQ(metaMessage) / sequence.getResolution()));
+                    if (metaMessage.getType() == SET_TEMPO && metaMessage.getData().length == 3) {
+                        final int newMpq = ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
+                        tempoEvents.add(new TempoEvent(event.getTick(), (double) newMpq / sequence.getResolution()));
                     }
                 }
 
@@ -76,11 +76,8 @@ public class MidiData implements Data {
 
                 if (message instanceof ShortMessage) {
                     final ShortMessage shortMessage = (ShortMessage) message;
-                    final byte instrument = channelInstruments[shortMessage.getChannel()];
-
-                    if (shortMessage.getCommand() == PROGRAM_CHANGE) {
-                        channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
-                    } else if (shortMessage.getCommand() == NOTE_ON) {
+                    if (shortMessage.getCommand() == NOTE_ON) {
+                        final byte instrument = channelInstruments[shortMessage.getChannel()];
                         final byte key = (byte) shortMessage.getData1();
                         final byte velocity = (byte) shortMessage.getData2();
 
@@ -101,6 +98,9 @@ public class MidiData implements Data {
 
                         final int calculatedTick = (int) Math.round(microTime / 1_000_000D * SONG_TICKS_PER_SECOND);
                         this.notes.computeIfAbsent(calculatedTick, k -> new ArrayList<>()).add(note);
+                    } else if (shortMessage.getCommand() == PROGRAM_CHANGE) {
+                        channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
+                    } else if (shortMessage.getCommand() == CONTROL_CHANGE) {
                     }
                 }
             }
@@ -117,14 +117,6 @@ public class MidiData implements Data {
 
     public void setNotes(final Map<Integer, List<MidiNote>> notes) {
         this.notes = notes;
-    }
-
-    private int getTempoMPQ(final MetaMessage metaMessage) {
-        if (metaMessage.getData().length != 3) {
-            return -1;
-        }
-
-        return ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
     }
 
     private static class TempoEvent {
