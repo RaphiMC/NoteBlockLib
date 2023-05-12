@@ -1,23 +1,28 @@
 package net.raphimc.noteblocklib.player;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
-import net.raphimc.noteblocklib.util.SleepTimer;
 
-public class SongPlayer implements Runnable {
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+public class SongPlayer {
+
+    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player").setDaemon(true).build());
 
     private final Song<?, ?, ?> song;
     private final ISongPlayerCallback callback;
-    private final SleepTimer timer;
 
-    private Thread thread;
+    private ScheduledFuture<?> timer;
     private int tick = -1;
     private boolean paused;
 
     public SongPlayer(final Song<?, ?, ?> song, final ISongPlayerCallback callback) {
         this.song = song;
         this.callback = callback;
-        this.timer = new SleepTimer((long) (1000F / this.song.getSpeed()));
     }
 
     public Song<?, ?, ?> getSong() {
@@ -25,7 +30,7 @@ public class SongPlayer implements Runnable {
     }
 
     public boolean isRunning() {
-        return this.thread != null && this.thread.isAlive();
+        return this.timer != null && !this.timer.isDone() && !this.timer.isCancelled();
     }
 
     public int getTick() {
@@ -43,9 +48,7 @@ public class SongPlayer implements Runnable {
         }
         if (this.isRunning()) this.stop();
 
-        this.thread = new Thread(this, "Song Player");
-        this.thread.setDaemon(true);
-        this.thread.start();
+        this.timer = SCHEDULER.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.song.getSpeed()), TimeUnit.NANOSECONDS);
     }
 
     public void setPaused(final boolean paused) {
@@ -59,41 +62,35 @@ public class SongPlayer implements Runnable {
     public void stop() {
         if (!this.isRunning()) return;
 
-        this.thread.interrupt();
+        this.timer.cancel(true);
     }
 
-
-    @Override
-    public void run() {
+    private void tick() {
         try {
-            while (!this.thread.isInterrupted()) {
-                while (this.paused || !this.callback.shouldTick()) Thread.sleep(50);
-                this.tick++;
-
-                this.timer.begin();
-                if (this.tick > this.song.getLength()) {
-                    if (this.callback.shouldLoop()) {
-                        this.tick = -this.callback.getLoopDelay();
-                        continue;
-                    } else {
-                        this.callback.onFinished();
-                        this.tick = -1;
-                        break;
-                    }
-                }
-
-                for (Note note : this.song.getNotesAtTick(this.tick)) {
-                    this.callback.playNote(note);
-                }
-                this.timer.end();
-
-                if (!this.timer.sleep()) {
-                    return;
-                }
+            if (this.paused || !this.callback.shouldTick()) {
+                return;
             }
-        } catch (InterruptedException ignored) {
+            this.tick++;
+
+            if (this.tick > this.song.getLength()) {
+                if (this.callback.shouldLoop()) {
+                    this.tick = -this.callback.getLoopDelay();
+                } else {
+                    this.callback.onFinished();
+                    this.tick = -1;
+                    this.stop();
+                }
+                return;
+            }
+
+            for (Note note : this.song.getNotesAtTick(this.tick)) {
+                this.callback.playNote(note);
+            }
         } catch (Throwable e) {
+            if (e.getCause() instanceof InterruptedException) return;
+
             e.printStackTrace();
+            this.stop();
         }
     }
 
