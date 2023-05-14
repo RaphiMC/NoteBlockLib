@@ -15,26 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.future.note;
+package net.raphimc.noteblocklib.format.nbs.note;
 
+import net.raphimc.noteblocklib.format.nbs.data.layer.NbsLayer;
 import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
-public class FutureNote extends Note {
+public class NbsNote extends Note {
 
-    public FutureNote(final byte key, final byte instrument) {
+    private NbsLayer layer;
+
+    public NbsNote(final byte instrument, final byte key) {
         super(instrument, key);
     }
 
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
+    /**
+     * @return The NBS layer this note is in. Can be null.
+     */
+    public NbsLayer getLayer() {
+        return this.layer;
     }
 
-    @Override
-    public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+    public void setLayer(final NbsLayer layer) {
+        this.layer = layer;
     }
 
 }

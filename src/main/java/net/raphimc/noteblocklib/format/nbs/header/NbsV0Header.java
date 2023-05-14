@@ -1,12 +1,29 @@
+/*
+ * This file is part of NoteBlockLib - https://github.com/RaphiMC/NoteBlockLib
+ * Copyright (C) 2023 RK_01/RaphiMC and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package net.raphimc.noteblocklib.format.nbs.header;
 
 import com.google.common.io.LittleEndianDataInputStream;
 
 import java.io.IOException;
 
-import static net.raphimc.noteblocklib.format.nbs.NBSParser.readString;
+import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
 
-public class NBSv0Header extends NBSHeader {
+public class NbsV0Header extends NbsHeader {
 
     private short layerCount;
     private String title;
@@ -25,7 +42,7 @@ public class NBSv0Header extends NBSHeader {
     private String sourceFileName;
 
     @SuppressWarnings("UnstableApiUsage")
-    public NBSv0Header(final LittleEndianDataInputStream dis) throws IOException {
+    public NbsV0Header(final LittleEndianDataInputStream dis) throws IOException {
         super(dis);
 
         this.layerCount = dis.readShort();
@@ -45,7 +62,7 @@ public class NBSv0Header extends NBSHeader {
         this.sourceFileName = readString(dis);
     }
 
-    public NBSv0Header(final short length, final byte nbsVersion, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName) {
+    public NbsV0Header(final short length, final byte nbsVersion, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName) {
         super(length, nbsVersion, vanillaInstrumentCount);
 
         this.layerCount = layerCount;

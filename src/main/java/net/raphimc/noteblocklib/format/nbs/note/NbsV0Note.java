@@ -15,26 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.future.note;
+package net.raphimc.noteblocklib.format.nbs.note;
 
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import com.google.common.io.LittleEndianDataInputStream;
 
-public class FutureNote extends Note {
+import java.io.IOException;
 
-    public FutureNote(final byte key, final byte instrument) {
+@SuppressWarnings("UnstableApiUsage")
+public class NbsV0Note extends NbsNote {
+
+    @SuppressWarnings("UnstableApiUsage")
+    public NbsV0Note(final LittleEndianDataInputStream dis) throws IOException {
+        super(dis.readByte(), dis.readByte());
+    }
+
+    public NbsV0Note(final byte instrument, final byte key) {
         super(instrument, key);
-    }
-
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
-    }
-
-    @Override
-    public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
     }
 
 }

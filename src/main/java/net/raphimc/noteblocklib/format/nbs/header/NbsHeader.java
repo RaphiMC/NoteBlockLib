@@ -1,3 +1,20 @@
+/*
+ * This file is part of NoteBlockLib - https://github.com/RaphiMC/NoteBlockLib
+ * Copyright (C) 2023 RK_01/RaphiMC and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package net.raphimc.noteblocklib.format.nbs.header;
 
 import com.google.common.io.LittleEndianDataInputStream;
@@ -5,14 +22,14 @@ import net.raphimc.noteblocklib.model.Header;
 
 import java.io.IOException;
 
-public class NBSHeader implements Header {
+public class NbsHeader implements Header {
 
     private short length;
     private byte nbsVersion;
     private byte vanillaInstrumentCount;
 
     @SuppressWarnings("UnstableApiUsage")
-    public NBSHeader(final LittleEndianDataInputStream dis) throws IOException {
+    public NbsHeader(final LittleEndianDataInputStream dis) throws IOException {
         final short length = dis.readShort();
         if (length == 0) {
             this.nbsVersion = dis.readByte();
@@ -29,7 +46,7 @@ public class NBSHeader implements Header {
         }
     }
 
-    public NBSHeader(final short length, final byte nbsVersion, final byte vanillaInstrumentCount) {
+    public NbsHeader(final short length, final byte nbsVersion, final byte vanillaInstrumentCount) {
         this.length = length;
         this.nbsVersion = nbsVersion;
         this.vanillaInstrumentCount = vanillaInstrumentCount;

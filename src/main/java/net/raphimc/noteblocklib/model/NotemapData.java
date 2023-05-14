@@ -15,26 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.future.note;
+package net.raphimc.noteblocklib.model;
 
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class FutureNote extends Note {
+public abstract class NotemapData<N extends Note> implements Data<N> {
 
-    public FutureNote(final byte key, final byte instrument) {
-        super(instrument, key);
+    protected Map<Integer, List<N>> notes;
+
+    public NotemapData() {
+        this.notes = new TreeMap<>();
     }
 
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
+    public NotemapData(final Map<Integer, List<N>> notes) {
+        this.notes = notes;
     }
 
-    @Override
-    public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+    public Map<Integer, List<N>> getNotes() {
+        return this.notes;
+    }
+
+    public void setNotes(final Map<Integer, List<N>> notes) {
+        this.notes = notes;
     }
 
 }

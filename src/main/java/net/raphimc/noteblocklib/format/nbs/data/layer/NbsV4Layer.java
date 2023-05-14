@@ -15,26 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.future.note;
+package net.raphimc.noteblocklib.format.nbs.data.layer;
 
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import net.raphimc.noteblocklib.format.nbs.note.NbsNote;
 
-public class FutureNote extends Note {
+import java.util.Map;
 
-    public FutureNote(final byte key, final byte instrument) {
-        super(instrument, key);
+public class NbsV4Layer extends NbsV2Layer {
+
+    private boolean locked;
+
+    public NbsV4Layer(final Map<Integer, NbsNote> notesAtTick, final String name, final byte volume, final short panning, final boolean locked) {
+        super(notesAtTick, name, volume, panning);
+
+        this.locked = locked;
     }
 
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
+    /**
+     * @return Whether this layer has been marked as locked.
+     */
+    public boolean isLocked() {
+        return this.locked;
     }
 
-    @Override
-    public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+    public void setLocked(final boolean locked) {
+        this.locked = locked;
     }
 
 }

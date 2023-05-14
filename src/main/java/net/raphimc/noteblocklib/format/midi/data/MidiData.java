@@ -1,3 +1,20 @@
+/*
+ * This file is part of NoteBlockLib - https://github.com/RaphiMC/NoteBlockLib
+ * Copyright (C) 2023 RK_01/RaphiMC and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package net.raphimc.noteblocklib.format.midi.data;
 
 import net.raphimc.noteblocklib.format.midi.header.MidiHeader;
@@ -5,20 +22,21 @@ import net.raphimc.noteblocklib.format.midi.mapping.InstrumentMapping;
 import net.raphimc.noteblocklib.format.midi.mapping.MidiMappings;
 import net.raphimc.noteblocklib.format.midi.mapping.PercussionMapping;
 import net.raphimc.noteblocklib.format.midi.note.MidiNote;
-import net.raphimc.noteblocklib.model.Data;
+import net.raphimc.noteblocklib.model.NotemapData;
 
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
-import static net.raphimc.noteblocklib.format.nbs.NBSDefinitions.*;
+import static net.raphimc.noteblocklib.format.nbs.NbsDefinitions.*;
 
-public class MidiData implements Data {
-
-    private Map<Integer, List<MidiNote>> notes;
+public class MidiData extends NotemapData<MidiNote> {
 
     public MidiData(final MidiHeader header, final InputStream is) throws InvalidMidiDataException, IOException {
         if (header.getMidiFileFormat().getType() != 0 && header.getMidiFileFormat().getType() != 1) {
@@ -27,9 +45,7 @@ public class MidiData implements Data {
         if (header.getMidiFileFormat().getDivisionType() != Sequence.PPQ) {
             throw new IllegalArgumentException("Midi file division type must be PPQ");
         }
-
         final Sequence sequence = MidiSystem.getSequence(is);
-        this.notes = new HashMap<>();
 
         final List<TempoEvent> tempoEvents = new ArrayList<>();
         for (int trackIdx = 0; trackIdx < sequence.getTracks().length; trackIdx++) {
@@ -56,22 +72,22 @@ public class MidiData implements Data {
 
         for (int trackIdx = 0; trackIdx < sequence.getTracks().length; trackIdx++) {
             final Track track = sequence.getTracks()[trackIdx];
+
             double microTime = 0;
             long lastTick = 0;
-            double tempo = tempoEvents.get(0).getTempo();
+            double microsPerTick = tempoEvents.get(0).getMicrosPerTick();
             int tempoEventIdx = 1;
-
             for (int eventIdx = 0; eventIdx < track.size(); eventIdx++) {
                 final MidiEvent event = track.get(eventIdx);
                 final MidiMessage message = event.getMessage();
 
                 while (tempoEventIdx < tempoEvents.size() && event.getTick() > tempoEvents.get(tempoEventIdx).getTick()) {
                     final TempoEvent tempoEvent = tempoEvents.get(tempoEventIdx++);
-                    microTime += (tempoEvent.getTick() - lastTick) * tempo;
+                    microTime += (tempoEvent.getTick() - lastTick) * microsPerTick;
                     lastTick = tempoEvent.getTick();
-                    tempo = tempoEvent.getTempo();
+                    microsPerTick = tempoEvent.getMicrosPerTick();
                 }
-                microTime += (event.getTick() - lastTick) * tempo;
+                microTime += (event.getTick() - lastTick) * microsPerTick;
                 lastTick = event.getTick();
 
                 if (message instanceof ShortMessage) {
@@ -96,8 +112,7 @@ public class MidiData implements Data {
                             note = new MidiNote(mapping.getInstrument().nbsId(), clampedKey, velocity);
                         }
 
-                        final int calculatedTick = (int) Math.round(microTime / 1_000_000D * SONG_TICKS_PER_SECOND);
-                        this.notes.computeIfAbsent(calculatedTick, k -> new ArrayList<>()).add(note);
+                        this.notes.computeIfAbsent((int) Math.round(microTime * SONG_TICKS_PER_SECOND / 1_000_000D), k -> new ArrayList<>()).add(note);
                     } else if (shortMessage.getCommand() == PROGRAM_CHANGE) {
                         channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
                     } else if (shortMessage.getCommand() == CONTROL_CHANGE) {
@@ -108,32 +123,24 @@ public class MidiData implements Data {
     }
 
     public MidiData(final Map<Integer, List<MidiNote>> notes) {
-        this.notes = notes;
-    }
-
-    public Map<Integer, List<MidiNote>> getNotes() {
-        return this.notes;
-    }
-
-    public void setNotes(final Map<Integer, List<MidiNote>> notes) {
-        this.notes = notes;
+        super(notes);
     }
 
     private static class TempoEvent {
         private final long tick;
-        private final double tempo;
+        private final double microsPerTick;
 
-        public TempoEvent(final long tick, final double tempo) {
+        public TempoEvent(final long tick, final double microsPerTick) {
             this.tick = tick;
-            this.tempo = tempo;
+            this.microsPerTick = microsPerTick;
         }
 
         public long getTick() {
             return this.tick;
         }
 
-        public double getTempo() {
-            return this.tempo;
+        public double getMicrosPerTick() {
+            return this.microsPerTick;
         }
     }
 
