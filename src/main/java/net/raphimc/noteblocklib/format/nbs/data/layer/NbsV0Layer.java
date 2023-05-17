@@ -15,28 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.nbs.note;
+package net.raphimc.noteblocklib.format.nbs.data.layer;
 
-import net.raphimc.noteblocklib.format.nbs.data.layer.NbsLayer;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
 
-public class NbsNote extends Note {
+import java.util.Map;
 
-    private NbsLayer layer;
+public class NbsV0Layer extends NbsLayer {
 
-    public NbsNote(final byte instrument, final byte key) {
-        super(instrument, key);
+    private String name;
+    private byte volume;
+
+    public NbsV0Layer(final Map<Integer, NbsV0Note> notesAtTick, final String name, final byte volume) {
+        super(notesAtTick);
+
+        this.name = name;
+        this.volume = volume;
     }
 
     /**
-     * @return The NBS layer this note is in. Can be null.
+     * @return The name of the layer.
      */
-    public NbsLayer getLayer() {
-        return this.layer;
+    public String getName() {
+        return this.name;
     }
 
-    public void setLayer(final NbsLayer layer) {
-        this.layer = layer;
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return The volume of the layer (percentage). Ranges from 0-100.
+     */
+    public byte getVolume() {
+        return this.volume;
+    }
+
+    public void setVolume(final byte volume) {
+        this.volume = volume;
     }
 
 }

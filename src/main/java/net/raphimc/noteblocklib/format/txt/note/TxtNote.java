@@ -33,6 +33,10 @@ public class TxtNote extends Note {
         super(instrument, key);
     }
 
+    public void write(final StringBuilder builder) {
+        builder.append(this.key).append(":").append(this.instrument);
+    }
+
     @Override
     public byte getInstrument() {
         return Instrument.fromMcId(super.getInstrument()).nbsId();

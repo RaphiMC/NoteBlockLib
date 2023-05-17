@@ -18,10 +18,12 @@
 package net.raphimc.noteblocklib.format.nbs.note;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
+import net.raphimc.noteblocklib.model.NoteWithVolume;
 
 import java.io.IOException;
 
-public class NbsV4Note extends NbsV0Note {
+public class NbsV4Note extends NbsV0Note implements NoteWithVolume {
 
     private byte velocity;
     private short panning;
@@ -44,15 +46,30 @@ public class NbsV4Note extends NbsV0Note {
         this.pitch = pitch;
     }
 
+    @Override
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final LittleEndianDataOutputStream dos) throws IOException {
+        super.write(dos);
+
+        dos.writeByte(this.velocity);
+        dos.writeByte(this.panning);
+        dos.writeShort(this.pitch);
+    }
+
     /**
-     * @return The velocity/volume of the note block, from 0% to 100%.
+     * @inheritDoc
      */
-    public byte getVelocity() {
+    @Override
+    public float getVolume() {
         return this.velocity;
     }
 
-    public void setVelocity(final byte velocity) {
-        this.velocity = velocity;
+    /**
+     * @inheritDoc
+     */
+    @Override
+    public void setVolume(final float volume) {
+        this.velocity = (byte) volume;
     }
 
     /**

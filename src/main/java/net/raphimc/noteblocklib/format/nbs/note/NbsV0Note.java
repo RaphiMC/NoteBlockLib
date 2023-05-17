@@ -18,11 +18,15 @@
 package net.raphimc.noteblocklib.format.nbs.note;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
+import net.raphimc.noteblocklib.format.nbs.data.layer.NbsLayer;
+import net.raphimc.noteblocklib.model.Note;
 
 import java.io.IOException;
 
-@SuppressWarnings("UnstableApiUsage")
-public class NbsV0Note extends NbsNote {
+public class NbsV0Note extends Note {
+
+    private NbsLayer layer;
 
     @SuppressWarnings("UnstableApiUsage")
     public NbsV0Note(final LittleEndianDataInputStream dis) throws IOException {
@@ -31,6 +35,23 @@ public class NbsV0Note extends NbsNote {
 
     public NbsV0Note(final byte instrument, final byte key) {
         super(instrument, key);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final LittleEndianDataOutputStream dos) throws IOException {
+        dos.writeByte(this.instrument);
+        dos.writeByte(this.key);
+    }
+
+    /**
+     * @return The NBS layer this note is in.
+     */
+    public NbsLayer getLayer() {
+        return this.layer;
+    }
+
+    public void setLayer(final NbsLayer layer) {
+        this.layer = layer;
     }
 
 }

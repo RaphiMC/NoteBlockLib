@@ -24,7 +24,12 @@ public class TxtV2Header extends TxtV1Header {
     private float speed;
 
     public TxtV2Header(final Scanner scanner) {
-        this.speed = Float.parseFloat(scanner.next("\\d+(|\\.\\d+)"));
+        this.speed = Float.parseFloat(scanner.skip("#{3}").next("\\d+(|\\.\\d+)"));
+    }
+
+    @Override
+    public void write(final StringBuilder builder) {
+        builder.append("###").append(this.speed).append('\n');
     }
 
     public TxtV2Header(final float speed) {

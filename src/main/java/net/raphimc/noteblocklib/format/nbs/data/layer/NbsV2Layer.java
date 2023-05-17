@@ -17,15 +17,15 @@
  */
 package net.raphimc.noteblocklib.format.nbs.data.layer;
 
-import net.raphimc.noteblocklib.format.nbs.note.NbsNote;
+import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
 
 import java.util.Map;
 
-public class NbsV2Layer extends NBSv0Layer {
+public class NbsV2Layer extends NbsV0Layer {
 
     private short panning;
 
-    public NbsV2Layer(final Map<Integer, NbsNote> notesAtTick, final String name, final byte volume, final short panning) {
+    public NbsV2Layer(final Map<Integer, NbsV0Note> notesAtTick, final String name, final byte volume, final short panning) {
         super(notesAtTick, name, volume);
 
         this.panning = panning;

@@ -17,23 +17,23 @@
  */
 package net.raphimc.noteblocklib.format.nbs.data.layer;
 
-import net.raphimc.noteblocklib.format.nbs.note.NbsNote;
+import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
 
 import java.util.Map;
 
 public class NbsLayer {
 
-    private Map<Integer, NbsNote> notesAtTick;
+    private Map<Integer, NbsV0Note> notesAtTick;
 
-    public NbsLayer(final Map<Integer, NbsNote> notesAtTick) {
+    public NbsLayer(final Map<Integer, NbsV0Note> notesAtTick) {
         this.notesAtTick = notesAtTick;
     }
 
-    public Map<Integer, NbsNote> getNotesAtTick() {
+    public Map<Integer, NbsV0Note> getNotesAtTick() {
         return this.notesAtTick;
     }
 
-    public void setNotesAtTick(final Map<Integer, NbsNote> notesAtTick) {
+    public void setNotesAtTick(final Map<Integer, NbsV0Note> notesAtTick) {
         this.notesAtTick = notesAtTick;
     }
 

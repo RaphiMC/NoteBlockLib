@@ -18,10 +18,12 @@
 package net.raphimc.noteblocklib.format.nbs.data;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 
 import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
+import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
 
 public class NbsV0CustomInstrument {
 
@@ -43,6 +45,14 @@ public class NbsV0CustomInstrument {
         this.soundFileName = soundFileName;
         this.pitch = pitch;
         this.pressKey = pressKey;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final LittleEndianDataOutputStream dos) throws IOException {
+        writeString(dos, this.name);
+        writeString(dos, this.soundFileName);
+        dos.writeByte(this.pitch);
+        dos.writeBoolean(this.pressKey);
     }
 
     /**

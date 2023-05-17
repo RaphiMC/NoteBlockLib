@@ -22,11 +22,14 @@ import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.future.FutureParser;
 import net.raphimc.noteblocklib.format.midi.MidiParser;
 import net.raphimc.noteblocklib.format.nbs.NbsParser;
+import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.txt.TxtParser;
+import net.raphimc.noteblocklib.format.txt.TxtSong;
 import net.raphimc.noteblocklib.model.Song;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 
 public class NoteBlockLib {
@@ -64,6 +67,33 @@ public class NoteBlockLib {
         } catch (Throwable e) {
             throw new Exception("Failed to parse song", e);
         }
+    }
+
+    public static void writeSong(final Song<?, ?, ?> song, final File file) throws Exception {
+        Files.write(file.toPath(), writeSong(song));
+    }
+
+    public static void writeSong(final Song<?, ?, ?> song, final OutputStream os) throws Exception {
+        os.write(writeSong(song));
+    }
+
+    public static byte[] writeSong(final Song<?, ?, ?> song) throws Exception {
+        byte[] bytes = null;
+        try {
+            if (song instanceof NbsSong) {
+                bytes = NbsParser.write((NbsSong) song);
+            } else if (song instanceof TxtSong) {
+                bytes = TxtParser.write((TxtSong) song);
+            }
+        } catch (Throwable e) {
+            throw new Exception("Failed to write song", e);
+        }
+
+        if (bytes == null) {
+            throw new Exception("Unsupported song type for writing: " + song.getClass().getSimpleName());
+        }
+
+        return bytes;
     }
 
     public static SongFormat getFormat(final File file) {

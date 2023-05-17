@@ -18,12 +18,14 @@
 package net.raphimc.noteblocklib.format.nbs.header;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 
 import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
+import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
 
-public class NbsV0Header extends NbsHeader {
+public class NbsV0Header extends NbsBaseHeader {
 
     private short layerCount;
     private String title;
@@ -80,6 +82,28 @@ public class NbsV0Header extends NbsHeader {
         this.noteBlocksAdded = noteBlocksAdded;
         this.noteBlocksRemoved = noteBlocksRemoved;
         this.sourceFileName = sourceFileName;
+    }
+
+    @Override
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final LittleEndianDataOutputStream dos) throws IOException {
+        super.write(dos);
+
+        dos.writeShort(this.layerCount);
+        writeString(dos, this.title);
+        writeString(dos, this.author);
+        writeString(dos, this.originalAuthor);
+        writeString(dos, this.description);
+        dos.writeShort(this.speed);
+        dos.writeBoolean(this.autoSave);
+        dos.writeByte(this.autoSaveInterval);
+        dos.writeByte(this.timeSignature);
+        dos.writeInt(this.minutesSpent);
+        dos.writeInt(this.leftClicks);
+        dos.writeInt(this.rightClicks);
+        dos.writeInt(this.noteBlocksAdded);
+        dos.writeInt(this.noteBlocksRemoved);
+        writeString(dos, this.sourceFileName);
     }
 
     /**

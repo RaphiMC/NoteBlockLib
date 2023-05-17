@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.format.nbs.header;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
 
 import java.io.IOException;
 
@@ -42,6 +43,16 @@ public class NbsV4Header extends NbsV0Header {
         this.loop = loop;
         this.maxLoopCount = maxLoopCount;
         this.loopStartTick = loopStartTick;
+    }
+
+    @Override
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final LittleEndianDataOutputStream dos) throws IOException {
+        super.write(dos);
+
+        dos.writeBoolean(this.loop);
+        dos.writeByte(this.maxLoopCount);
+        dos.writeShort(this.loopStartTick);
     }
 
     /**

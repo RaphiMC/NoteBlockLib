@@ -18,8 +18,11 @@
 package net.raphimc.noteblocklib.format.midi.note;
 
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.NoteWithVolume;
 
-public class MidiNote extends Note {
+import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.MAX_VELOCITY;
+
+public class MidiNote extends Note implements NoteWithVolume {
 
     private byte velocity;
 
@@ -30,14 +33,16 @@ public class MidiNote extends Note {
     }
 
     /**
-     * @return The velocity/volume of the note, from 0 to 127.
+     * @inheritDoc
      */
-    public byte getVelocity() {
-        return this.velocity;
+    @Override
+    public float getVolume() {
+        return (float) this.velocity / MAX_VELOCITY * 100F;
     }
 
-    public void setVelocity(final byte velocity) {
-        this.velocity = velocity;
+    @Override
+    public void setVolume(final float volume) {
+        this.velocity = (byte) (volume / 100F * MAX_VELOCITY);
     }
 
 }

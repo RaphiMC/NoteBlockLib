@@ -18,18 +18,19 @@
 package net.raphimc.noteblocklib.format.nbs.header;
 
 import com.google.common.io.LittleEndianDataInputStream;
+import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.model.Header;
 
 import java.io.IOException;
 
-public class NbsHeader implements Header {
+public class NbsBaseHeader implements Header {
 
     private short length;
     private byte nbsVersion;
     private byte vanillaInstrumentCount;
 
     @SuppressWarnings("UnstableApiUsage")
-    public NbsHeader(final LittleEndianDataInputStream dis) throws IOException {
+    public NbsBaseHeader(final LittleEndianDataInputStream dis) throws IOException {
         final short length = dis.readShort();
         if (length == 0) {
             this.nbsVersion = dis.readByte();
@@ -46,10 +47,24 @@ public class NbsHeader implements Header {
         }
     }
 
-    public NbsHeader(final short length, final byte nbsVersion, final byte vanillaInstrumentCount) {
+    NbsBaseHeader(final short length, final byte nbsVersion, final byte vanillaInstrumentCount) {
         this.length = length;
         this.nbsVersion = nbsVersion;
         this.vanillaInstrumentCount = vanillaInstrumentCount;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final LittleEndianDataOutputStream dos) throws IOException {
+        if (this.nbsVersion == 0) {
+            dos.writeShort(this.length);
+        } else {
+            dos.writeShort(0);
+            dos.writeByte(this.nbsVersion);
+            dos.writeByte(this.vanillaInstrumentCount);
+            if (this.nbsVersion >= 3) {
+                dos.writeShort(this.length);
+            }
+        }
     }
 
     /**

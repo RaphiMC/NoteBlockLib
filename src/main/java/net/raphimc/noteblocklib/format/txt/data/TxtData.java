@@ -28,8 +28,19 @@ import java.util.Scanner;
 public class TxtData extends NotemapData<TxtNote> {
 
     public TxtData(final Scanner scanner) {
+        scanner.useDelimiter("[:\r\n]+");
         while (scanner.hasNext("\\d+")) {
             this.notes.computeIfAbsent(scanner.nextInt(), k -> new ArrayList<>()).add(new TxtNote(scanner));
+        }
+    }
+
+    public void write(final StringBuilder builder) {
+        for (final Map.Entry<Integer, List<TxtNote>> entry : this.notes.entrySet()) {
+            for (final TxtNote note : entry.getValue()) {
+                builder.append(entry.getKey()).append(":");
+                note.write(builder);
+                builder.append("\n");
+            }
         }
     }
 

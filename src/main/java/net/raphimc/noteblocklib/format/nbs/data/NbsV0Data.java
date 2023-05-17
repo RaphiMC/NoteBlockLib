@@ -18,12 +18,12 @@
 package net.raphimc.noteblocklib.format.nbs.data;
 
 import com.google.common.io.LittleEndianDataInputStream;
-import net.raphimc.noteblocklib.format.nbs.data.layer.NBSv0Layer;
+import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.format.nbs.data.layer.NbsLayer;
+import net.raphimc.noteblocklib.format.nbs.data.layer.NbsV0Layer;
 import net.raphimc.noteblocklib.format.nbs.data.layer.NbsV2Layer;
 import net.raphimc.noteblocklib.format.nbs.data.layer.NbsV4Layer;
 import net.raphimc.noteblocklib.format.nbs.header.NbsV0Header;
-import net.raphimc.noteblocklib.format.nbs.note.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
 import net.raphimc.noteblocklib.format.nbs.note.NbsV4Note;
 import net.raphimc.noteblocklib.model.Data;
@@ -37,19 +37,24 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
+import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
 
-public class NbsData implements Data<NbsNote> {
+public class NbsV0Data implements Data<NbsV0Note> {
 
-    private Map<Integer, NbsLayer> layers;
+    private List<NbsLayer> layers;
     private List<NbsV0CustomInstrument> customInstruments;
 
     @SuppressWarnings("UnstableApiUsage")
-    public NbsData(final NbsV0Header header, final LittleEndianDataInputStream dis) throws IOException {
-        this.layers = new TreeMap<>();
+    public NbsV0Data(final NbsV0Header header, final LittleEndianDataInputStream dis) throws IOException {
+        this.layers = new ArrayList<>(header.getLayerCount());
         this.customInstruments = new ArrayList<>();
 
         final int customInstrumentDiff = Instrument.values().length - header.getVanillaInstrumentCount();
         header.setVanillaInstrumentCount((byte) Instrument.values().length);
+
+        for (int i = 0; i < header.getLayerCount(); i++) {
+            layers.add(new NbsLayer(new TreeMap<>()));
+        }
 
         int tick = -1;
         while (true) {
@@ -67,7 +72,7 @@ public class NbsData implements Data<NbsNote> {
                 if (note.getInstrument() >= header.getVanillaInstrumentCount() && customInstrumentDiff > 0) {
                     note.setInstrument((byte) (note.getInstrument() + customInstrumentDiff));
                 }
-                this.layers.computeIfAbsent(layer, k -> new NbsLayer(new TreeMap<>())).getNotesAtTick().put(tick, note);
+                this.layers.get(layer).getNotesAtTick().put(tick, note);
                 note.setLayer(this.layers.get(layer));
             }
         }
@@ -80,15 +85,14 @@ public class NbsData implements Data<NbsNote> {
                 final short panning = (short) (header.getNbsVersion() >= 2 ? dis.readUnsignedByte() : 100);
 
                 final NbsLayer layer = this.layers.get(i);
-                if (layer == null) continue;
                 if (header.getNbsVersion() >= 4) {
-                    this.layers.put(i, new NbsV4Layer(layer.getNotesAtTick(), name, volume, panning, locked));
+                    this.layers.set(i, new NbsV4Layer(layer.getNotesAtTick(), name, volume, panning, locked));
                 } else if (header.getNbsVersion() >= 2) {
-                    this.layers.put(i, new NbsV2Layer(layer.getNotesAtTick(), name, volume, panning));
+                    this.layers.set(i, new NbsV2Layer(layer.getNotesAtTick(), name, volume, panning));
                 } else {
-                    this.layers.put(i, new NBSv0Layer(layer.getNotesAtTick(), name, volume));
+                    this.layers.set(i, new NbsV0Layer(layer.getNotesAtTick(), name, volume));
                 }
-                for (NbsNote note : this.layers.get(i).getNotesAtTick().values()) {
+                for (NbsV0Note note : this.layers.get(i).getNotesAtTick().values()) {
                     note.setLayer(this.layers.get(i));
                 }
             }
@@ -104,16 +108,64 @@ public class NbsData implements Data<NbsNote> {
         }
     }
 
-    public NbsData(final Map<Integer, NbsLayer> layers, final List<NbsV0CustomInstrument> customInstruments) {
+    public NbsV0Data(final List<NbsLayer> layers, final List<NbsV0CustomInstrument> customInstruments) {
         this.layers = layers;
         this.customInstruments = customInstruments;
     }
 
-    public Map<Integer, NbsLayer> getLayers() {
+    @SuppressWarnings("UnstableApiUsage")
+    public void write(final NbsV0Header header, final LittleEndianDataOutputStream dos) throws IOException {
+        if (this.layers.size() != header.getLayerCount()) {
+            throw new IllegalArgumentException("Layer count mismatch");
+        }
+
+        final Map<Integer, List<NbsV0Note>> notes = new TreeMap<>();
+        for (NbsLayer layer : this.layers) {
+            for (Map.Entry<Integer, NbsV0Note> note : layer.getNotesAtTick().entrySet()) {
+                notes.computeIfAbsent(note.getKey(), k -> new ArrayList<>()).add(note.getValue());
+            }
+        }
+
+        int lastTick = -1;
+        for (Map.Entry<Integer, List<NbsV0Note>> entry : notes.entrySet()) {
+            dos.writeShort(entry.getKey() - lastTick);
+            lastTick = entry.getKey();
+
+            int lastLayer = -1;
+            for (NbsV0Note note : entry.getValue()) {
+                dos.writeShort(this.layers.indexOf(note.getLayer()) - lastLayer);
+                lastLayer = this.layers.indexOf(note.getLayer());
+                note.write(dos);
+            }
+            dos.writeShort(0);
+        }
+        dos.writeShort(0);
+
+        for (NbsLayer layer : this.layers) {
+            if (layer instanceof NbsV0Layer) {
+                final NbsV0Layer v0Layer = (NbsV0Layer) layer;
+                writeString(dos, v0Layer.getName());
+                if (layer instanceof NbsV4Layer) {
+                    dos.writeBoolean(((NbsV4Layer) layer).isLocked());
+                }
+                dos.writeByte(v0Layer.getVolume());
+                if (layer instanceof NbsV2Layer) {
+                    dos.writeByte(((NbsV2Layer) layer).getPanning());
+                }
+            }
+        }
+
+        dos.writeByte(this.customInstruments.size());
+        for (NbsV0CustomInstrument customInstrument : this.customInstruments) {
+            customInstrument.write(dos);
+        }
+    }
+
+    public List<NbsLayer> getLayers() {
         return this.layers;
     }
 
-    public void setLayers(final Map<Integer, NbsLayer> layers) {
+    public void setLayers(final List<NbsLayer> layers) {
         this.layers = layers;
     }
 

@@ -23,6 +23,7 @@ import net.raphimc.noteblocklib.format.txt.header.TxtV2Header;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class TxtParser {
@@ -30,10 +31,19 @@ public class TxtParser {
     public static TxtSong parse(final byte[] bytes, final File sourceFile) {
         final Scanner scanner = new Scanner(new ByteArrayInputStream(bytes));
 
-        final TxtV1Header header = scanner.hasNext("#{3}\\d+") ? new TxtV2Header(scanner.skip("#{3}")) : new TxtV1Header();
-        final TxtData data = new TxtData(scanner.useDelimiter("[:\r\n]+"));
+        final TxtV1Header header = scanner.hasNext("#{3}\\d+") ? new TxtV2Header(scanner) : new TxtV1Header();
+        final TxtData data = new TxtData(scanner);
 
         return new TxtSong(sourceFile, header, data);
+    }
+
+    public static byte[] write(final TxtSong song) {
+        final StringBuilder builder = new StringBuilder();
+
+        song.getHeader().write(builder);
+        song.getData().write(builder);
+
+        return builder.toString().getBytes(StandardCharsets.UTF_8);
     }
 
 }

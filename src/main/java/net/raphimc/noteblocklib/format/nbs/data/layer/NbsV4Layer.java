@@ -17,7 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.nbs.data.layer;
 
-import net.raphimc.noteblocklib.format.nbs.note.NbsNote;
+import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
 
 import java.util.Map;
 
@@ -25,7 +25,7 @@ public class NbsV4Layer extends NbsV2Layer {
 
     private boolean locked;
 
-    public NbsV4Layer(final Map<Integer, NbsNote> notesAtTick, final String name, final byte volume, final short panning, final boolean locked) {
+    public NbsV4Layer(final Map<Integer, NbsV0Note> notesAtTick, final String name, final byte volume, final short panning, final boolean locked) {
         super(notesAtTick, name, volume, panning);
 
         this.locked = locked;

@@ -17,10 +17,10 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
-import net.raphimc.noteblocklib.format.nbs.data.NbsData;
+import net.raphimc.noteblocklib.format.nbs.data.NbsV0Data;
 import net.raphimc.noteblocklib.format.nbs.data.layer.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.header.NbsV0Header;
-import net.raphimc.noteblocklib.format.nbs.note.NbsNote;
+import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 
@@ -30,19 +30,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class NbsSong extends Song<NbsV0Header, NbsData, NbsNote> {
+public class NbsSong extends Song<NbsV0Header, NbsV0Data, NbsV0Note> {
 
-    public NbsSong(final File sourceFile, final NbsV0Header header, final NbsData data) {
+    public NbsSong(final File sourceFile, final NbsV0Header header, final NbsV0Data data) {
         super(sourceFile, header, data);
     }
 
     @Override
-    protected SongView<NbsNote> createView() {
+    protected SongView<NbsV0Note> createView() {
         final String title = this.getHeader().getTitle().isEmpty() ? this.getSourceFile() == null ? "NBS Song" : this.getSourceFile().getName() : this.getHeader().getTitle();
 
-        final Map<Integer, List<NbsNote>> notes = new TreeMap<>();
-        for (Map.Entry<Integer, NbsLayer> layer : this.getData().getLayers().entrySet()) {
-            for (Map.Entry<Integer, NbsNote> note : layer.getValue().getNotesAtTick().entrySet()) {
+        final Map<Integer, List<NbsV0Note>> notes = new TreeMap<>();
+        for (NbsLayer layer : this.getData().getLayers()) {
+            for (Map.Entry<Integer, NbsV0Note> note : layer.getNotesAtTick().entrySet()) {
                 notes.computeIfAbsent(note.getKey(), k -> new ArrayList<>()).add(note.getValue());
             }
         }
