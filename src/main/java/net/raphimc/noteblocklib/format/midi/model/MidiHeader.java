@@ -15,40 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.future.header;
+package net.raphimc.noteblocklib.format.midi.model;
 
-import com.google.common.io.ByteStreams;
 import net.raphimc.noteblocklib.model.Header;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiFileFormat;
+import javax.sound.midi.MidiSystem;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class FutureHeader implements Header {
+public class MidiHeader implements Header {
 
-    private boolean useMagicValue = true;
+    private MidiFileFormat midiFileFormat;
 
-    public FutureHeader(final InputStream is) throws IOException {
-        is.mark(is.available());
-        final byte[] data = ByteStreams.toByteArray(is);
-        for (byte b : data) {
-            if (b == 64) {
-                this.useMagicValue = false;
-                break;
-            }
-        }
-        is.reset();
+    public MidiHeader(final InputStream is) throws IOException, InvalidMidiDataException {
+        this.midiFileFormat = MidiSystem.getMidiFileFormat(is);
     }
 
-    public FutureHeader(final boolean useMagicValue) {
-        this.useMagicValue = useMagicValue;
+    public MidiHeader(final MidiFileFormat midiFileFormat) {
+        this.midiFileFormat = midiFileFormat;
     }
 
-    public boolean useMagicValue() {
-        return this.useMagicValue;
+    public MidiFileFormat getMidiFileFormat() {
+        return this.midiFileFormat;
     }
 
-    public void setUseMagicValue(final boolean useMagicValue) {
-        this.useMagicValue = useMagicValue;
+    public void setMidiFileFormat(final MidiFileFormat midiFileFormat) {
+        this.midiFileFormat = midiFileFormat;
     }
 
 }

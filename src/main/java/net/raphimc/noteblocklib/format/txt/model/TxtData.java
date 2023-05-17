@@ -15,36 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.txt.note;
+package net.raphimc.noteblocklib.format.txt.model;
 
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import net.raphimc.noteblocklib.model.NotemapData;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-public class TxtNote extends Note {
+public class TxtData extends NotemapData<TxtNote> {
 
-    public TxtNote(final Scanner scanner) {
-        this(scanner.nextByte(), scanner.nextByte());
-    }
-
-    public TxtNote(final byte key, final byte instrument) {
-        super(instrument, key);
+    public TxtData(final Scanner scanner) {
+        scanner.useDelimiter("[:\r\n]+");
+        while (scanner.hasNext("\\d+")) {
+            this.notes.computeIfAbsent(scanner.nextInt(), k -> new ArrayList<>()).add(new TxtNote(scanner));
+        }
     }
 
     public void write(final StringBuilder builder) {
-        builder.append(this.key).append(":").append(this.instrument);
+        for (final Map.Entry<Integer, List<TxtNote>> entry : this.notes.entrySet()) {
+            for (final TxtNote note : entry.getValue()) {
+                builder.append(entry.getKey()).append(":");
+                note.write(builder);
+                builder.append("\n");
+            }
+        }
     }
 
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
-    }
-
-    @Override
-    public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+    public TxtData(final Map<Integer, List<TxtNote>> notes) {
+        super(notes);
     }
 
 }

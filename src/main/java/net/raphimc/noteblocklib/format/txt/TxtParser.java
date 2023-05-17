@@ -17,9 +17,8 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
-import net.raphimc.noteblocklib.format.txt.data.TxtData;
-import net.raphimc.noteblocklib.format.txt.header.TxtV1Header;
-import net.raphimc.noteblocklib.format.txt.header.TxtV2Header;
+import net.raphimc.noteblocklib.format.txt.model.TxtData;
+import net.raphimc.noteblocklib.format.txt.model.TxtHeader;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,7 +30,7 @@ public class TxtParser {
     public static TxtSong parse(final byte[] bytes, final File sourceFile) {
         final Scanner scanner = new Scanner(new ByteArrayInputStream(bytes));
 
-        final TxtV1Header header = scanner.hasNext("#{3}\\d+") ? new TxtV2Header(scanner) : new TxtV1Header();
+        final TxtHeader header = new TxtHeader(scanner);
         final TxtData data = new TxtData(scanner);
 
         return new TxtSong(sourceFile, header, data);

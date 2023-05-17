@@ -17,27 +17,25 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
-import net.raphimc.noteblocklib.format.txt.data.TxtData;
-import net.raphimc.noteblocklib.format.txt.header.TxtV1Header;
-import net.raphimc.noteblocklib.format.txt.header.TxtV2Header;
-import net.raphimc.noteblocklib.format.txt.note.TxtNote;
+import net.raphimc.noteblocklib.format.txt.model.TxtData;
+import net.raphimc.noteblocklib.format.txt.model.TxtHeader;
+import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 
 import java.io.File;
 
-public class TxtSong extends Song<TxtV1Header, TxtData, TxtNote> {
+public class TxtSong extends Song<TxtHeader, TxtData, TxtNote> {
 
-    public TxtSong(final File sourceFile, final TxtV1Header header, final TxtData data) {
+    public TxtSong(final File sourceFile, final TxtHeader header, final TxtData data) {
         super(sourceFile, header, data);
     }
 
     @Override
     protected SongView<TxtNote> createView() {
         final String title = this.getSourceFile() == null ? "Txt Song" : this.getSourceFile().getName();
-        final float speed = this.getHeader() instanceof TxtV2Header ? ((TxtV2Header) this.getHeader()).getSpeed() : 20F;
 
-        return new SongView<>(title, speed, this.getData().getNotes());
+        return new SongView<>(title, this.getHeader().getSpeed(), this.getData().getNotes());
     }
 
 }

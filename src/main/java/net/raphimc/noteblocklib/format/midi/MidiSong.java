@@ -17,9 +17,9 @@
  */
 package net.raphimc.noteblocklib.format.midi;
 
-import net.raphimc.noteblocklib.format.midi.data.MidiData;
-import net.raphimc.noteblocklib.format.midi.header.MidiHeader;
-import net.raphimc.noteblocklib.format.midi.note.MidiNote;
+import net.raphimc.noteblocklib.format.midi.model.MidiData;
+import net.raphimc.noteblocklib.format.midi.model.MidiHeader;
+import net.raphimc.noteblocklib.format.midi.model.MidiNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 

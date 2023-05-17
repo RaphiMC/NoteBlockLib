@@ -15,36 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.txt.data;
+package net.raphimc.noteblocklib.format.future.model;
 
-import net.raphimc.noteblocklib.format.txt.note.TxtNote;
+import com.google.common.io.LittleEndianDataInputStream;
 import net.raphimc.noteblocklib.model.NotemapData;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
-public class TxtData extends NotemapData<TxtNote> {
+public class FutureData extends NotemapData<FutureNote> {
 
-    public TxtData(final Scanner scanner) {
-        scanner.useDelimiter("[:\r\n]+");
-        while (scanner.hasNext("\\d+")) {
-            this.notes.computeIfAbsent(scanner.nextInt(), k -> new ArrayList<>()).add(new TxtNote(scanner));
-        }
-    }
-
-    public void write(final StringBuilder builder) {
-        for (final Map.Entry<Integer, List<TxtNote>> entry : this.notes.entrySet()) {
-            for (final TxtNote note : entry.getValue()) {
-                builder.append(entry.getKey()).append(":");
-                note.write(builder);
-                builder.append("\n");
+    @SuppressWarnings("UnstableApiUsage")
+    public FutureData(final FutureHeader header, final LittleEndianDataInputStream dis) throws IOException {
+        int tick = 0;
+        while (dis.available() > 0) {
+            final byte b = dis.readByte();
+            if (b == (header.useMagicValue() ? 5 : 64)) {
+                tick += dis.readUnsignedShort();
+            } else {
+                this.notes.computeIfAbsent(tick, k -> new ArrayList<>()).add(new FutureNote(dis.readByte(), b));
             }
         }
     }
 
-    public TxtData(final Map<Integer, List<TxtNote>> notes) {
+    public FutureData(final Map<Integer, List<FutureNote>> notes) {
         super(notes);
     }
 

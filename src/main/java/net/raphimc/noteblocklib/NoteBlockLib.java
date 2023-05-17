@@ -23,9 +23,12 @@ import net.raphimc.noteblocklib.format.future.FutureParser;
 import net.raphimc.noteblocklib.format.midi.MidiParser;
 import net.raphimc.noteblocklib.format.nbs.NbsParser;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
+import net.raphimc.noteblocklib.format.nbs.model.NbsData;
+import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.format.txt.TxtParser;
 import net.raphimc.noteblocklib.format.txt.TxtSong;
 import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.SongView;
 
 import java.io.File;
 import java.io.InputStream;
@@ -94,6 +97,14 @@ public class NoteBlockLib {
         }
 
         return bytes;
+    }
+
+    public static Song<?, ?, ?> createSongFromView(final SongView<?> songView, final SongFormat format) {
+        if (format != SongFormat.NBS) {
+            throw new IllegalArgumentException("Only NBS is supported for creating songs from views");
+        }
+
+        return new NbsSong(null, new NbsHeader(songView), new NbsData(songView));
     }
 
     public static SongFormat getFormat(final File file) {

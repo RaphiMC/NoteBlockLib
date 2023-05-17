@@ -19,10 +19,8 @@ package net.raphimc.noteblocklib.format.nbs;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
-import net.raphimc.noteblocklib.format.nbs.data.NbsV0Data;
-import net.raphimc.noteblocklib.format.nbs.header.NbsBaseHeader;
-import net.raphimc.noteblocklib.format.nbs.header.NbsV0Header;
-import net.raphimc.noteblocklib.format.nbs.header.NbsV4Header;
+import net.raphimc.noteblocklib.format.nbs.model.NbsData;
+import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,12 +32,9 @@ public class NbsParser {
 
     public static NbsSong parse(final byte[] bytes, final File sourceFile) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(bytes));
-        dis.mark(6);
-        final int nbsVersion = new NbsBaseHeader(dis).getNbsVersion();
-        dis.reset();
 
-        final NbsV0Header header = nbsVersion >= 4 ? new NbsV4Header(dis) : new NbsV0Header(dis);
-        final NbsV0Data data = new NbsV0Data(header, dis);
+        final NbsHeader header = new NbsHeader(dis);
+        final NbsData data = new NbsData(header, dis);
 
         return new NbsSong(sourceFile, header, data);
     }

@@ -17,8 +17,8 @@
  */
 package net.raphimc.noteblocklib.format.midi;
 
-import net.raphimc.noteblocklib.format.midi.data.MidiData;
-import net.raphimc.noteblocklib.format.midi.header.MidiHeader;
+import net.raphimc.noteblocklib.format.midi.model.MidiData;
+import net.raphimc.noteblocklib.format.midi.model.MidiHeader;
 
 import javax.sound.midi.InvalidMidiDataException;
 import java.io.ByteArrayInputStream;

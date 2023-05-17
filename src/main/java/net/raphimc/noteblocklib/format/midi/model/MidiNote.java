@@ -15,26 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.future.note;
+package net.raphimc.noteblocklib.format.midi.model;
 
 import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import net.raphimc.noteblocklib.model.NoteWithVolume;
 
-public class FutureNote extends Note {
+import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.MAX_VELOCITY;
 
-    public FutureNote(final byte key, final byte instrument) {
+public class MidiNote extends Note implements NoteWithVolume {
+
+    private byte velocity;
+
+    public MidiNote(final byte instrument, final byte key, final byte velocity) {
         super(instrument, key);
+
+        this.velocity = velocity;
     }
 
     @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
+    public float getVolume() {
+        return (float) this.velocity / MAX_VELOCITY * 100F;
     }
 
     @Override
-    public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+    public void setVolume(final float volume) {
+        this.velocity = (byte) (volume / 100F * MAX_VELOCITY);
     }
 
 }

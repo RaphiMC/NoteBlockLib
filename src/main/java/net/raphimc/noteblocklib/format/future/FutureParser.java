@@ -18,8 +18,8 @@
 package net.raphimc.noteblocklib.format.future;
 
 import com.google.common.io.LittleEndianDataInputStream;
-import net.raphimc.noteblocklib.format.future.data.FutureData;
-import net.raphimc.noteblocklib.format.future.header.FutureHeader;
+import net.raphimc.noteblocklib.format.future.model.FutureData;
+import net.raphimc.noteblocklib.format.future.model.FutureHeader;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

@@ -24,6 +24,9 @@ public interface NoteWithVolume {
      */
     float getVolume();
 
+    /**
+     * @param volume The velocity/volume of the note, from 0% to 100%.
+     */
     void setVolume(final float volume);
 
 }

@@ -17,9 +17,9 @@
  */
 package net.raphimc.noteblocklib.format.future;
 
-import net.raphimc.noteblocklib.format.future.data.FutureData;
-import net.raphimc.noteblocklib.format.future.header.FutureHeader;
-import net.raphimc.noteblocklib.format.future.note.FutureNote;
+import net.raphimc.noteblocklib.format.future.model.FutureData;
+import net.raphimc.noteblocklib.format.future.model.FutureHeader;
+import net.raphimc.noteblocklib.format.future.model.FutureNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 

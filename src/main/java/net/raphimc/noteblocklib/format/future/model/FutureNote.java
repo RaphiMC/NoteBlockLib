@@ -15,31 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.nbs.data.layer;
+package net.raphimc.noteblocklib.format.future.model;
 
-import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.Instrument;
+import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
-import java.util.Map;
+public class FutureNote extends Note {
 
-public class NbsV2Layer extends NbsV0Layer {
-
-    private short panning;
-
-    public NbsV2Layer(final Map<Integer, NbsV0Note> notesAtTick, final String name, final byte volume, final short panning) {
-        super(notesAtTick, name, volume);
-
-        this.panning = panning;
+    public FutureNote(final byte key, final byte instrument) {
+        super(instrument, key);
     }
 
-    /**
-     * @return How much this layer is panned to the left/right. 0 is 2 blocks right, 100 is center, 200 is 2 blocks left.
-     */
-    public short getPanning() {
-        return this.panning;
+    @Override
+    public byte getInstrument() {
+        return Instrument.fromMcId(super.getInstrument()).nbsId();
     }
 
-    public void setPanning(final short panning) {
-        this.panning = panning;
+    @Override
+    public byte getKey() {
+        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
     }
 
 }

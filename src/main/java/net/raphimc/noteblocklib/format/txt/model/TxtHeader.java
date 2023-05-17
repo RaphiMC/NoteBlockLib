@@ -15,13 +15,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.txt.header;
+package net.raphimc.noteblocklib.format.txt.model;
 
 import net.raphimc.noteblocklib.model.Header;
 
-public class TxtV1Header implements Header {
+import java.util.Scanner;
+
+public class TxtHeader implements Header {
+
+    /**
+     * @since v2
+     */
+    private float speed = 20F;
+
+    public TxtHeader(final Scanner scanner) {
+        if (scanner.hasNext("#{3}\\d+")) {
+            this.speed = Float.parseFloat(scanner.skip("#{3}").next("\\d+(|\\.\\d+)"));
+        }
+    }
 
     public void write(final StringBuilder builder) {
+        builder.append("###").append(this.speed).append('\n');
+    }
+
+    public TxtHeader(final float speed) {
+        this.speed = speed;
+    }
+
+    public TxtHeader() {
+    }
+
+    /**
+     * @return The speed of the song in ticks per second.
+     * @since v2
+     */
+    public float getSpeed() {
+        return this.speed;
+    }
+
+    /**
+     * @param speed The speed of the song in ticks per second.
+     * @since v2
+     */
+    public void setSpeed(final float speed) {
+        this.speed = speed;
     }
 
 }

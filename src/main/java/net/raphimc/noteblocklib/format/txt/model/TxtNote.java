@@ -15,33 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.txt.header;
+package net.raphimc.noteblocklib.format.txt.model;
+
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.Instrument;
+import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
 import java.util.Scanner;
 
-public class TxtV2Header extends TxtV1Header {
+public class TxtNote extends Note {
 
-    private float speed;
+    public TxtNote(final Scanner scanner) {
+        this(scanner.nextByte(), scanner.nextByte());
+    }
 
-    public TxtV2Header(final Scanner scanner) {
-        this.speed = Float.parseFloat(scanner.skip("#{3}").next("\\d+(|\\.\\d+)"));
+    public TxtNote(final byte key, final byte instrument) {
+        super(instrument, key);
+    }
+
+    public void write(final StringBuilder builder) {
+        builder.append(this.key).append(":").append(this.instrument);
     }
 
     @Override
-    public void write(final StringBuilder builder) {
-        builder.append("###").append(this.speed).append('\n');
+    public byte getInstrument() {
+        return Instrument.fromMcId(super.getInstrument()).nbsId();
     }
 
-    public TxtV2Header(final float speed) {
-        this.speed = speed;
-    }
-
-    public float getSpeed() {
-        return this.speed;
-    }
-
-    public void setSpeed(final float speed) {
-        this.speed = speed;
+    @Override
+    public byte getKey() {
+        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
     }
 
 }

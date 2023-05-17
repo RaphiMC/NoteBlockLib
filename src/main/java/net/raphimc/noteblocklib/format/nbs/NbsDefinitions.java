@@ -17,10 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
-import net.raphimc.noteblocklib.format.nbs.data.layer.NbsV0Layer;
-import net.raphimc.noteblocklib.format.nbs.data.layer.NbsV2Layer;
-import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
-import net.raphimc.noteblocklib.format.nbs.note.NbsV4Note;
+import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 
 public class NbsDefinitions {
 
@@ -36,15 +33,9 @@ public class NbsDefinitions {
      * @param note The NBS note
      * @return The effective volume of the note
      */
-    public static float getVolume(final NbsV0Note note) {
-        float layerVolume = 100;
-        float noteVolume = 100;
-        if (note.getLayer() instanceof NbsV0Layer) {
-            layerVolume = ((NbsV0Layer) note.getLayer()).getVolume();
-        }
-        if (note instanceof NbsV4Note) {
-            noteVolume = ((NbsV4Note) note).getVolume();
-        }
+    public static float getVolume(final NbsNote note) {
+        final float layerVolume = note.getLayer().getVolume();
+        final float noteVolume = note.getVolume();
         return (layerVolume * noteVolume) / 100F;
     }
 
@@ -54,15 +45,9 @@ public class NbsDefinitions {
      * @param note The NBS note
      * @return The effective panning of the note
      */
-    public static float getPanning(final NbsV0Note note) {
-        short layerPanning = 100;
-        short notePanning = 100;
-        if (note.getLayer() instanceof NbsV2Layer) {
-            layerPanning = ((NbsV2Layer) note.getLayer()).getPanning();
-        }
-        if (note instanceof NbsV4Note) {
-            notePanning = ((NbsV4Note) note).getPanning();
-        }
+    public static float getPanning(final NbsNote note) {
+        final short layerPanning = note.getLayer().getPanning();
+        final short notePanning = note.getPanning();
         return (layerPanning + notePanning) / 2F;
     }
 
@@ -72,12 +57,9 @@ public class NbsDefinitions {
      * @param note The NBS note
      * @return The effective pitch of the note
      */
-    public static int getPitch(final NbsV0Note note) {
-        byte key = note.getKey();
-        short pitch = 0;
-        if (note instanceof NbsV4Note) {
-            pitch = ((NbsV4Note) note).getPitch();
-        }
+    public static int getPitch(final NbsNote note) {
+        final byte key = note.getKey();
+        final short pitch = note.getPitch();
         return key * PITCHES_PER_KEY + pitch;
     }
 
@@ -87,7 +69,7 @@ public class NbsDefinitions {
      * @param note The NBS note
      * @return The effective key of the note
      */
-    public static int getKey(final NbsV0Note note) {
+    public static int getKey(final NbsNote note) {
         return (int) ((float) getPitch(note) / PITCHES_PER_KEY);
     }
 

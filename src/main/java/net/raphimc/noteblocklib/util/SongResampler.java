@@ -18,8 +18,7 @@
 package net.raphimc.noteblocklib.util;
 
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
-import net.raphimc.noteblocklib.format.nbs.note.NbsV0Note;
-import net.raphimc.noteblocklib.format.nbs.note.NbsV4Note;
+import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.SongView;
 
@@ -33,6 +32,7 @@ public class SongResampler {
      *
      * @param songView The song view
      * @param newSpeed The new tick speed (Ticks per second)
+     * @param <N>      The note type
      */
     public static <N extends Note> void changeTickSpeed(final SongView<N> songView, final float newSpeed) {
         final float divider = songView.getSpeed() / newSpeed;
@@ -65,13 +65,13 @@ public class SongResampler {
             }
         }
         if (tempoChangerId == -1) return;
-        final SongView<NbsV0Note> view = song.getView();
+        final SongView<NbsNote> view = song.getView();
 
         final List<TempoEvent> tempoEvents = new ArrayList<>();
-        for (Map.Entry<Integer, List<NbsV0Note>> entry : view.getNotes().entrySet()) {
-            for (NbsV0Note note : entry.getValue()) {
-                if (note instanceof NbsV4Note && note.getInstrument() == tempoChangerId) {
-                    final NbsV4Note v4Note = (NbsV4Note) note;
+        for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {
+            for (NbsNote note : entry.getValue()) {
+                if (note instanceof NbsNote && note.getInstrument() == tempoChangerId) {
+                    final NbsNote v4Note = (NbsNote) note;
                     tempoEvents.add(new TempoEvent(entry.getKey(), Math.abs(v4Note.getPitch()) / 15F));
                 }
             }
@@ -82,14 +82,14 @@ public class SongResampler {
         }
         tempoEvents.sort(Comparator.comparingInt(TempoEvent::getTick));
 
-        final Map<Integer, List<NbsV0Note>> newNotes = new TreeMap<>();
+        final Map<Integer, List<NbsNote>> newNotes = new TreeMap<>();
         final float newSpeed = tempoEvents.stream().map(TempoEvent::getTicksPerSecond).max(Float::compareTo).orElse(view.getSpeed());
 
         double milliTime = 0;
         int lastTick = 0;
         float millisPerTick = tempoEvents.get(0).getMillisPerTick();
         int tempoEventIdx = 1;
-        for (Map.Entry<Integer, List<NbsV0Note>> entry : view.getNotes().entrySet()) {
+        for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {
             while (tempoEventIdx < tempoEvents.size() && entry.getKey() > tempoEvents.get(tempoEventIdx).getTick()) {
                 final TempoEvent tempoEvent = tempoEvents.get(tempoEventIdx++);
                 milliTime += (tempoEvent.getTick() - lastTick) * millisPerTick;

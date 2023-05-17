@@ -15,13 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi.data;
+package net.raphimc.noteblocklib.format.midi.model;
 
-import net.raphimc.noteblocklib.format.midi.header.MidiHeader;
 import net.raphimc.noteblocklib.format.midi.mapping.InstrumentMapping;
 import net.raphimc.noteblocklib.format.midi.mapping.MidiMappings;
 import net.raphimc.noteblocklib.format.midi.mapping.PercussionMapping;
-import net.raphimc.noteblocklib.format.midi.note.MidiNote;
 import net.raphimc.noteblocklib.model.NotemapData;
 
 import javax.sound.midi.*;
