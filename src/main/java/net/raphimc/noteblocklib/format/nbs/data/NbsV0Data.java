@@ -29,7 +29,6 @@ import net.raphimc.noteblocklib.format.nbs.note.NbsV4Note;
 import net.raphimc.noteblocklib.model.Data;
 import net.raphimc.noteblocklib.util.Instrument;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +76,7 @@ public class NbsV0Data implements Data<NbsV0Note> {
             }
         }
 
-        try {
+        if (dis.available() > 0) {
             for (int i = 0; i < header.getLayerCount(); i++) {
                 final String name = readString(dis);
                 final boolean locked = header.getNbsVersion() >= 4 && dis.readBoolean();
@@ -96,15 +95,13 @@ public class NbsV0Data implements Data<NbsV0Note> {
                     note.setLayer(this.layers.get(i));
                 }
             }
-        } catch (EOFException ignored) {
         }
 
-        try {
+        if (dis.available() > 0) {
             final int customInstrumentsAmount = dis.readUnsignedByte();
             for (int i = 0; i < customInstrumentsAmount; i++) {
                 this.customInstruments.add(new NbsV0CustomInstrument(dis));
             }
-        } catch (EOFException ignored) {
         }
     }
 
