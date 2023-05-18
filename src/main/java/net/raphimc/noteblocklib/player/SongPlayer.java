@@ -19,7 +19,7 @@ package net.raphimc.noteblocklib.player;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.SongView;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,20 +30,16 @@ public class SongPlayer {
 
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player").setDaemon(true).build());
 
-    private final Song<?, ?, ?> song;
+    private final SongView<?> songView;
     private final ISongPlayerCallback callback;
 
     private ScheduledFuture<?> timer;
     private int tick = -1;
     private boolean paused;
 
-    public SongPlayer(final Song<?, ?, ?> song, final ISongPlayerCallback callback) {
-        this.song = song;
+    public SongPlayer(final SongView<?> songView, final ISongPlayerCallback callback) {
+        this.songView = songView;
         this.callback = callback;
-    }
-
-    public Song<?, ?, ?> getSong() {
-        return this.song;
     }
 
     public boolean isRunning() {
@@ -65,7 +61,7 @@ public class SongPlayer {
         }
         if (this.isRunning()) this.stop();
 
-        this.timer = SCHEDULER.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.song.getView().getSpeed()), TimeUnit.NANOSECONDS);
+        this.timer = SCHEDULER.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.songView.getSpeed()), TimeUnit.NANOSECONDS);
     }
 
     public void setPaused(final boolean paused) {
@@ -89,7 +85,7 @@ public class SongPlayer {
             }
             this.tick++;
 
-            if (this.tick > this.song.getView().getLength()) {
+            if (this.tick > this.songView.getLength()) {
                 if (this.callback.shouldLoop()) {
                     this.tick = -this.callback.getLoopDelay();
                 } else {
@@ -100,7 +96,7 @@ public class SongPlayer {
                 return;
             }
 
-            for (Note note : this.song.getView().getNotesAtTick(this.tick)) {
+            for (Note note : this.songView.getNotesAtTick(this.tick)) {
                 this.callback.playNote(note);
             }
         } catch (Throwable e) {

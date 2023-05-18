@@ -33,7 +33,7 @@ import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
 public class NbsHeader implements Header {
 
     /**
-     * @since v0 and >= v3
+     * @since v0 and {@literal >}= v3
      */
     private short length;
 
@@ -268,7 +268,7 @@ public class NbsHeader implements Header {
 
     /**
      * @param length The length of the song, measured in ticks. Divide this by the tempo to get the length of the song in seconds.
-     * @since v0 and >= v3
+     * @since v0 and {@literal >}= v3
      */
     public void setLength(final short length) {
         this.length = length;
