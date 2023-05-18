@@ -66,6 +66,9 @@ public class NbsData implements Data<NbsNote> {
                 final short jumpLayers = dis.readShort();
                 if (jumpLayers == 0) break;
                 layer += jumpLayers;
+                while (this.layers.size() <= layer) {
+                    this.layers.add(new NbsLayer());
+                }
 
                 final NbsNote note = new NbsNote(header, this.layers.get(layer), dis);
                 if (note.getInstrument() >= header.getVanillaInstrumentCount() && customInstrumentDiff > 0) {
@@ -126,10 +129,6 @@ public class NbsData implements Data<NbsNote> {
 
     @SuppressWarnings("UnstableApiUsage")
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
-        if (this.layers.size() != header.getLayerCount()) {
-            throw new IllegalArgumentException("Layer count mismatch");
-        }
-
         final Map<Integer, List<NbsNote>> notes = new TreeMap<>();
         for (NbsLayer layer : this.layers) {
             for (Map.Entry<Integer, NbsNote> note : layer.getNotesAtTick().entrySet()) {
@@ -152,8 +151,8 @@ public class NbsData implements Data<NbsNote> {
         }
         dos.writeShort(0);
 
-        for (NbsLayer layer : this.layers) {
-            layer.write(header, dos);
+        for (int i = 0; i < header.getLayerCount(); i++) {
+            this.layers.get(i).write(header, dos);
         }
 
         dos.writeByte(this.customInstruments.size());
