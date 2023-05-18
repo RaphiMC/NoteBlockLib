@@ -43,8 +43,18 @@ public class TxtNote extends Note {
     }
 
     @Override
+    public void setInstrument(final byte instrument) {
+        super.setInstrument(Instrument.fromNbsId(instrument).mcId());
+    }
+
+    @Override
     public byte getKey() {
         return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+    }
+
+    @Override
+    public void setKey(final byte key) {
+        super.setKey((byte) (key - MinecraftDefinitions.MC_LOWEST_KEY));
     }
 
     @Override
