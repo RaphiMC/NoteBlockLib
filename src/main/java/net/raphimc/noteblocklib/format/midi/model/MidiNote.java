@@ -42,4 +42,9 @@ public class MidiNote extends Note implements NoteWithVolume {
         this.velocity = (byte) (volume / 100F * MAX_VELOCITY);
     }
 
+    @Override
+    public Note clone() {
+        return new MidiNote(this.instrument, this.key, this.velocity);
+    }
+
 }

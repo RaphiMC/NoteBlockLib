@@ -37,4 +37,9 @@ public class FutureNote extends Note {
         return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
     }
 
+    @Override
+    public Note clone() {
+        return new FutureNote(this.key, this.instrument);
+    }
+
 }

@@ -159,4 +159,9 @@ public class NbsNote extends Note implements NoteWithVolume {
         this.pitch = pitch;
     }
 
+    @Override
+    public Note clone() {
+        return new NbsNote(this.layer, this.instrument, this.key, this.velocity, this.panning, this.pitch);
+    }
+
 }

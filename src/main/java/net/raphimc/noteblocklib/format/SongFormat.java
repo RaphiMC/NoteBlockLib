@@ -19,9 +19,20 @@ package net.raphimc.noteblocklib.format;
 
 public enum SongFormat {
 
-    NBS,
-    TXT,
-    FUTURE,
-    MIDI,
+    NBS("nbs"),
+    TXT("txt"),
+    FUTURE("notebot"),
+    MIDI("mid"),
+    ;
+
+    private final String extension;
+
+    SongFormat(final String extension) {
+        this.extension = extension;
+    }
+
+    public String getExtension() {
+        return this.extension;
+    }
 
 }

@@ -17,7 +17,7 @@
  */
 package net.raphimc.noteblocklib.model;
 
-public abstract class Note {
+public abstract class Note implements Cloneable {
 
     protected byte instrument;
     protected byte key;
@@ -54,5 +54,7 @@ public abstract class Note {
     public void setKey(final byte key) {
         this.key = key;
     }
+
+    public abstract Note clone();
 
 }

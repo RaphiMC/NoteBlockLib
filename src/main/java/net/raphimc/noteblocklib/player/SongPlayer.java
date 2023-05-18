@@ -42,6 +42,10 @@ public class SongPlayer {
         this.callback = callback;
     }
 
+    public SongView<?> getSongView() {
+        return this.songView;
+    }
+
     public boolean isRunning() {
         return this.timer != null && !this.timer.isDone() && !this.timer.isCancelled();
     }

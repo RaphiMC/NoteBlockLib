@@ -47,4 +47,9 @@ public class TxtNote extends Note {
         return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
     }
 
+    @Override
+    public Note clone() {
+        return new TxtNote(this.key, this.instrument);
+    }
+
 }
