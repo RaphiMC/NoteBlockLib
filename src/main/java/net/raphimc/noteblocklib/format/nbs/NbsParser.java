@@ -30,7 +30,7 @@ import java.io.IOException;
 @SuppressWarnings("UnstableApiUsage")
 public class NbsParser {
 
-    public static NbsSong parse(final byte[] bytes, final File sourceFile) throws IOException {
+    public static NbsSong read(final byte[] bytes, final File sourceFile) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(bytes));
 
         final NbsHeader header = new NbsHeader(dis);

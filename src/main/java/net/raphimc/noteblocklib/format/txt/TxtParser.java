@@ -27,7 +27,7 @@ import java.util.Scanner;
 
 public class TxtParser {
 
-    public static TxtSong parse(final byte[] bytes, final File sourceFile) {
+    public static TxtSong read(final byte[] bytes, final File sourceFile) {
         final Scanner scanner = new Scanner(new ByteArrayInputStream(bytes));
 
         final TxtHeader header = new TxtHeader(scanner);

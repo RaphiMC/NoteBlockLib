@@ -33,22 +33,22 @@ public class MinecraftDefinitions {
     private static final Map<Instrument, Instrument[][]> INSTRUMENT_SHIFTS = new HashMap<>();
 
     static {
-        INSTRUMENT_SHIFTS.put(Instrument.HARP, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.BELL, Instrument.CHIME}});
-        INSTRUMENT_SHIFTS.put(Instrument.BASS, new Instrument[][]{new Instrument[0], new Instrument[]{Instrument.HARP, Instrument.BELL, Instrument.CHIME}});
+        INSTRUMENT_SHIFTS.put(Instrument.HARP, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.BELL}});
+        INSTRUMENT_SHIFTS.put(Instrument.BASS, new Instrument[][]{new Instrument[0], new Instrument[]{Instrument.HARP, Instrument.BELL}});
         INSTRUMENT_SHIFTS.put(Instrument.BASS_DRUM, new Instrument[][]{new Instrument[0], new Instrument[]{Instrument.SNARE}});
         INSTRUMENT_SHIFTS.put(Instrument.SNARE, new Instrument[][]{new Instrument[]{Instrument.BASS_DRUM}, new Instrument[]{Instrument.HAT}});
         INSTRUMENT_SHIFTS.put(Instrument.HAT, new Instrument[][]{new Instrument[]{Instrument.BASS_DRUM}, new Instrument[]{Instrument.CHIME}});
         INSTRUMENT_SHIFTS.put(Instrument.GUITAR, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.COW_BELL, Instrument.XYLOPHONE}});
         INSTRUMENT_SHIFTS.put(Instrument.FLUTE, new Instrument[][]{new Instrument[]{Instrument.DIDGERIDOO}, new Instrument[]{Instrument.BELL, Instrument.CHIME}});
-        INSTRUMENT_SHIFTS.put(Instrument.BELL, new Instrument[][]{new Instrument[]{Instrument.HARP}, new Instrument[]{Instrument.CHIME}});
+        INSTRUMENT_SHIFTS.put(Instrument.BELL, new Instrument[][]{new Instrument[]{Instrument.HARP}, new Instrument[0]});
         INSTRUMENT_SHIFTS.put(Instrument.CHIME, new Instrument[][]{new Instrument[]{Instrument.BELL}, new Instrument[0]});
         INSTRUMENT_SHIFTS.put(Instrument.XYLOPHONE, new Instrument[][]{new Instrument[]{Instrument.COW_BELL}, new Instrument[]{Instrument.CHIME}});
-        INSTRUMENT_SHIFTS.put(Instrument.IRON_XYLOPHONE, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.BELL, Instrument.CHIME}});
+        INSTRUMENT_SHIFTS.put(Instrument.IRON_XYLOPHONE, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.BELL}});
         INSTRUMENT_SHIFTS.put(Instrument.COW_BELL, new Instrument[][]{new Instrument[]{Instrument.GUITAR}, new Instrument[]{Instrument.XYLOPHONE}});
-        INSTRUMENT_SHIFTS.put(Instrument.DIDGERIDOO, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.FLUTE, Instrument.BELL, Instrument.CHIME}});
-        INSTRUMENT_SHIFTS.put(Instrument.BIT, new Instrument[][]{new Instrument[]{Instrument.DIDGERIDOO}, new Instrument[]{Instrument.BELL, Instrument.CHIME}});
-        INSTRUMENT_SHIFTS.put(Instrument.BANJO, new Instrument[][]{new Instrument[]{Instrument.DIDGERIDOO}, new Instrument[]{Instrument.BELL, Instrument.CHIME}});
-        INSTRUMENT_SHIFTS.put(Instrument.PLING, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.BELL, Instrument.CHIME}});
+        INSTRUMENT_SHIFTS.put(Instrument.DIDGERIDOO, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.FLUTE, Instrument.BELL}});
+        INSTRUMENT_SHIFTS.put(Instrument.BIT, new Instrument[][]{new Instrument[]{Instrument.DIDGERIDOO}, new Instrument[]{Instrument.BELL}});
+        INSTRUMENT_SHIFTS.put(Instrument.BANJO, new Instrument[][]{new Instrument[]{Instrument.DIDGERIDOO}, new Instrument[]{Instrument.BELL}});
+        INSTRUMENT_SHIFTS.put(Instrument.PLING, new Instrument[][]{new Instrument[]{Instrument.BASS}, new Instrument[]{Instrument.BELL}});
     }
 
     /**
@@ -111,8 +111,8 @@ public class MinecraftDefinitions {
      *
      * @param note The note to transpose
      */
-    public static void transposeNote(final Note note) {
-        transposeNote(note, NbsDefinitions.KEYS_PER_OCTAVE);
+    public static void transposeNoteKey(final Note note) {
+        transposeNoteKey(note, NbsDefinitions.KEYS_PER_OCTAVE);
     }
 
     /**
@@ -122,7 +122,7 @@ public class MinecraftDefinitions {
      * @param note            The note to transpose
      * @param transposeAmount The amount of keys to transpose by
      */
-    public static void transposeNote(final Note note, final int transposeAmount) {
+    public static void transposeNoteKey(final Note note, final int transposeAmount) {
         byte nbsKey = note.getKey();
         while (nbsKey < MC_LOWEST_KEY) {
             nbsKey += transposeAmount;
@@ -134,8 +134,8 @@ public class MinecraftDefinitions {
     }
 
     /**
-     * Transposes the key of the note by shifting the instrument to a higher or lower sounding one.
-     * This often sounds the best as it keeps the musical key more or less intact.
+     * "Transposes" the key of the note by shifting the instrument to a higher or lower sounding one.
+     * This often sounds the best of the three methods as it keeps the musical key the same and only changes the instrument.
      * <b>The note might still be slightly outside of the minecraft octave range.</b> Use one of the other methods to fix this. Clamp is recommended.
      *
      * @param note The note to transpose

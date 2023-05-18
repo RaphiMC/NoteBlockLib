@@ -27,7 +27,7 @@ import java.io.IOException;
 
 public class MidiParser {
 
-    public static MidiSong parse(final byte[] bytes, final File sourceFile) throws InvalidMidiDataException, IOException {
+    public static MidiSong read(final byte[] bytes, final File sourceFile) throws InvalidMidiDataException, IOException {
         final MidiHeader header = new MidiHeader(new ByteArrayInputStream(bytes));
         final MidiData data = new MidiData(header, new ByteArrayInputStream(bytes));
 

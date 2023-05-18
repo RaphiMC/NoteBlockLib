@@ -37,38 +37,38 @@ import java.nio.file.Files;
 
 public class NoteBlockLib {
 
-    public static Song<?, ?, ?> parseSong(final File file) throws Exception {
-        return parseSong(file, getFormat(file));
+    public static Song<?, ?, ?> readSong(final File file) throws Exception {
+        return readSong(file, getFormat(file));
     }
 
-    public static Song<?, ?, ?> parseSong(final File file, final SongFormat format) throws Exception {
-        return parseSong(Files.readAllBytes(file.toPath()), format, file);
+    public static Song<?, ?, ?> readSong(final File file, final SongFormat format) throws Exception {
+        return readSong(Files.readAllBytes(file.toPath()), format, file);
     }
 
-    public static Song<?, ?, ?> parseSong(final InputStream is, final SongFormat format) throws Exception {
-        return parseSong(ByteStreams.toByteArray(is), format, null);
+    public static Song<?, ?, ?> readSong(final InputStream is, final SongFormat format) throws Exception {
+        return readSong(ByteStreams.toByteArray(is), format, null);
     }
 
-    public static Song<?, ?, ?> parseSong(final byte[] bytes, final SongFormat format) throws Exception {
-        return parseSong(bytes, format, null);
+    public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format) throws Exception {
+        return readSong(bytes, format, null);
     }
 
-    public static Song<?, ?, ?> parseSong(final byte[] bytes, final SongFormat format, final File sourceFile) throws Exception {
+    public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format, final File sourceFile) throws Exception {
         try {
             switch (format) {
                 case NBS:
-                    return NbsParser.parse(bytes, sourceFile);
+                    return NbsParser.read(bytes, sourceFile);
                 case TXT:
-                    return TxtParser.parse(bytes, sourceFile);
+                    return TxtParser.read(bytes, sourceFile);
                 case FUTURE:
-                    return FutureParser.parse(bytes, sourceFile);
+                    return FutureParser.read(bytes, sourceFile);
                 case MIDI:
-                    return MidiParser.parse(bytes, sourceFile);
+                    return MidiParser.read(bytes, sourceFile);
                 default:
                     throw new IllegalStateException("Unknown format: " + format);
             }
         } catch (Throwable e) {
-            throw new Exception("Failed to parse song", e);
+            throw new Exception("Failed to read song", e);
         }
     }
 

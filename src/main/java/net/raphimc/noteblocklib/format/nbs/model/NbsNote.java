@@ -74,6 +74,10 @@ public class NbsNote extends Note implements NoteWithVolume {
         this.layer = layer;
     }
 
+    public NbsNote(final byte instrument, final byte key) {
+        super(instrument, key);
+    }
+
     @SuppressWarnings("UnstableApiUsage")
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
         dos.writeByte(this.instrument);

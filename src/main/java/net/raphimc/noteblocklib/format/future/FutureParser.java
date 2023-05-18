@@ -28,7 +28,7 @@ import java.io.IOException;
 @SuppressWarnings("UnstableApiUsage")
 public class FutureParser {
 
-    public static FutureSong parse(final byte[] bytes, final File sourceFile) throws IOException {
+    public static FutureSong read(final byte[] bytes, final File sourceFile) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(bytes));
 
         final FutureHeader header = new FutureHeader(dis);
