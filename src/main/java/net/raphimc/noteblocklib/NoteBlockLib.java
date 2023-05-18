@@ -70,7 +70,7 @@ public class NoteBlockLib {
                 case MIDI:
                     return MidiParser.read(bytes, fileName);
                 default:
-                    throw new IllegalStateException("Unknown format: " + format);
+                    throw new IllegalStateException("Unknown format");
             }
         } catch (Throwable e) {
             throw new Exception("Failed to read song", e);
@@ -117,18 +117,7 @@ public class NoteBlockLib {
     }
 
     public static SongFormat getFormat(final Path path) {
-        final String name = path.toString().toLowerCase();
-        if (name.endsWith(".nbs")) {
-            return SongFormat.NBS;
-        } else if (name.endsWith(".txt")) {
-            return SongFormat.TXT;
-        } else if (name.endsWith(".notebot")) {
-            return SongFormat.FUTURE;
-        } else if (name.endsWith(".mid")) {
-            return SongFormat.MIDI;
-        } else {
-            throw new IllegalStateException("Unknown file type");
-        }
+        return SongFormat.getByExtension(com.google.common.io.Files.getFileExtension(path.getFileName().toString()));
     }
 
 }
