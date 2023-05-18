@@ -24,19 +24,18 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 @SuppressWarnings("UnstableApiUsage")
 public class NbsParser {
 
-    public static NbsSong read(final byte[] bytes, final File sourceFile) throws IOException {
+    public static NbsSong read(final byte[] bytes, final String fileName) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(bytes));
 
         final NbsHeader header = new NbsHeader(dis);
         final NbsData data = new NbsData(header, dis);
 
-        return new NbsSong(sourceFile, header, data);
+        return new NbsSong(fileName, header, data);
     }
 
     public static byte[] write(final NbsSong song) throws IOException {

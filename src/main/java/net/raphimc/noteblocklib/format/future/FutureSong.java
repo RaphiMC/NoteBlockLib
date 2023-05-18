@@ -23,17 +23,15 @@ import net.raphimc.noteblocklib.format.future.model.FutureNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 
-import java.io.File;
-
 public class FutureSong extends Song<FutureHeader, FutureData, FutureNote> {
 
-    public FutureSong(final File sourceFile, final FutureHeader header, final FutureData data) {
-        super(sourceFile, header, data);
+    public FutureSong(final String fileName, final FutureHeader header, final FutureData data) {
+        super(fileName, header, data);
     }
 
     @Override
     protected SongView<FutureNote> createView() {
-        final String title = this.getSourceFile() == null ? "Future Song" : this.getSourceFile().getName();
+        final String title = this.fileName == null ? "Future Song" : this.fileName;
 
         return new SongView<>(title, 20F, this.getData().getNotes());
     }

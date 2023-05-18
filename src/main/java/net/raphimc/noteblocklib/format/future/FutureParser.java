@@ -22,19 +22,18 @@ import net.raphimc.noteblocklib.format.future.model.FutureData;
 import net.raphimc.noteblocklib.format.future.model.FutureHeader;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 
 @SuppressWarnings("UnstableApiUsage")
 public class FutureParser {
 
-    public static FutureSong read(final byte[] bytes, final File sourceFile) throws IOException {
+    public static FutureSong read(final byte[] bytes, final String fileName) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(bytes));
 
         final FutureHeader header = new FutureHeader(dis);
         final FutureData data = new FutureData(header, dis);
 
-        return new FutureSong(sourceFile, header, data);
+        return new FutureSong(fileName, header, data);
     }
 
 }

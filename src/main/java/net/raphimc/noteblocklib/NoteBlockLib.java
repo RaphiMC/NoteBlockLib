@@ -34,15 +34,20 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class NoteBlockLib {
 
     public static Song<?, ?, ?> readSong(final File file) throws Exception {
-        return readSong(file, getFormat(file));
+        return readSong(file.toPath());
     }
 
-    public static Song<?, ?, ?> readSong(final File file, final SongFormat format) throws Exception {
-        return readSong(Files.readAllBytes(file.toPath()), format, file);
+    public static Song<?, ?, ?> readSong(final Path path) throws Exception {
+        return readSong(path, getFormat(path));
+    }
+
+    public static Song<?, ?, ?> readSong(final Path path, final SongFormat format) throws Exception {
+        return readSong(Files.readAllBytes(path), format, path.getFileName().toString());
     }
 
     public static Song<?, ?, ?> readSong(final InputStream is, final SongFormat format) throws Exception {
@@ -53,17 +58,17 @@ public class NoteBlockLib {
         return readSong(bytes, format, null);
     }
 
-    public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format, final File sourceFile) throws Exception {
+    public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format, final String fileName) throws Exception {
         try {
             switch (format) {
                 case NBS:
-                    return NbsParser.read(bytes, sourceFile);
+                    return NbsParser.read(bytes, fileName);
                 case TXT:
-                    return TxtParser.read(bytes, sourceFile);
+                    return TxtParser.read(bytes, fileName);
                 case FUTURE:
-                    return FutureParser.read(bytes, sourceFile);
+                    return FutureParser.read(bytes, fileName);
                 case MIDI:
-                    return MidiParser.read(bytes, sourceFile);
+                    return MidiParser.read(bytes, fileName);
                 default:
                     throw new IllegalStateException("Unknown format: " + format);
             }
@@ -73,7 +78,11 @@ public class NoteBlockLib {
     }
 
     public static void writeSong(final Song<?, ?, ?> song, final File file) throws Exception {
-        Files.write(file.toPath(), writeSong(song));
+        writeSong(song, file.toPath());
+    }
+
+    public static void writeSong(final Song<?, ?, ?> song, final Path path) throws Exception {
+        Files.write(path, writeSong(song));
     }
 
     public static void writeSong(final Song<?, ?, ?> song, final OutputStream os) throws Exception {
@@ -107,8 +116,8 @@ public class NoteBlockLib {
         return new NbsSong(null, new NbsHeader(songView), new NbsData(songView));
     }
 
-    public static SongFormat getFormat(final File file) {
-        final String name = file.getName().toLowerCase();
+    public static SongFormat getFormat(final Path path) {
+        final String name = path.toString().toLowerCase();
         if (name.endsWith(".nbs")) {
             return SongFormat.NBS;
         } else if (name.endsWith(".txt")) {
@@ -118,7 +127,7 @@ public class NoteBlockLib {
         } else if (name.endsWith(".mid")) {
             return SongFormat.MIDI;
         } else {
-            throw new IllegalStateException("Unknown file type: " + file.getName());
+            throw new IllegalStateException("Unknown file type");
         }
     }
 

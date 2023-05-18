@@ -21,19 +21,18 @@ import net.raphimc.noteblocklib.format.txt.model.TxtData;
 import net.raphimc.noteblocklib.format.txt.model.TxtHeader;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 public class TxtParser {
 
-    public static TxtSong read(final byte[] bytes, final File sourceFile) {
+    public static TxtSong read(final byte[] bytes, final String fileName) {
         final Scanner scanner = new Scanner(new ByteArrayInputStream(bytes));
 
         final TxtHeader header = new TxtHeader(scanner);
         final TxtData data = new TxtData(scanner);
 
-        return new TxtSong(sourceFile, header, data);
+        return new TxtSong(fileName, header, data);
     }
 
     public static byte[] write(final TxtSong song) {

@@ -23,20 +23,18 @@ import net.raphimc.noteblocklib.format.midi.model.MidiNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 
-import java.io.File;
-
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.SONG_TICKS_PER_SECOND;
 
 public class MidiSong extends Song<MidiHeader, MidiData, MidiNote> {
 
-    public MidiSong(final File sourceFile, final MidiHeader header, final MidiData data) {
-        super(sourceFile, header, data);
+    public MidiSong(final String fileName, final MidiHeader header, final MidiData data) {
+        super(fileName, header, data);
     }
 
     @Override
     protected SongView<MidiNote> createView() {
         final String midiTitle = (String) this.getHeader().getMidiFileFormat().getProperty("title");
-        final String title = midiTitle == null || midiTitle.isEmpty() ? this.getSourceFile() == null ? "MIDI Song" : this.getSourceFile().getName() : midiTitle;
+        final String title = midiTitle == null || midiTitle.isEmpty() ? this.fileName == null ? "MIDI Song" : this.fileName : midiTitle;
 
         return new SongView<>(title, SONG_TICKS_PER_SECOND, this.getData().getNotes());
     }

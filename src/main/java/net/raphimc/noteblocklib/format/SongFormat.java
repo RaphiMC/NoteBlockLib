@@ -17,22 +17,50 @@
  */
 package net.raphimc.noteblocklib.format;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 public enum SongFormat {
 
     NBS("nbs"),
     TXT("txt"),
     FUTURE("notebot"),
-    MIDI("mid"),
+    MIDI("mid", "midi"),
     ;
 
-    private final String extension;
+    private final List<String> extensions;
 
-    SongFormat(final String extension) {
-        this.extension = extension;
+    SongFormat(final String... extension) {
+        this.extensions = Arrays.asList(extension);
     }
 
-    public String getExtension() {
-        return this.extension;
+    public static SongFormat getByExtension(final String extension) {
+        for (final SongFormat format : values()) {
+            if (format.extensions.contains(extension.toLowerCase(Locale.ROOT))) {
+                return format;
+            }
+        }
+
+        return null;
+    }
+
+    public static SongFormat getByName(final String name) {
+        for (final SongFormat format : values()) {
+            if (format.name().equalsIgnoreCase(name)) {
+                return format;
+            }
+        }
+
+        return null;
+    }
+
+    public String getName() {
+        return this.name().toLowerCase();
+    }
+
+    public List<String> getExtensions() {
+        return this.extensions;
     }
 
 }

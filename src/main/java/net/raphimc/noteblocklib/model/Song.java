@@ -17,18 +17,16 @@
  */
 package net.raphimc.noteblocklib.model;
 
-import java.io.File;
-
 public abstract class Song<H extends Header, D extends Data<N>, N extends Note> {
 
-    private final File sourceFile;
+    protected final String fileName;
     private final H header;
     private final D data;
 
     private SongView<N> view;
 
-    public Song(final File sourceFile, final H header, final D data) {
-        this.sourceFile = sourceFile;
+    public Song(final String fileName, final H header, final D data) {
+        this.fileName = fileName;
         this.header = header;
         this.data = data;
 
@@ -39,13 +37,6 @@ public abstract class Song<H extends Header, D extends Data<N>, N extends Note> 
 
     public void refreshView() {
         this.view = this.createView();
-    }
-
-    /**
-     * @return The file this song originated from or null, if read from InputStream
-     */
-    public File getSourceFile() {
-        return this.sourceFile;
     }
 
     public H getHeader() {

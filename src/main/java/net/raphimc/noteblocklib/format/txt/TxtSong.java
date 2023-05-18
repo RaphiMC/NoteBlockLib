@@ -23,17 +23,15 @@ import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 
-import java.io.File;
-
 public class TxtSong extends Song<TxtHeader, TxtData, TxtNote> {
 
-    public TxtSong(final File sourceFile, final TxtHeader header, final TxtData data) {
-        super(sourceFile, header, data);
+    public TxtSong(final String fileName, final TxtHeader header, final TxtData data) {
+        super(fileName, header, data);
     }
 
     @Override
     protected SongView<TxtNote> createView() {
-        final String title = this.getSourceFile() == null ? "Txt Song" : this.getSourceFile().getName();
+        final String title = this.fileName == null ? "Txt Song" : this.fileName;
 
         return new SongView<>(title, this.getHeader().getSpeed(), this.getData().getNotes());
     }

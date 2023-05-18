@@ -24,7 +24,6 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +31,13 @@ import java.util.TreeMap;
 
 public class NbsSong extends Song<NbsHeader, NbsData, NbsNote> {
 
-    public NbsSong(final File sourceFile, final NbsHeader header, final NbsData data) {
-        super(sourceFile, header, data);
+    public NbsSong(final String fileName, final NbsHeader header, final NbsData data) {
+        super(fileName, header, data);
     }
 
     @Override
     protected SongView<NbsNote> createView() {
-        final String title = this.getHeader().getTitle().isEmpty() ? this.getSourceFile() == null ? "NBS Song" : this.getSourceFile().getName() : this.getHeader().getTitle();
+        final String title = this.getHeader().getTitle().isEmpty() ? this.fileName == null ? "NBS Song" : this.fileName : this.getHeader().getTitle();
 
         final Map<Integer, List<NbsNote>> notes = new TreeMap<>();
         for (NbsLayer layer : this.getData().getLayers()) {
