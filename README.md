@@ -122,6 +122,38 @@ Song<?, ?, ?> nbsSong = NoteBlockLib.createSongFromView(mySong, SongFormat.NBS);
 
 NoteBlockLib.writeSong(nbsSong, new File("C:\\Users\\Koppe\\Desktop\\output.nbs"));
 ```
+**Playing a song**
+```java
+Song<?, ?, ?> song = NoteBlockLib.readSong(new File("input.nbs"));
+
+// Optionally apply a modification to all notes here (For example to transpose the note keys)
+
+SongPlayer player = new SongPlayer(song.getView(), new ISongPlayerCallback() {
+    @Override
+    public void playNote(Note note) {
+        // This method gets called in real time when the song is played.
+        // For NBS notes: To calculate values like the volume or the panning use the NbsDefinitions class.
+        System.out.println(note.getInstrument() + " " + note.getKey());
+    }
+
+    // There are other methods like onFinished which can be overridden.
+});
+
+// Start playing
+player.play();
+
+// Pause
+player.setPaused(true);
+
+// Resume
+player.setPaused(false);
+
+// Seek
+player.setTick(50);
+
+// Stop
+player.stop();
+```
 
 ## Contact
 If you encounter any issues, please report them on the
