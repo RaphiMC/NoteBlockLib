@@ -60,6 +60,8 @@ public class NoteBlockLib {
 
     public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format, final String fileName) throws Exception {
         try {
+            if (format == null) throw new IllegalArgumentException("Unknown format");
+
             switch (format) {
                 case NBS:
                     return NbsParser.read(bytes, fileName);
