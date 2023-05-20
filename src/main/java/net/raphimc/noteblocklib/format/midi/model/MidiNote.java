@@ -20,16 +20,30 @@ package net.raphimc.noteblocklib.format.midi.model;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 
+import java.util.Objects;
+
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.MAX_VELOCITY;
 
 public class MidiNote extends Note implements NoteWithVolume {
 
+    private final long midiTick;
     private byte velocity;
 
-    public MidiNote(final byte instrument, final byte key, final byte velocity) {
+    public MidiNote(final long midiTick, final byte instrument, final byte key, final byte velocity) {
         super(instrument, key);
 
+        this.midiTick = midiTick;
         this.velocity = velocity;
+    }
+
+    /**
+     * The MIDI tick of this note.
+     * This value is excluded from equals and hashcode.
+     *
+     * @return The tick of the note in the midi sequence.
+     */
+    public long getMidiTick() {
+        return this.midiTick;
     }
 
     @Override
@@ -44,7 +58,21 @@ public class MidiNote extends Note implements NoteWithVolume {
 
     @Override
     public MidiNote clone() {
-        return new MidiNote(this.instrument, this.key, this.velocity);
+        return new MidiNote(this.midiTick, this.instrument, this.key, this.velocity);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        MidiNote midiNote = (MidiNote) o;
+        return velocity == midiNote.velocity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), velocity);
     }
 
 }
