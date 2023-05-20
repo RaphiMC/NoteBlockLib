@@ -23,6 +23,7 @@ public class MidiDefinitions {
     public static final int PERCUSSION_CHANNEL = 9;
     public static final int VOLUME_CONTROL_MSB = 0x07;
     public static final int PAN_CONTROL_MSB = 0x0A;
+    public static final int RESET_CONTROLS = 0x79;
 
     public static final int CHANNELS = 16;
     public static final byte NBS_KEY_OFFSET = 21;

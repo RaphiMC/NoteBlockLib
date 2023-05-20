@@ -121,6 +121,9 @@ public class MidiData extends NotemapData<MidiNote> {
                             channelVolumes[shortMessage.getChannel()] = (byte) shortMessage.getData2();
                         } else if (shortMessage.getData1() == PAN_CONTROL_MSB) {
                             channelPans[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                        } else if (shortMessage.getData1() == RESET_CONTROLS) {
+                            channelVolumes[shortMessage.getChannel()] = MAX_VELOCITY;
+                            channelPans[shortMessage.getChannel()] = CENTER_PAN;
                         }
                     } else if (shortMessage.getCommand() == SYSTEM_RESET) {
                         Arrays.fill(channelInstruments, (byte) 0);
