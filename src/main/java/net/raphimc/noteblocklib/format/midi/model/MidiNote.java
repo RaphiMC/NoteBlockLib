@@ -43,7 +43,7 @@ public class MidiNote extends Note implements NoteWithVolume {
     }
 
     @Override
-    public Note clone() {
+    public MidiNote clone() {
         return new MidiNote(this.instrument, this.key, this.velocity);
     }
 

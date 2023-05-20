@@ -23,6 +23,7 @@ import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class NbsNote extends Note implements NoteWithVolume {
 
@@ -160,8 +161,22 @@ public class NbsNote extends Note implements NoteWithVolume {
     }
 
     @Override
-    public Note clone() {
+    public NbsNote clone() {
         return new NbsNote(this.layer, this.instrument, this.key, this.velocity, this.panning, this.pitch);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        NbsNote nbsNote = (NbsNote) o;
+        return velocity == nbsNote.velocity && panning == nbsNote.panning && pitch == nbsNote.pitch;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), velocity, panning, pitch);
     }
 
 }

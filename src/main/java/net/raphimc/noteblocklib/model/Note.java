@@ -17,6 +17,8 @@
  */
 package net.raphimc.noteblocklib.model;
 
+import java.util.Objects;
+
 public abstract class Note implements Cloneable {
 
     protected byte instrument;
@@ -56,5 +58,18 @@ public abstract class Note implements Cloneable {
     }
 
     public abstract Note clone();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return instrument == note.instrument && key == note.key;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(instrument, key);
+    }
 
 }

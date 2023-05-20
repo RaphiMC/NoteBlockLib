@@ -58,7 +58,7 @@ public class TxtNote extends Note {
     }
 
     @Override
-    public Note clone() {
+    public TxtNote clone() {
         return new TxtNote(this.key, this.instrument);
     }
 

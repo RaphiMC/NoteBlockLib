@@ -48,7 +48,7 @@ public class FutureNote extends Note {
     }
 
     @Override
-    public Note clone() {
+    public FutureNote clone() {
         return new FutureNote(this.key, this.instrument);
     }
 

@@ -17,10 +17,16 @@
  */
 package net.raphimc.noteblocklib.util;
 
+import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
+import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.NoteWithVolume;
 import net.raphimc.noteblocklib.model.SongView;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class SongUtil {
@@ -36,6 +42,53 @@ public class SongUtil {
      */
     public static <N extends Note> void applyToAllNotes(final SongView<N> songView, final Consumer<N> noteConsumer) {
         songView.getNotes().values().stream().flatMap(Collection::stream).forEach(noteConsumer);
+    }
+
+    /**
+     * Removes duplicate notes which are on the same tick.
+     * Useful when reading large MIDI files with a lot of duplicate notes.
+     *
+     * @param songView The song view
+     * @param <N>      The note type
+     */
+    public static <N extends Note> void removeDoubleNotes(final SongView<N> songView) {
+        for (List<N> list : songView.getNotes().values()) {
+            final Set<N> set = new HashSet<>(list);
+            list.clear();
+            list.addAll(set);
+        }
+    }
+
+    /**
+     * Removes all notes which have a volume of 0.
+     *
+     * @param songView The song view
+     * @param <N>      The note type
+     */
+    public static <N extends Note> void removeSilentNotes(final SongView<N> songView) {
+        removeSilentNotes(songView, 0F);
+    }
+
+    /**
+     * Removes all notes which have a volume lower than or equal the given threshold.
+     *
+     * @param songView  The song view
+     * @param threshold The threshold
+     * @param <N>       The note type
+     */
+    public static <N extends Note> void removeSilentNotes(final SongView<N> songView, final float threshold) {
+        for (List<N> list : songView.getNotes().values()) {
+            list.removeIf(note -> {
+                if (note instanceof NbsNote) {
+                    final float volume = NbsDefinitions.getVolume((NbsNote) note);
+                    return volume <= threshold;
+                } else if (note instanceof NoteWithVolume) {
+                    return ((NoteWithVolume) note).getVolume() <= threshold;
+                } else {
+                    return false;
+                }
+            });
+        }
     }
 
 }
