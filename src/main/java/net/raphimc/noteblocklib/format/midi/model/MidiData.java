@@ -25,10 +25,7 @@ import net.raphimc.noteblocklib.model.NotemapData;
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
@@ -67,6 +64,10 @@ public class MidiData extends NotemapData<MidiNote> {
         tempoEvents.sort(Comparator.comparingLong(TempoEvent::getTick));
 
         final byte[] channelInstruments = new byte[CHANNELS];
+        final byte[] channelVolumes = new byte[CHANNELS];
+        final byte[] channelPans = new byte[CHANNELS];
+        Arrays.fill(channelVolumes, MAX_VELOCITY);
+        Arrays.fill(channelPans, CENTER_PAN);
 
         for (int trackIdx = 0; trackIdx < sequence.getTracks().length; trackIdx++) {
             final Track track = sequence.getTracks()[trackIdx];
@@ -94,26 +95,37 @@ public class MidiData extends NotemapData<MidiNote> {
                         final byte instrument = channelInstruments[shortMessage.getChannel()];
                         final byte key = (byte) shortMessage.getData1();
                         final byte velocity = (byte) shortMessage.getData2();
+                        final byte effectiveVelocity = (byte) ((float) velocity * channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
+                        final byte pan = channelPans[shortMessage.getChannel()];
 
                         final MidiNote note;
                         if (shortMessage.getChannel() == PERCUSSION_CHANNEL) {
                             final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS.get(key);
                             if (mapping == null) continue;
 
-                            note = new MidiNote(event.getTick(), mapping.getInstrument().nbsId(), mapping.getKey(), velocity);
+                            note = new MidiNote(event.getTick(), mapping.getInstrument().nbsId(), mapping.getKey(), effectiveVelocity, pan);
                         } else {
                             final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS.get(instrument);
                             if (mapping == null) continue;
 
                             final int transposedKey = key - NBS_KEY_OFFSET + KEYS_PER_OCTAVE * mapping.getOctaveModifier();
                             final byte clampedKey = (byte) Math.max(NBS_LOWEST_KEY, Math.min(transposedKey, NBS_HIGHEST_KEY));
-                            note = new MidiNote(event.getTick(), mapping.getInstrument().nbsId(), clampedKey, velocity);
+                            note = new MidiNote(event.getTick(), mapping.getInstrument().nbsId(), clampedKey, effectiveVelocity, pan);
                         }
 
                         this.notes.computeIfAbsent((int) Math.round(microTime * SONG_TICKS_PER_SECOND / 1_000_000D), k -> new ArrayList<>()).add(note);
                     } else if (shortMessage.getCommand() == PROGRAM_CHANGE) {
                         channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
                     } else if (shortMessage.getCommand() == CONTROL_CHANGE) {
+                        if (shortMessage.getData1() == VOLUME_CONTROL_MSB) {
+                            channelVolumes[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                        } else if (shortMessage.getData1() == PAN_CONTROL_MSB) {
+                            channelPans[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                        }
+                    } else if (shortMessage.getCommand() == SYSTEM_RESET) {
+                        Arrays.fill(channelInstruments, (byte) 0);
+                        Arrays.fill(channelVolumes, MAX_VELOCITY);
+                        Arrays.fill(channelPans, CENTER_PAN);
                     }
                 }
             }

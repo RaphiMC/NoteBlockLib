@@ -18,22 +18,26 @@
 package net.raphimc.noteblocklib.format.midi.model;
 
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.NoteWithPanning;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 
 import java.util.Objects;
 
+import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.CENTER_PAN;
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.MAX_VELOCITY;
 
-public class MidiNote extends Note implements NoteWithVolume {
+public class MidiNote extends Note implements NoteWithVolume, NoteWithPanning {
 
     private final long midiTick;
     private byte velocity;
+    private byte panning;
 
-    public MidiNote(final long midiTick, final byte instrument, final byte key, final byte velocity) {
+    public MidiNote(final long midiTick, final byte instrument, final byte key, final byte velocity, final byte panning) {
         super(instrument, key);
 
         this.midiTick = midiTick;
         this.velocity = velocity;
+        this.panning = panning;
     }
 
     /**
@@ -57,8 +61,18 @@ public class MidiNote extends Note implements NoteWithVolume {
     }
 
     @Override
+    public float getPanning() {
+        return ((this.panning - CENTER_PAN) / (float) CENTER_PAN) * 100F;
+    }
+
+    @Override
+    public void setPanning(final float panning) {
+        this.panning = (byte) (panning / 100F * CENTER_PAN + CENTER_PAN);
+    }
+
+    @Override
     public MidiNote clone() {
-        return new MidiNote(this.midiTick, this.instrument, this.key, this.velocity);
+        return new MidiNote(this.midiTick, this.instrument, this.key, this.velocity, this.panning);
     }
 
     @Override
@@ -67,12 +81,12 @@ public class MidiNote extends Note implements NoteWithVolume {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         MidiNote midiNote = (MidiNote) o;
-        return velocity == midiNote.velocity;
+        return velocity == midiNote.velocity && panning == midiNote.panning;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), velocity);
+        return Objects.hash(super.hashCode(), velocity, panning);
     }
 
 }

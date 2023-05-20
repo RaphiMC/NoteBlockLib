@@ -20,12 +20,13 @@ package net.raphimc.noteblocklib.format.nbs.model;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.NoteWithPanning;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 
 import java.io.IOException;
 import java.util.Objects;
 
-public class NbsNote extends Note implements NoteWithVolume {
+public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
 
     /**
      * @since v0
@@ -126,19 +127,21 @@ public class NbsNote extends Note implements NoteWithVolume {
     }
 
     /**
-     * @return The stereo position of the note block, from 0-200. 100 is center panning.
+     * @return The stereo position of the note block. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left)
      * @since v4
      */
-    public short getPanning() {
-        return this.panning;
+    @Override
+    public float getPanning() {
+        return this.panning - 100;
     }
 
     /**
-     * @param panning The stereo position of the note block, from 0-200. 100 is center panning.
+     * @param panning The stereo position of the note block. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left)
      * @since v4
      */
-    public void setPanning(final short panning) {
-        this.panning = panning;
+    @Override
+    public void setPanning(final float panning) {
+        this.panning = (short) (panning + 100);
     }
 
     /**

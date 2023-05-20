@@ -19,10 +19,7 @@ package net.raphimc.noteblocklib.format.nbs.model;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
-import net.raphimc.noteblocklib.model.Data;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.NoteWithVolume;
-import net.raphimc.noteblocklib.model.SongView;
+import net.raphimc.noteblocklib.model.*;
 import net.raphimc.noteblocklib.util.Instrument;
 
 import java.io.IOException;
@@ -120,6 +117,10 @@ public class NbsData implements Data<NbsNote> {
                 if (note instanceof NoteWithVolume) {
                     final NoteWithVolume noteWithVolume = (NoteWithVolume) note;
                     nbsNote.setVolume(noteWithVolume.getVolume());
+                }
+                if (note instanceof NoteWithPanning) {
+                    final NoteWithPanning noteWithPanning = (NoteWithPanning) note;
+                    nbsNote.setPanning(noteWithPanning.getPanning());
                 }
 
                 layer.getNotesAtTick().put(entry.getKey(), nbsNote);

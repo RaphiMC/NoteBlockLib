@@ -40,14 +40,14 @@ public class NbsDefinitions {
     }
 
     /**
-     * Calculates the effective panning of a note. (0 is 2 blocks right, 100 is center, 200 is 2 blocks left)
+     * Calculates the effective panning of a note. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left)
      *
      * @param note The NBS note
      * @return The effective panning of the note
      */
     public static float getPanning(final NbsNote note) {
-        final short layerPanning = note.getLayer().getPanning();
-        final short notePanning = note.getPanning();
+        final float layerPanning = note.getLayer().getPanning() - 100;
+        final float notePanning = note.getPanning();
         return (layerPanning + notePanning) / 2F;
     }
 
