@@ -109,16 +109,18 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
     }
 
     /**
-     * @return The velocity/volume of the note, from 0% to 100%.
+     * @return The velocity/volume of the note, from 0% to 100%. Factors in the layer's volume.
      * @since v4
      */
     @Override
     public float getVolume() {
-        return this.velocity;
+        final float layerVolume = this.layer.getVolume();
+        final float noteVolume = this.velocity;
+        return (layerVolume * noteVolume) / 100F;
     }
 
     /**
-     * @param volume The velocity/volume of the note, from 0% to 100%.
+     * @param volume The velocity/volume of the note, from 0% to 100%. Does not change the layer's volume.
      * @since v4
      */
     @Override
@@ -126,22 +128,32 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
         this.velocity = (byte) volume;
     }
 
+    public byte getRawVelocity() {
+        return this.velocity;
+    }
+
     /**
-     * @return The stereo position of the note block. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left)
+     * @return The stereo position of the note block. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left). Factors in the layer's panning.
      * @since v4
      */
     @Override
     public float getPanning() {
-        return this.panning - 100;
+        final float layerPanning = this.layer.getPanning() - 100;
+        final float notePanning = this.panning - 100;
+        return (layerPanning + notePanning) / 2F;
     }
 
     /**
-     * @param panning The stereo position of the note block. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left)
+     * @param panning The stereo position of the note block. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left). Does not change the layer's panning.
      * @since v4
      */
     @Override
     public void setPanning(final float panning) {
         this.panning = (short) (panning + 100);
+    }
+
+    public short getRawPanning() {
+        return this.panning;
     }
 
     /**

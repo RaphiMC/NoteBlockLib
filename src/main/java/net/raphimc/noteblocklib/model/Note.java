@@ -43,6 +43,10 @@ public abstract class Note implements Cloneable {
         this.instrument = instrument;
     }
 
+    public byte getRawInstrument() {
+        return this.instrument;
+    }
+
     /**
      * @return The key of the note, from 0-87, where 0 is A0 and 87 is C8. 33-57 is within the 2-octave limit.
      */
@@ -55,6 +59,10 @@ public abstract class Note implements Cloneable {
      */
     public void setKey(final byte key) {
         this.key = key;
+    }
+
+    public byte getRawKey() {
+        return this.key;
     }
 
     public abstract Note clone();

@@ -28,30 +28,6 @@ public class NbsDefinitions {
     public static final int PITCHES_PER_KEY = 100;
 
     /**
-     * Calculates the effective volume of a note. (0% - 100%)
-     *
-     * @param note The NBS note
-     * @return The effective volume of the note
-     */
-    public static float getVolume(final NbsNote note) {
-        final float layerVolume = note.getLayer().getVolume();
-        final float noteVolume = note.getVolume();
-        return (layerVolume * noteVolume) / 100F;
-    }
-
-    /**
-     * Calculates the effective panning of a note. (-100 is 2 blocks right, 0 is center, 100 is 2 blocks left)
-     *
-     * @param note The NBS note
-     * @return The effective panning of the note
-     */
-    public static float getPanning(final NbsNote note) {
-        final float layerPanning = note.getLayer().getPanning() - 100;
-        final float notePanning = note.getPanning();
-        return (layerPanning + notePanning) / 2F;
-    }
-
-    /**
      * Calculates the effective pitch of a note. (100 = 1 key, 1200 = 1 octave)
      *
      * @param note The NBS note

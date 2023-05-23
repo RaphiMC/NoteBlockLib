@@ -17,8 +17,6 @@
  */
 package net.raphimc.noteblocklib.util;
 
-import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
-import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 import net.raphimc.noteblocklib.model.SongView;
@@ -79,10 +77,7 @@ public class SongUtil {
     public static <N extends Note> void removeSilentNotes(final SongView<N> songView, final float threshold) {
         for (List<N> list : songView.getNotes().values()) {
             list.removeIf(note -> {
-                if (note instanceof NbsNote) {
-                    final float volume = NbsDefinitions.getVolume((NbsNote) note);
-                    return volume <= threshold;
-                } else if (note instanceof NoteWithVolume) {
+                if (note instanceof NoteWithVolume) {
                     return ((NoteWithVolume) note).getVolume() <= threshold;
                 } else {
                     return false;

@@ -136,7 +136,7 @@ SongPlayer player = new SongPlayer(song.getView(), new ISongPlayerCallback() {
     @Override
     public void playNote(Note note) {
         // This method gets called in real time when the song is played.
-        // For NBS notes: To calculate values like the volume or the panning use the NbsDefinitions class.
+        // NBS Notes have a fine pitch besides the normal key. To calculate the key which factors that in use the NbsDefinitions class.
         System.out.println(note.getInstrument() + " " + note.getKey());
     }
 

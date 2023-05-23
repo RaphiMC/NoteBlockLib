@@ -60,6 +60,10 @@ public class MidiNote extends Note implements NoteWithVolume, NoteWithPanning {
         this.velocity = (byte) (volume / 100F * MAX_VELOCITY);
     }
 
+    public byte getRawVelocity() {
+        return this.velocity;
+    }
+
     @Override
     public float getPanning() {
         return ((this.panning - CENTER_PAN) / (float) CENTER_PAN) * 100F;
@@ -68,6 +72,10 @@ public class MidiNote extends Note implements NoteWithVolume, NoteWithPanning {
     @Override
     public void setPanning(final float panning) {
         this.panning = (byte) (panning / 100F * CENTER_PAN + CENTER_PAN);
+    }
+
+    public byte getRawPanning() {
+        return this.panning;
     }
 
     @Override
