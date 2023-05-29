@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    api "com.google.guava:guava:31.1-jre"
+    api "com.google.guava:guava:32.0.0-jre"
 }
 
 java {
