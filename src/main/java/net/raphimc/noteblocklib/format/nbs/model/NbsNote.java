@@ -114,7 +114,7 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
      */
     @Override
     public float getVolume() {
-        final float layerVolume = this.layer.getVolume();
+        final float layerVolume = this.layer != null ? this.layer.getVolume() : 100F;
         final float noteVolume = this.velocity;
         return (layerVolume * noteVolume) / 100F;
     }
@@ -138,7 +138,7 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
      */
     @Override
     public float getPanning() {
-        final float layerPanning = this.layer.getPanning() - 100;
+        final float layerPanning = this.layer != null ? (this.layer.getPanning() - 100) : 0F;
         final float notePanning = this.panning - 100;
         return (layerPanning + notePanning) / 2F;
     }
