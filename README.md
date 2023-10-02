@@ -85,12 +85,12 @@ Song<?, ?, ?> song = NoteBlockLib.readSong(new File("input.nbs"));
 // SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::clampNoteKey);
 
 // Transpose the note key
-SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::transposeNoteKey);
+//SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::transposeNoteKey);
 
-// Shift the instrument of out of range notes to a higher/lower one. Sounds better than above.
-// SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::instrumentShiftNote);
+// Shift the instrument of out of range notes to a higher/lower one. Sounds better than all above.
+SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::instrumentShiftNote);
 // Clamp the remaining out of range notes
-// SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::clampNoteKey);
+SongUtil.applyToAllNotes(song.getView(), MinecraftDefinitions::clampNoteKey);
         
 NoteBlockLib.writeSong(song, new File("output.nbs"));
 ```
