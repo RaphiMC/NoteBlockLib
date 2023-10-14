@@ -15,7 +15,7 @@ To use NoteBlockLib in your application, check out the [Usage](#usage) section.
 
 ## Releases
 ### Gradle/Maven
-To use NoteBlockLib with Gradle/Maven you can use this [Maven server](https://maven.lenni0451.net/#/releases/net/raphimc/NoteBlockLib) or [Jitpack](https://jitpack.io/#RaphiMC/NoteBlockLib).  
+To use NoteBlockLib with Gradle/Maven you can get it from [Maven central](https://mvnrepository.com/artifact/net.raphimc/NoteBlockLib), [Lenni0451's maven](https://maven.lenni0451.net/#/releases/net/raphimc/NoteBlockLib) or [Jitpack](https://jitpack.io/#RaphiMC/NoteBlockLib).
 You can also find instructions how to implement it into your build script there.
 
 ## Usage
