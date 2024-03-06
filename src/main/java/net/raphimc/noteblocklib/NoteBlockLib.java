@@ -36,6 +36,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.google.common.io.Files.getFileExtension;
+
 public class NoteBlockLib {
 
     public static Song<?, ?, ?> readSong(final File file) throws Exception {
@@ -119,7 +121,7 @@ public class NoteBlockLib {
     }
 
     public static SongFormat getFormat(final Path path) {
-        return SongFormat.getByExtension(com.google.common.io.Files.getFileExtension(path.getFileName().toString()));
+        return SongFormat.getByExtension(getFileExtension(path.getFileName().toString()));
     }
 
 }

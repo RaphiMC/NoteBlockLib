@@ -26,7 +26,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-@SuppressWarnings("UnstableApiUsage")
 public class NbsParser {
 
     public static NbsSong read(final byte[] bytes, final String fileName) throws IOException {

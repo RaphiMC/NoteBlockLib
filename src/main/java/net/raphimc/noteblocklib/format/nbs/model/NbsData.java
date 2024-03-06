@@ -40,7 +40,6 @@ public class NbsData implements Data<NbsNote> {
      */
     private List<NbsCustomInstrument> customInstruments;
 
-    @SuppressWarnings("UnstableApiUsage")
     public NbsData(final NbsHeader header, final LittleEndianDataInputStream dis) throws IOException {
         this.layers = new ArrayList<>(header.getLayerCount());
         this.customInstruments = new ArrayList<>();
@@ -128,7 +127,6 @@ public class NbsData implements Data<NbsNote> {
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
         final Map<Integer, List<NbsNote>> notes = new TreeMap<>();
         for (NbsLayer layer : this.layers) {

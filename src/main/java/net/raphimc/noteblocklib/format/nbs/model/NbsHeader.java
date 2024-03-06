@@ -137,7 +137,6 @@ public class NbsHeader implements Header {
      */
     private short loopStartTick;
 
-    @SuppressWarnings("UnstableApiUsage")
     public NbsHeader(final LittleEndianDataInputStream dis) throws IOException {
         final short length = dis.readShort();
         if (length == 0) {
@@ -220,7 +219,6 @@ public class NbsHeader implements Header {
         this.layerCount = (short) songView.getNotes().values().stream().mapToInt(List::size).max().orElse(0);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void write(final LittleEndianDataOutputStream dos) throws IOException {
         if (this.nbsVersion == 0) {
             dos.writeShort(this.length);

@@ -27,7 +27,6 @@ import java.util.Map;
 
 public class FutureData extends NotemapData<FutureNote> {
 
-    @SuppressWarnings("UnstableApiUsage")
     public FutureData(final FutureHeader header, final LittleEndianDataInputStream dis) throws IOException {
         int tick = 0;
         while (dis.available() > 0) {

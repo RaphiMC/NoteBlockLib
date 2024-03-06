@@ -24,7 +24,6 @@ import net.raphimc.noteblocklib.format.future.model.FutureHeader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-@SuppressWarnings("UnstableApiUsage")
 public class FutureParser {
 
     public static FutureSong read(final byte[] bytes, final String fileName) throws IOException {

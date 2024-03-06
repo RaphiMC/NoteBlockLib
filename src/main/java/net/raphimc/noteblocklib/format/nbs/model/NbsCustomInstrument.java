@@ -47,7 +47,6 @@ public class NbsCustomInstrument {
      */
     private boolean pressKey;
 
-    @SuppressWarnings("UnstableApiUsage")
     public NbsCustomInstrument(final LittleEndianDataInputStream dis) throws IOException {
         this.name = readString(dis);
         this.soundFileName = readString(dis);
@@ -62,7 +61,6 @@ public class NbsCustomInstrument {
         this.pressKey = pressKey;
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void write(final LittleEndianDataOutputStream dos) throws IOException {
         writeString(dos, this.name);
         writeString(dos, this.soundFileName);

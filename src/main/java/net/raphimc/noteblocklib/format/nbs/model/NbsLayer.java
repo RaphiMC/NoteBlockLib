@@ -54,7 +54,6 @@ public class NbsLayer {
      */
     private boolean locked = false;
 
-    @SuppressWarnings("UnstableApiUsage")
     public NbsLayer(final NbsHeader header, final LittleEndianDataInputStream dis) throws IOException {
         this.name = readString(dis);
         if (header.getNbsVersion() >= 4) {
@@ -77,7 +76,6 @@ public class NbsLayer {
     public NbsLayer() {
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
         writeString(dos, this.name);
         if (header.getNbsVersion() >= 4) {

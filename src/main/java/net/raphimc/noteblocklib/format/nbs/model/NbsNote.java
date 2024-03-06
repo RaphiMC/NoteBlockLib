@@ -48,7 +48,6 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
      */
     private short pitch = 0;
 
-    @SuppressWarnings("UnstableApiUsage")
     public NbsNote(final NbsHeader header, final NbsLayer layer, final LittleEndianDataInputStream dis) throws IOException {
         super(dis.readByte(), dis.readByte());
 
@@ -80,7 +79,6 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
         super(instrument, key);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
         dos.writeByte(this.instrument);
         dos.writeByte(this.key);
