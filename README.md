@@ -4,8 +4,8 @@ Library for reading, writing, manipulating and playing note block songs.
 To use NoteBlockLib in your application, check out the [Usage](#usage) section.
 
 ## Features
-- Reads .nbs, .mid, .txt and .notebot files
-- Can write/create .nbs and .txt files
+- Reads .nbs, .mcsp2, .mid, .txt and .notebot files
+- Can convert all of the above to .nbs
 - Offers an easy way to play note block songs in your application
 - Pretty good MIDI converter
 - Supports all NBS versions (even with undocumented features)

@@ -20,6 +20,7 @@ package net.raphimc.noteblocklib;
 import com.google.common.io.ByteStreams;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.future.FutureParser;
+import net.raphimc.noteblocklib.format.mcsp.McSpParser;
 import net.raphimc.noteblocklib.format.midi.MidiParser;
 import net.raphimc.noteblocklib.format.nbs.NbsParser;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
@@ -67,6 +68,8 @@ public class NoteBlockLib {
             switch (format) {
                 case NBS:
                     return NbsParser.read(bytes, fileName);
+                case MCSP:
+                    return McSpParser.read(bytes, fileName);
                 case TXT:
                     return TxtParser.read(bytes, fileName);
                 case FUTURE:

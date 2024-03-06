@@ -23,10 +23,11 @@ import java.util.Locale;
 
 public enum SongFormat {
 
-    NBS("nbs"),
-    TXT("txt"),
-    FUTURE("notebot"),
-    MIDI("mid", "midi"),
+    NBS("nbs"), // Minecraft Note Block Studio (https://opennbs.org/)
+    MCSP("mcsp2"), // Minecraft Song Planner (Ancestor of Minecraft Note Block Studio) (https://web.archive.org/web/20110923175931/http://www.minecraftforum.net/topic/136749-minecraft-song-planner-25-a-tool-for-note-block-musicians/)
+    TXT("txt"), // BleachHack NoteBot (https://github.com/BleachDev/BleachHack)
+    FUTURE("notebot"), // Future client NoteBot (https://futureclient.net/)
+    MIDI("mid", "midi"), // Standard MIDI (https://en.wikipedia.org/wiki/MIDI)
     ;
 
     private final List<String> extensions;
