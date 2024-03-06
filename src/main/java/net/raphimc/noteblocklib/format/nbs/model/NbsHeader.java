@@ -40,7 +40,7 @@ public class NbsHeader implements Header {
     /**
      * @since v0
      */
-    private byte nbsVersion;
+    private byte version;
 
     /**
      * @since v0
@@ -140,16 +140,16 @@ public class NbsHeader implements Header {
     public NbsHeader(final LittleEndianDataInputStream dis) throws IOException {
         final short length = dis.readShort();
         if (length == 0) {
-            this.nbsVersion = dis.readByte();
+            this.version = dis.readByte();
             this.vanillaInstrumentCount = dis.readByte();
-            if (this.nbsVersion >= 3) {
+            if (this.version >= 3) {
                 this.length = dis.readShort();
             } else {
                 this.length = -1;
             }
         } else {
             this.length = length;
-            this.nbsVersion = 0;
+            this.version = 0;
             this.vanillaInstrumentCount = 10;
         }
 
@@ -169,24 +169,24 @@ public class NbsHeader implements Header {
         this.noteBlocksRemoved = dis.readInt();
         this.sourceFileName = readString(dis);
 
-        if (this.nbsVersion >= 4) {
+        if (this.version >= 4) {
             this.loop = dis.readBoolean();
             this.maxLoopCount = dis.readByte();
             this.loopStartTick = dis.readShort();
         }
     }
 
-    public NbsHeader(final short length, final byte nbsVersion, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName, final boolean loop, final byte maxLoopCount, final short loopStartTick) {
-        this(length, nbsVersion, vanillaInstrumentCount, layerCount, title, author, originalAuthor, description, speed, autoSave, autoSaveInterval, timeSignature, minutesSpent, leftClicks, rightClicks, noteBlocksAdded, noteBlocksRemoved, sourceFileName);
+    public NbsHeader(final short length, final byte version, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName, final boolean loop, final byte maxLoopCount, final short loopStartTick) {
+        this(length, version, vanillaInstrumentCount, layerCount, title, author, originalAuthor, description, speed, autoSave, autoSaveInterval, timeSignature, minutesSpent, leftClicks, rightClicks, noteBlocksAdded, noteBlocksRemoved, sourceFileName);
 
         this.loop = loop;
         this.maxLoopCount = maxLoopCount;
         this.loopStartTick = loopStartTick;
     }
 
-    public NbsHeader(final short length, final byte nbsVersion, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName) {
+    public NbsHeader(final short length, final byte version, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName) {
         this.length = length;
-        this.nbsVersion = nbsVersion;
+        this.version = version;
         this.vanillaInstrumentCount = vanillaInstrumentCount;
         this.layerCount = layerCount;
         this.title = title;
@@ -209,7 +209,7 @@ public class NbsHeader implements Header {
     }
 
     public <N extends Note> NbsHeader(final SongView<N> songView) {
-        this.nbsVersion = 4;
+        this.version = 4;
         this.vanillaInstrumentCount = (byte) Instrument.values().length;
         this.title = songView.getTitle();
         this.length = (short) songView.getLength();
@@ -220,13 +220,13 @@ public class NbsHeader implements Header {
     }
 
     public void write(final LittleEndianDataOutputStream dos) throws IOException {
-        if (this.nbsVersion == 0) {
+        if (this.version == 0) {
             dos.writeShort(this.length);
         } else {
             dos.writeShort(0);
-            dos.writeByte(this.nbsVersion);
+            dos.writeByte(this.version);
             dos.writeByte(this.vanillaInstrumentCount);
-            if (this.nbsVersion >= 3) {
+            if (this.version >= 3) {
                 dos.writeShort(this.length);
             }
         }
@@ -247,7 +247,7 @@ public class NbsHeader implements Header {
         dos.writeInt(this.noteBlocksRemoved);
         writeString(dos, this.sourceFileName);
 
-        if (this.nbsVersion >= 4) {
+        if (this.version >= 4) {
             dos.writeBoolean(this.loop);
             dos.writeByte(this.maxLoopCount);
             dos.writeShort(this.loopStartTick);
@@ -276,16 +276,34 @@ public class NbsHeader implements Header {
      * @return The version of the NBS format.
      * @since v0
      */
-    public byte getNbsVersion() {
-        return this.nbsVersion;
+    public byte getVersion() {
+        return this.version;
     }
 
     /**
-     * @param nbsVersion The version of the NBS format.
+     * @param version The version of the NBS format.
      * @since v0
      */
-    public void setNbsVersion(final byte nbsVersion) {
-        this.nbsVersion = nbsVersion;
+    public void setVersion(final byte version) {
+        this.version = version;
+    }
+
+    /**
+     * @return The version of the NBS format.
+     * @since v0
+     */
+    @Deprecated
+    public byte getNbsVersion() {
+        return this.version;
+    }
+
+    /**
+     * @param version The version of the NBS format.
+     * @since v0
+     */
+    @Deprecated
+    public void setNbsVersion(final byte version) {
+        this.version = version;
     }
 
     /**

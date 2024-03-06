@@ -55,7 +55,7 @@ public class SongResampler {
      * @param song The song
      */
     public static void applyNbsTempoChangers(final NbsSong song) {
-        if (song.getHeader().getNbsVersion() < 4) return;
+        if (song.getHeader().getVersion() < 4) return;
 
         int tempoChangerId = -1;
         for (int i = 0; i < song.getData().getCustomInstruments().size(); i++) {

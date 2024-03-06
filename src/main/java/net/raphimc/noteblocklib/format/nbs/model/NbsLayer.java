@@ -56,11 +56,11 @@ public class NbsLayer {
 
     public NbsLayer(final NbsHeader header, final LittleEndianDataInputStream dis) throws IOException {
         this.name = readString(dis);
-        if (header.getNbsVersion() >= 4) {
+        if (header.getVersion() >= 4) {
             this.locked = dis.readBoolean();
         }
         this.volume = dis.readByte();
-        if (header.getNbsVersion() >= 2) {
+        if (header.getVersion() >= 2) {
             this.panning = dis.readByte();
         }
     }
@@ -78,11 +78,11 @@ public class NbsLayer {
 
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
         writeString(dos, this.name);
-        if (header.getNbsVersion() >= 4) {
+        if (header.getVersion() >= 4) {
             dos.writeBoolean(this.locked);
         }
         dos.writeByte(this.volume);
-        if (header.getNbsVersion() >= 2) {
+        if (header.getVersion() >= 2) {
             dos.writeByte(this.panning);
         }
     }

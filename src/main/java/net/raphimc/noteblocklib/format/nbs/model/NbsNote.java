@@ -51,7 +51,7 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
     public NbsNote(final NbsHeader header, final NbsLayer layer, final LittleEndianDataInputStream dis) throws IOException {
         super(dis.readByte(), dis.readByte());
 
-        if (header.getNbsVersion() >= 4) {
+        if (header.getVersion() >= 4) {
             this.velocity = dis.readByte();
             this.panning = (short) dis.readUnsignedByte();
             this.pitch = dis.readShort();
@@ -83,7 +83,7 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
         dos.writeByte(this.instrument);
         dos.writeByte(this.key);
 
-        if (header.getNbsVersion() >= 4) {
+        if (header.getVersion() >= 4) {
             dos.writeByte(this.velocity);
             dos.writeByte(this.panning);
             dos.writeShort(this.pitch);
