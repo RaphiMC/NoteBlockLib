@@ -27,7 +27,7 @@ public class McSpParser {
 
     public static McSpSong read(final byte[] bytes, final String fileName) {
         final McSpHeader header = new McSpHeader(new Scanner(new ByteArrayInputStream(bytes)));
-        final McSpData data = new McSpData(new Scanner(new ByteArrayInputStream(bytes)));
+        final McSpData data = new McSpData(header, new Scanner(new ByteArrayInputStream(bytes)));
 
         return new McSpSong(fileName, header, data);
     }

@@ -31,35 +31,61 @@ public class McSpData implements Data<McSpNote> {
 
     private static final Pattern NOTE_DATA_PATTERN = Pattern.compile("(\\d+)?>(.)");
 
-    public McSpData(final Scanner scanner) {
+    public McSpData(final McSpHeader header, final Scanner scanner) {
         this.layers = new ArrayList<>();
         scanner.useDelimiter("[|\\n]");
-        for (int i = 0; i < 6; i++) {
+        if (header.getVersion() == 2) {
+            for (int i = 0; i < 6; i++) {
+                scanner.next(); // skip header
+            }
+
+            int tick = 0;
+            while (scanner.hasNext()) {
+                tick += scanner.nextInt();
+                final Matcher noteData = NOTE_DATA_PATTERN.matcher(scanner.next());
+
+                int layer = 0;
+                while (noteData.find()) {
+                    if (noteData.groupCount() == 2) {
+                        layer += Integer.parseInt(noteData.group(1));
+                        while (this.layers.size() <= layer) {
+                            this.layers.add(new McSpLayer());
+                        }
+                        this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote(noteData.group(2).charAt(0)));
+                    } else if (noteData.groupCount() == 1) {
+                        if (this.layers.isEmpty()) {
+                            this.layers.add(new McSpLayer());
+                        }
+                        this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote(noteData.group(1).charAt(0)));
+                    } else if (noteData.groupCount() != 0) {
+                        throw new IllegalArgumentException("Invalid note data: " + noteData.group(0));
+                    }
+                }
+            }
+        } else if (header.getVersion() == 0) {
             scanner.next(); // skip header
-        }
 
-        int tick = 0;
-        while (scanner.hasNext()) {
-            tick += scanner.nextInt();
-            final Matcher noteData = NOTE_DATA_PATTERN.matcher(scanner.next());
+            int tick = 0;
+            while (scanner.hasNext()) {
+                tick += scanner.nextInt();
+                final char[] noteData = scanner.next().toCharArray();
+                if (noteData.length != 14) {
+                    throw new IllegalArgumentException("Invalid note data: " + new String(noteData));
+                }
+                for (int layer = 0; layer <= 6; layer++) {
+                    final int instrument = noteData[layer * 2] - '0';
+                    final int key = noteData[layer * 2 + 1] - 'A';
+                    if (instrument == 0) continue;
 
-            int layer = 0;
-            while (noteData.find()) {
-                if (noteData.groupCount() == 2) {
-                    layer += Integer.parseInt(noteData.group(1));
                     while (this.layers.size() <= layer) {
                         this.layers.add(new McSpLayer());
                     }
-                    this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote(noteData.group(2).charAt(0)));
-                } else if (noteData.groupCount() == 1) {
-                    if (this.layers.isEmpty()) {
-                        this.layers.add(new McSpLayer());
-                    }
-                    this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote(noteData.group(1).charAt(0)));
-                } else if (noteData.groupCount() != 0) {
-                    throw new IllegalArgumentException("Invalid note data: " + noteData.group(0));
+
+                    this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote((byte) key, (byte) (instrument - 1)));
                 }
             }
+        } else {
+            throw new IllegalArgumentException("Unsupported MCSP version: " + header.getVersion());
         }
     }
 

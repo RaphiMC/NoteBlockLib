@@ -39,26 +39,32 @@ public class McSpHeader implements Header {
     public McSpHeader(final Scanner scanner) {
         scanner.useDelimiter("\\|");
         this.version = scanner.nextInt();
-        if (this.version != 2) {
-            throw new IllegalStateException("Unsupported MCSP version");
+        if (this.version != 0 && this.version != 2) {
+            throw new IllegalStateException("Unsupported MCSP version: " + this.version);
         }
-        this.autoSaveInterval = scanner.nextInt();
-        this.title = scanner.next();
-        this.author = scanner.next();
-        this.originalAuthor = scanner.next();
-        if (!scanner.next().isEmpty()) {
-            throw new IllegalStateException("Invalid MCSP header");
+        if (this.version == 2) {
+            this.autoSaveInterval = scanner.nextInt();
+            this.title = scanner.next();
+            this.author = scanner.next();
+            this.originalAuthor = scanner.next();
+            if (!scanner.next().isEmpty()) {
+                throw new IllegalStateException("Invalid MCSP header");
+            }
+            try { // Optional metadata
+                scanner.nextLine();
+                this.speed = scanner.nextInt();
+                this.leftClicks = scanner.nextInt();
+                this.rightClicks = scanner.nextInt();
+                this.noteBlocksAdded = scanner.nextInt();
+                this.noteBlocksRemoved = scanner.nextInt();
+                this.minutesSpent = scanner.nextInt();
+            } catch (NoSuchElementException ignored) {
+            }
         }
-        try { // Optional metadata
-            scanner.nextLine();
-            this.speed = scanner.nextInt();
-            this.leftClicks = scanner.nextInt();
-            this.rightClicks = scanner.nextInt();
-            this.noteBlocksAdded = scanner.nextInt();
-            this.noteBlocksRemoved = scanner.nextInt();
-            this.minutesSpent = scanner.nextInt();
-        } catch (NoSuchElementException ignored) {
-        }
+    }
+
+    public McSpHeader(final int version) {
+        this.version = version;
     }
 
     public McSpHeader(final int version, final int autoSaveInterval, final String title, final String author, final String originalAuthor, final int speed, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final int minutesSpent) {
