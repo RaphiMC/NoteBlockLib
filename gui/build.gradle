@@ -1,0 +1,44 @@
+plugins {
+    id "application"
+}
+
+configurations {
+    include
+
+    implementation.extendsFrom include
+    api.extendsFrom include
+}
+
+dependencies {
+    include project(":")
+
+    include "org.lwjgl:lwjgl:3.3.3"
+    include "org.lwjgl:lwjgl-openal:3.3.3"
+    ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos", "natives-macos-arm64"].each {
+        include "org.lwjgl:lwjgl:3.3.3:$it"
+        include "org.lwjgl:lwjgl-openal:3.3.3:$it"
+    }
+}
+
+application {
+    mainClass = "net.raphimc.noteblocklib.gui.Main"
+}
+
+jar {
+    dependsOn configurations.include
+    from {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.include.collect {
+            zipTree(it)
+        }
+    } {
+        exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
+    }
+
+    manifest {
+        attributes(
+                "Main-Class": application.mainClass,
+                "Multi-Release": "true"
+        )
+    }
+}

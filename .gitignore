@@ -12,5 +12,6 @@ hs_err_pid*
 /.idea/*
 !/.idea/copyright/
 /.gradle/
-/build/
-/out/
+build/
+out/
+/run/

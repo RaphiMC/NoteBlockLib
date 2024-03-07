@@ -4,26 +4,30 @@ plugins {
     id "signing"
 }
 
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+allprojects {
+    apply plugin: "java"
 
-    group = project.maven_group ?: rootProject.maven_group
-    archivesName = project.maven_name ?: rootProject.maven_name
-    version = project.maven_version ?: rootProject.maven_version
-}
+    base {
+        java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+        compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
-repositories {
-    mavenCentral()
+        group = project.maven_group ?: rootProject.maven_group
+        archivesName = project.maven_name ?: rootProject.maven_name
+        version = project.maven_version ?: rootProject.maven_version
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
 }
 
 dependencies {
     api "com.google.guava:guava:33.0.0-jre"
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
 }
 
 jar {
