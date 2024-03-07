@@ -33,7 +33,7 @@ public class McSpData implements Data<McSpNote> {
 
     public McSpData(final McSpHeader header, final Scanner scanner) {
         this.layers = new ArrayList<>();
-        scanner.useDelimiter("[|\\n]");
+        scanner.useDelimiter("[|\r\n]");
         if (header.getVersion() == 2) {
             for (int i = 0; i < 6; i++) {
                 scanner.next(); // skip header
