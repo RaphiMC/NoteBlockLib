@@ -153,6 +153,10 @@ public class NbsHeader implements Header {
             this.vanillaInstrumentCount = 10;
         }
 
+        if (this.version < 0 || this.version > 5) {
+            throw new IllegalStateException("Unsupported NBS version: " + this.version);
+        }
+
         this.layerCount = dis.readShort();
         this.title = readString(dis);
         this.author = readString(dis);
