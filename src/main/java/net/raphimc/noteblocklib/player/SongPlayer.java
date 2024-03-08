@@ -59,10 +59,7 @@ public class SongPlayer {
     }
 
     public void play() {
-        if (this.paused) {
-            this.paused = false;
-            return;
-        }
+        this.paused = false;
         if (this.isRunning()) this.stop();
 
         this.timer = SCHEDULER.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.songView.getSpeed()), TimeUnit.NANOSECONDS);
@@ -80,6 +77,7 @@ public class SongPlayer {
         if (!this.isRunning()) return;
 
         this.timer.cancel(true);
+        this.paused = false;
     }
 
     private void tick() {
