@@ -15,29 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.gui.elements;
+package net.raphimc.noteblocktool;
 
-import net.raphimc.noteblocklib.gui.frames.ListFrame;
+import com.formdev.flatlaf.FlatDarkLaf;
+import net.raphimc.noteblocktool.frames.ListFrame;
 
 import javax.swing.*;
 
-public class DragTable extends JTable {
+public class Main {
 
-    public DragTable() {
-        super(new DragTableModel("Path", "Title", "Author", "Length", "Notes", "Speed"));
+    public static void main(String[] args) {
+        FlatDarkLaf.setup();
+        UIManager.getLookAndFeelDefaults().put("TextComponent.arc", 5);
+        UIManager.getLookAndFeelDefaults().put("Button.arc", 5);
 
-        this.getTableHeader().setReorderingAllowed(false);
-    }
-
-    public void addRow(final ListFrame.LoadedSong song) {
-        ((DragTableModel) this.getModel()).addRow(new Object[]{
-                song,
-                song.getSong().getView().getTitle(),
-                song.getAuthor().orElse("Unknown"),
-                song.getLength(),
-                song.getNoteCount(),
-                song.getSong().getView().getSpeed()
-        });
+        new ListFrame();
     }
 
 }

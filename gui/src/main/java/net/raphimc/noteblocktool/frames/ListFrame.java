@@ -15,18 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.gui.frames;
+package net.raphimc.noteblocktool.frames;
 
 import net.lenni0451.commons.swing.GBC;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.mcsp.McSpSong;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
-import net.raphimc.noteblocklib.gui.elements.DragTable;
-import net.raphimc.noteblocklib.gui.elements.DragTableDropTargetListener;
-import net.raphimc.noteblocklib.gui.elements.DragTableModel;
-import net.raphimc.noteblocklib.gui.elements.NoteBlockFileFilter;
 import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocktool.elements.DragTable;
+import net.raphimc.noteblocktool.elements.DragTableDropTargetListener;
+import net.raphimc.noteblocktool.elements.DragTableModel;
+import net.raphimc.noteblocktool.elements.NoteBlockFileFilter;
 
 import javax.swing.*;
 import java.awt.*;

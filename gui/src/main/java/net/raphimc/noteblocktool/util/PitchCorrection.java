@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.gui.util;
+package net.raphimc.noteblocktool.util;
 
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.util.MinecraftDefinitions;

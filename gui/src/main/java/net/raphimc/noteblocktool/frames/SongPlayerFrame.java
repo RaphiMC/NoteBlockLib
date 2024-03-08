@@ -15,14 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.gui.frames;
+package net.raphimc.noteblocktool.frames;
 
 import net.lenni0451.commons.swing.GBC;
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
-import net.raphimc.noteblocklib.gui.audio.JavaxSoundSystem;
-import net.raphimc.noteblocklib.gui.audio.OpenALSoundSystem;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithPanning;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
@@ -32,6 +30,8 @@ import net.raphimc.noteblocklib.player.SongPlayer;
 import net.raphimc.noteblocklib.util.Instrument;
 import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 import net.raphimc.noteblocklib.util.SongResampler;
+import net.raphimc.noteblocktool.audio.JavaxSoundSystem;
+import net.raphimc.noteblocktool.audio.OpenALSoundSystem;
 
 import javax.swing.*;
 import java.awt.*;

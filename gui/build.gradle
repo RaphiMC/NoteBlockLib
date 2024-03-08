@@ -30,7 +30,7 @@ dependencies {
 }
 
 application {
-    mainClass = "net.raphimc.noteblocklib.gui.Main"
+    mainClass = "net.raphimc.noteblocktool.Main"
 }
 
 jar {
