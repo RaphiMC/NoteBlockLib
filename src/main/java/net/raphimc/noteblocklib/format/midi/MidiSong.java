@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.midi;
 
+import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.midi.model.MidiData;
 import net.raphimc.noteblocklib.format.midi.model.MidiHeader;
 import net.raphimc.noteblocklib.format.midi.model.MidiNote;
@@ -28,7 +29,7 @@ import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.SONG_TICKS_PE
 public class MidiSong extends Song<MidiHeader, MidiData, MidiNote> {
 
     public MidiSong(final String fileName, final MidiHeader header, final MidiData data) {
-        super(fileName, header, data);
+        super(SongFormat.MIDI, fileName, header, data);
     }
 
     @Override
