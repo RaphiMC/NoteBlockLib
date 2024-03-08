@@ -113,8 +113,9 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
                 }
                 this.soundSystemComboBox.addActionListener(e -> {
                     if (this.openALSupported) {
-                        this.soundSystem = SoundSystem.values()[this.soundSystemComboBox.getSelectedIndex()];
-                        this.soundSystem.init();
+                        SoundSystem soundSystem = SoundSystem.values()[this.soundSystemComboBox.getSelectedIndex()];
+                        soundSystem.init();
+                        this.soundSystem = soundSystem;
                     } else {
                         JOptionPane.showMessageDialog(this, "OpenAL is not supported on this system", "Error", JOptionPane.ERROR_MESSAGE);
                         this.soundSystemComboBox.setSelectedIndex(1);
