@@ -67,11 +67,7 @@ public class JavaxSoundSystem {
     }
 
     public static void playNote(final Instrument instrument, final float volume, final float pitch) {
-        if (PLAYING_SOUNDS.size() >= MAX_SOUNDS) {
-            Clip clip = PLAYING_SOUNDS.remove(0);
-            clip.stop();
-            clip.close();
-        }
+        if (PLAYING_SOUNDS.size() >= MAX_SOUNDS) return;
         try {
             final Sound sound = SOUNDS.get(instrument);
             final int[] samples = mutate(sound.getSamples(), volume, pitch);
