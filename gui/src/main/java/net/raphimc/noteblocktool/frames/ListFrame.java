@@ -205,8 +205,8 @@ public class ListFrame extends JFrame {
         }
 
         public String getLength() {
-            int msLength = (int) (this.song.getView().getLength() / this.song.getView().getSpeed() * 1000);
-            return String.format("%02d:%02d:%02d", msLength / 3600000, (msLength / 60000) % 60, (msLength / 1000) % 60);
+            int msLength = (int) (this.song.getView().getLength() / this.song.getView().getSpeed());
+            return String.format("%02d:%02d:%02d", msLength / 3600, (msLength / 60) % 60, msLength % 60);
         }
 
         public Optional<String> getAuthor() {

@@ -56,6 +56,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
     private final JButton pauseResumeButton = new JButton("Pause");
     private final JSlider progressSlider = new JSlider(0, 100, 0);
     private final JLabel soundCount = new JLabel("Sounds: 0/" + DECIMAL_FORMAT.format(this.maxSoundsSpinner.getValue()));
+    private final JLabel progressLabel = new JLabel("Current Position: 00:00:00");
     private SoundSystem soundSystem = SoundSystem.OPENAL;
     private float volume = 1F;
 
@@ -160,7 +161,10 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             southPanel.setLayout(new GridBagLayout());
             root.add(southPanel, BorderLayout.SOUTH);
 
-            GBC.create(southPanel).grid(0, 0).insets(5, 5, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(this.progressSlider, () -> {
+            int gridy = 0;
+            GBC.create(southPanel).grid(0, gridy++).anchor(GBC.CENTER).add(this.progressLabel);
+
+            GBC.create(southPanel).grid(0, gridy++).insets(5, 5, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(this.progressSlider, () -> {
                 this.progressSlider.addChangeListener(e -> {
                     //Skip updates if the value is set directly
                     if (!this.progressSlider.getValueIsAdjusting()) return;
@@ -193,13 +197,13 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             });
             buttonPanel.add(this.pauseResumeButton);
             this.pauseResumeButton.addActionListener(e -> this.songPlayer.setPaused(!this.songPlayer.isPaused()));
-            GBC.create(southPanel).grid(0, 1).insets(5, 5, 5, 5).weightx(1).width(2).fill(GBC.HORIZONTAL).add(buttonPanel);
+            GBC.create(southPanel).grid(0, gridy++).insets(5, 5, 5, 5).weightx(1).width(2).fill(GBC.HORIZONTAL).add(buttonPanel);
 
             final JPanel statusBar = new JPanel();
             statusBar.setBorder(BorderFactory.createEtchedBorder());
             statusBar.setLayout(new GridLayout(1, 1));
             statusBar.add(this.soundCount);
-            GBC.create(southPanel).grid(0, 100).weightx(1).fill(GBC.HORIZONTAL).add(statusBar);
+            GBC.create(southPanel).grid(0, gridy++).weightx(1).fill(GBC.HORIZONTAL).add(statusBar);
         }
     }
 
@@ -240,6 +244,9 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             this.progressSlider.setValue(0);
         }
         this.soundCount.setText("Sounds: " + DECIMAL_FORMAT.format(this.soundSystem.getSoundCount()) + "/" + DECIMAL_FORMAT.format(this.maxSoundsSpinner.getValue()));
+
+        int msLength = (int) (this.songPlayer.getTick() / this.song.getSong().getView().getSpeed());
+        this.progressLabel.setText("Current Position: " + String.format("%02d:%02d:%02d", msLength / 3600, (msLength / 60) % 60, msLength % 60));
     }
 
     @Override
