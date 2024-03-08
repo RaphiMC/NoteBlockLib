@@ -42,10 +42,10 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
     private final ListFrame.LoadedSong song;
     private final SongPlayer songPlayer;
+    private final Timer updateTimer;
     private final JComboBox<String> soundSystemComboBox = new JComboBox<>(new String[]{SoundSystem.OPENAL.getName(), SoundSystem.JAVAX.getName()});
-    private final JButton playButton = new JButton("Play");
-    private final JButton pauseButton = new JButton("Pause");
-    private final JButton stopButton = new JButton("Stop");
+    private final JButton playStopButton = new JButton("Play");
+    private final JButton pauseResumeButton = new JButton("Pause");
     private final JSlider volumeSlider = new JSlider(0, 100, 100);
     private SoundSystem soundSystem = SoundSystem.OPENAL;
     private boolean openALSupported = true;
@@ -53,16 +53,22 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
     public SongPlayerFrame(final ListFrame.LoadedSong song) {
         this.song = song;
+        this.songPlayer = new SongPlayer(this.getSongView(), this);
+        this.updateTimer = new Timer(50, e -> {
+            if (this.songPlayer.isRunning()) {
+                this.playStopButton.setText("Stop");
+                this.pauseResumeButton.setEnabled(true);
+                if (this.songPlayer.isPaused()) this.pauseResumeButton.setText("Resume");
+                else this.pauseResumeButton.setText("Pause");
+            } else {
+                this.playStopButton.setText("Play");
+                this.pauseResumeButton.setText("Pause");
+                this.pauseResumeButton.setEnabled(false);
+            }
+        });
+        this.updateTimer.start();
 
-        final SongView<?> songView = song.getSong().getView();
-        if (song.getSong() instanceof NbsSong) {
-            SongResampler.applyNbsTempoChangers(((NbsSong) song.getSong()));
-            song.getSong().refreshView();
-        }
-
-        this.songPlayer = new SongPlayer(songView, this);
-
-        this.setTitle("NoteBlockLib Song Player - " + songView.getTitle());
+        this.setTitle("NoteBlockLib Song Player - " + this.song.getSong().getView().getTitle());
         this.setSize(500, 400);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -70,10 +76,19 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
         this.initComponents();
         this.initFrameHandler();
 
-        this.playButton.doClick();
+        this.playStopButton.doClick();
 
         this.setMinimumSize(this.getSize());
         this.setVisible(true);
+    }
+
+    private SongView<?> getSongView() {
+        final SongView<?> songView = this.song.getSong().getView();
+        if (this.song.getSong() instanceof NbsSong) {
+            SongResampler.applyNbsTempoChangers(((NbsSong) this.song.getSong()));
+            this.song.getSong().refreshView();
+        }
+        return songView;
     }
 
     private void initComponents() {
@@ -109,6 +124,10 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             GBC.create(northPanel).grid(0, 1).insets(5, 5, 5, 5).anchor(GBC.LINE_START).add(new JLabel("Volume:"));
             GBC.create(northPanel).grid(1, 1).insets(5, 0, 5, 5).weightx(1).fill(GBC.HORIZONTAL).add(this.volumeSlider, () -> {
                 if (this.openALSupported) OpenALSoundSystem.setMasterVolume(this.volume);
+                this.volumeSlider.setPaintLabels(true);
+                this.volumeSlider.setPaintTicks(true);
+                this.volumeSlider.setMajorTickSpacing(25);
+                this.volumeSlider.setMinorTickSpacing(5);
                 this.volumeSlider.addChangeListener(e -> {
                     if (this.openALSupported) {
                         this.volume = this.volumeSlider.getValue() / 100F;
@@ -124,12 +143,18 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
             final JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new GridLayout(1, 3, 5, 0));
-            buttonPanel.add(this.playButton);
-            this.playButton.addActionListener(e -> this.songPlayer.play());
-            buttonPanel.add(this.pauseButton);
-            this.pauseButton.addActionListener(e -> this.songPlayer.setPaused(true));
-            buttonPanel.add(this.stopButton);
-            this.stopButton.addActionListener(e -> this.songPlayer.stop());
+            buttonPanel.add(this.playStopButton);
+            this.playStopButton.addActionListener(e -> {
+                if (this.songPlayer.isRunning()) {
+                    this.songPlayer.stop();
+                    this.songPlayer.setTick(0);
+                    this.soundSystem.stopSounds();
+                } else {
+                    this.songPlayer.play();
+                }
+            });
+            buttonPanel.add(this.pauseResumeButton);
+            this.pauseResumeButton.addActionListener(e -> this.songPlayer.setPaused(!this.songPlayer.isPaused()));
             GBC.create(southPanel).grid(0, 0).insets(5, 5, 5, 5).weightx(1).width(2).fill(GBC.HORIZONTAL).add(buttonPanel);
         }
     }
@@ -143,7 +168,8 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
             @Override
             public void windowClosed(WindowEvent e) {
-                SongPlayerFrame.this.stopButton.doClick();
+                SongPlayerFrame.this.songPlayer.stop();
+                SongPlayerFrame.this.updateTimer.stop();
             }
         });
     }
@@ -209,6 +235,11 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             if (this.initialized) return;
             this.init.run();
             this.initialized = true;
+        }
+
+        public void stopSounds() {
+            if (this.equals(SoundSystem.OPENAL)) OpenALSoundSystem.stopAllSources();
+            else if (this.equals(SoundSystem.JAVAX)) JavaxSoundSystem.stopAllSounds();
         }
     }
 
