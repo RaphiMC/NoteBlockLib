@@ -66,7 +66,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
         this.updateTimer = new Timer(50, e -> this.tick());
         this.updateTimer.start();
 
-        this.setTitle("NoteBlockLib Song Player - " + this.song.getSong().getView().getTitle());
+        this.setTitle("NoteBlockTool Song Player - " + this.song.getSong().getView().getTitle());
         this.setSize(500, 400);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLocationRelativeTo(null);

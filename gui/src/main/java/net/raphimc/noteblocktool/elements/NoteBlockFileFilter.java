@@ -32,7 +32,7 @@ public class NoteBlockFileFilter extends FileFilter {
 
     public NoteBlockFileFilter() {
         this.extensions = Arrays.stream(SongFormat.values()).flatMap(format -> format.getExtensions().stream()).collect(Collectors.toList());
-        this.description = "NoteBlockLib Song Files (" + this.extensions.stream().map(s -> "*." + s).collect(Collectors.joining(", ")) + ")";
+        this.description = "NoteBlockTool Song Files (" + this.extensions.stream().map(s -> "*." + s).collect(Collectors.joining(", ")) + ")";
     }
 
     public NoteBlockFileFilter(final SongFormat songFormat) {

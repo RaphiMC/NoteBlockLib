@@ -50,7 +50,7 @@ public class ListFrame extends JFrame {
     private SongPlayerFrame songPlayerFrame;
 
     public ListFrame() {
-        this.setTitle("NoteBlockLib GUI");
+        this.setTitle("NoteBlockTool");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(500, 400);
         this.setLocationRelativeTo(null);
