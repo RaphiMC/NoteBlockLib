@@ -35,6 +35,7 @@ import java.util.concurrent.*;
 
 public class SoundSystem {
 
+    private static final int MAX_MONO_SOURCES = 2048;
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Sound System").setDaemon(true).build());
     private static final Map<Instrument, Integer> INSTRUMENT_BUFFERS = new EnumMap<>(Instrument.class);
     private static final List<Integer> PLAYING_SOURCES = new CopyOnWriteArrayList<>();
@@ -57,10 +58,9 @@ public class SoundSystem {
             throw new RuntimeException("ALC_SOFT_output_limiter is not supported");
         }
 
-        // TODO: HRTF
         // TODO: Loopback support (for audio export)
 
-        CONTEXT = ALC10.alcCreateContext(DEVICE, new int[]{ALC11.ALC_MONO_SOURCES, 4096, SOFTOutputLimiter.ALC_OUTPUT_LIMITER_SOFT, 1, 0});
+        CONTEXT = ALC10.alcCreateContext(DEVICE, new int[]{ALC11.ALC_MONO_SOURCES, MAX_MONO_SOURCES, SOFTOutputLimiter.ALC_OUTPUT_LIMITER_SOFT, 1, 0});
         checkError("Could not create context");
         if (!ALC10.alcMakeContextCurrent(CONTEXT)) {
             throw new RuntimeException("Could not make context current");
@@ -98,24 +98,24 @@ public class SoundSystem {
         System.out.println("Initialized OpenAL on " + ALC10.alcGetString(DEVICE, ALC11.ALC_ALL_DEVICES_SPECIFIER));
     }
 
-    public static int createSource(final Instrument instrument, final float pitch, final float volume) {
-        final int id = AL10.alGenSources();
-        checkError("Could not generate audio source");
-        if (id > 0) {
-            AL10.alSourcei(id, AL10.AL_BUFFER, INSTRUMENT_BUFFERS.get(instrument));
-            checkError("Could not set audio source buffer");
-            AL10.alSourcef(id, AL10.AL_PITCH, pitch);
-            checkError("Could not set audio source pitch");
-            AL10.alSourcef(id, AL10.AL_GAIN, volume);
-            checkError("Could not set audio source volume");
-            AL10.alSourcei(id, AL10.AL_LOOPING, AL10.AL_FALSE);
-            checkError("Could not set audio source looping");
+    public static void playNote(final Instrument instrument, final float volume, final float pitch, final float panning) {
+        if (PLAYING_SOURCES.size() >= MAX_MONO_SOURCES) {
+            AL10.alDeleteSources(PLAYING_SOURCES.remove(0));
+            checkError("Could not delete audio source");
         }
-        return id;
-    }
 
-    public static void playSource(final int source) {
+        final int source = AL10.alGenSources();
+        checkError("Could not generate audio source");
         if (source > 0) {
+            AL10.alSourcei(source, AL10.AL_BUFFER, INSTRUMENT_BUFFERS.get(instrument));
+            checkError("Could not set audio source buffer");
+            AL10.alSourcef(source, AL10.AL_GAIN, volume);
+            checkError("Could not set audio source volume");
+            AL10.alSourcef(source, AL10.AL_PITCH, pitch);
+            checkError("Could not set audio source pitch");
+            AL10.alSource3f(source, AL10.AL_POSITION, panning * 2F, 0F, 0F);
+            checkError("Could not set audio source position");
+
             AL10.alSourcePlay(source);
             checkError("Could not play audio source");
             PLAYING_SOURCES.add(source);
@@ -124,8 +124,8 @@ public class SoundSystem {
 
     public static void stopAllSources() {
         for (Integer source : PLAYING_SOURCES) {
-            AL10.alSourceStop(source);
-            checkError("Could not stop audio source");
+            AL10.alDeleteSources(source);
+            checkError("Could not delete audio source");
         }
         PLAYING_SOURCES.clear();
     }
@@ -148,12 +148,13 @@ public class SoundSystem {
         DEVICE = 0L;
     }
 
-    public static int getPlayingSources() {
-        return PLAYING_SOURCES.size();
+    public static void setMasterVolume(final float volume) {
+        AL10.alListenerf(AL10.AL_GAIN, volume);
+        checkError("Could not set listener gain");
     }
 
-    public static int getMaxSources() {
-        return ALC10.alcGetInteger(DEVICE, ALC11.ALC_MONO_SOURCES);
+    public static int getPlayingSources() {
+        return PLAYING_SOURCES.size();
     }
 
     private static void tick() {
@@ -171,29 +172,43 @@ public class SoundSystem {
     }
 
     private static int loadWav(final InputStream inputStream) {
-        final int id = AL10.alGenBuffers();
+        final int buffer = AL10.alGenBuffers();
         checkError("Could not generate audio buffer");
         try {
             final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
             final AudioFormat audioFormat = audioInputStream.getFormat();
-            if (audioFormat.getChannels() != 1) {
-                throw new RuntimeException("Only mono audio is supported");
-            }
-            if (audioFormat.getSampleSizeInBits() != 16) {
-                throw new RuntimeException("Only 16-bit audio is supported");
-            }
 
             final byte[] audioBytes = ByteStreams.toByteArray(audioInputStream);
             final ByteBuffer audioBuffer = MemoryUtil.memAlloc(audioBytes.length).put(audioBytes);
             audioBuffer.flip();
-            AL10.alBufferData(id, AL10.AL_FORMAT_MONO16, audioBuffer, (int) audioFormat.getSampleRate());
+            AL10.alBufferData(buffer, getAlAudioFormat(audioFormat), audioBuffer, (int) audioFormat.getSampleRate());
             checkError("Could not set audio buffer data");
             MemoryUtil.memFree(audioBuffer);
         } catch (Throwable e) {
             throw new RuntimeException("Could not load audio buffer", e);
         }
 
-        return id;
+        return buffer;
+    }
+
+    private static int getAlAudioFormat(final AudioFormat audioFormat) {
+        if (audioFormat.getEncoding() == AudioFormat.Encoding.PCM_SIGNED || audioFormat.getEncoding() == AudioFormat.Encoding.PCM_UNSIGNED) {
+            if (audioFormat.getChannels() == 1) {
+                if (audioFormat.getSampleSizeInBits() == 8) {
+                    return AL10.AL_FORMAT_MONO8;
+                } else if (audioFormat.getSampleSizeInBits() == 16) {
+                    return AL10.AL_FORMAT_MONO16;
+                }
+            } else if (audioFormat.getChannels() == 2) {
+                if (audioFormat.getSampleSizeInBits() == 8) {
+                    return AL10.AL_FORMAT_STEREO8;
+                } else if (audioFormat.getSampleSizeInBits() == 16) {
+                    return AL10.AL_FORMAT_STEREO16;
+                }
+            }
+        }
+
+        throw new RuntimeException("Unsupported audio format: " + audioFormat);
     }
 
     private static void checkError(final String message) {

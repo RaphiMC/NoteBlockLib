@@ -17,37 +17,36 @@
  */
 package net.raphimc.noteblocklib.gui.util;
 
-import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
-import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
-public class NoteUtil {
+public enum PitchCorrection {
 
-    public static Note getCorrectedNote(final Note note, final PitchCorrection pitchCorrection) {
-        if (note instanceof NbsNote) {
-            final NbsNote nbsNote = (NbsNote) note;
-            note.setKey((byte) NbsDefinitions.getKey(nbsNote));
+    NONE {
+        @Override
+        public void correctNote(final Note note) {
         }
-
-        switch (pitchCorrection) {
-            case CLAMP:
-                MinecraftDefinitions.clampNoteKey(note);
-                break;
-            case TRANSPOSE:
-                MinecraftDefinitions.transposeNoteKey(note);
-                break;
-            case INSTRUMENT_SHIFT:
-                MinecraftDefinitions.instrumentShiftNote(note);
-                MinecraftDefinitions.clampNoteKey(note);
-                break;
+    },
+    INSTRUMENT_SHIFT {
+        @Override
+        public void correctNote(final Note note) {
+            MinecraftDefinitions.instrumentShiftNote(note);
+            MinecraftDefinitions.clampNoteKey(note);
         }
+    },
+    TRANSPOSE {
+        @Override
+        public void correctNote(final Note note) {
+            MinecraftDefinitions.transposeNoteKey(note);
+        }
+    },
+    CLAMP {
+        @Override
+        public void correctNote(final Note note) {
+            MinecraftDefinitions.clampNoteKey(note);
+        }
+    };
 
-        return note;
-    }
-
-    public enum PitchCorrection {
-        CLAMP, TRANSPOSE, INSTRUMENT_SHIFT, NONE
-    }
+    public abstract void correctNote(final Note note);
 
 }
