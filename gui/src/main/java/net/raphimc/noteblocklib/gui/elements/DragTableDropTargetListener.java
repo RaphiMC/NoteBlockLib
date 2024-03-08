@@ -96,7 +96,7 @@ public class DragTableDropTargetListener implements DropTargetListener {
 
         event.acceptDrop(DnDConstants.ACTION_COPY);
         try {
-            List<File> files = (List<File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+            final List<File> files = (List<File>) event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
             this.fileConsumer.accept(files.toArray(new File[0]));
         } catch (Exception e) {
             e.printStackTrace();

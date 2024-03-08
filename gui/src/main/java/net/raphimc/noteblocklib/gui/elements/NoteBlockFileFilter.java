@@ -44,7 +44,7 @@ public class NoteBlockFileFilter extends FileFilter {
     public boolean accept(File f) {
         if (f.isDirectory()) return true;
         if (!f.isFile()) return false;
-        String extension = f.getName().substring(f.getName().lastIndexOf(".") + 1);
+        final String extension = f.getName().substring(f.getName().lastIndexOf(".") + 1);
         return this.extensions.contains(extension.toLowerCase());
     }
 

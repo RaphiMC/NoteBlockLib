@@ -17,7 +17,7 @@
  */
 package net.raphimc.noteblocklib.gui.elements;
 
-import net.raphimc.noteblocklib.gui.ListFrame;
+import net.raphimc.noteblocklib.gui.frames.ListFrame;
 
 import javax.swing.*;
 

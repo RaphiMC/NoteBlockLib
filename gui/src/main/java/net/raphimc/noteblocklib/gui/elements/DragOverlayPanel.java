@@ -68,10 +68,10 @@ public class DragOverlayPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(50, 50, 50, 150));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        String text = "Drop files here to add them";
-        FontMetrics metrics = g.getFontMetrics();
-        int x = (this.getWidth() - metrics.stringWidth(text)) / 2;
-        int y = ((this.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
+        final String text = "Drop files here to add them";
+        final FontMetrics metrics = g.getFontMetrics();
+        final int x = (this.getWidth() - metrics.stringWidth(text)) / 2;
+        final int y = ((this.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
         g.setColor(Color.WHITE);
         g.drawString(text, x, y);
         super.paintComponent(g);

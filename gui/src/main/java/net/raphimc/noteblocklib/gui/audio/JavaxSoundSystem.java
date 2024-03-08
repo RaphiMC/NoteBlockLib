@@ -23,10 +23,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.raphimc.noteblocklib.util.Instrument;
 
 import javax.sound.sampled.*;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
@@ -43,22 +40,22 @@ public class JavaxSoundSystem {
 
     public static void init() {
         try {
-            SOUNDS.put(Instrument.HARP, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/harp.wav")));
-            SOUNDS.put(Instrument.BASS, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bass.wav")));
-            SOUNDS.put(Instrument.BASS_DRUM, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bd.wav")));
-            SOUNDS.put(Instrument.SNARE, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/snare.wav")));
-            SOUNDS.put(Instrument.HAT, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/hat.wav")));
-            SOUNDS.put(Instrument.GUITAR, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/guitar.wav")));
-            SOUNDS.put(Instrument.FLUTE, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/flute.wav")));
-            SOUNDS.put(Instrument.BELL, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bell.wav")));
-            SOUNDS.put(Instrument.CHIME, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/icechime.wav")));
-            SOUNDS.put(Instrument.XYLOPHONE, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/xylobone.wav")));
-            SOUNDS.put(Instrument.IRON_XYLOPHONE, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/iron_xylophone.wav")));
-            SOUNDS.put(Instrument.COW_BELL, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/cow_bell.wav")));
-            SOUNDS.put(Instrument.DIDGERIDOO, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/didgeridoo.wav")));
-            SOUNDS.put(Instrument.BIT, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bit.wav")));
-            SOUNDS.put(Instrument.BANJO, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/banjo.wav")));
-            SOUNDS.put(Instrument.PLING, readSound(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/pling.wav")));
+            SOUNDS.put(Instrument.HARP, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/harp.wav")));
+            SOUNDS.put(Instrument.BASS, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/bass.wav")));
+            SOUNDS.put(Instrument.BASS_DRUM, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/bd.wav")));
+            SOUNDS.put(Instrument.SNARE, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/snare.wav")));
+            SOUNDS.put(Instrument.HAT, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/hat.wav")));
+            SOUNDS.put(Instrument.GUITAR, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/guitar.wav")));
+            SOUNDS.put(Instrument.FLUTE, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/flute.wav")));
+            SOUNDS.put(Instrument.BELL, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/bell.wav")));
+            SOUNDS.put(Instrument.CHIME, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/icechime.wav")));
+            SOUNDS.put(Instrument.XYLOPHONE, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/xylobone.wav")));
+            SOUNDS.put(Instrument.IRON_XYLOPHONE, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/iron_xylophone.wav")));
+            SOUNDS.put(Instrument.COW_BELL, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/cow_bell.wav")));
+            SOUNDS.put(Instrument.DIDGERIDOO, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/didgeridoo.wav")));
+            SOUNDS.put(Instrument.BIT, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/bit.wav")));
+            SOUNDS.put(Instrument.BANJO, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/banjo.wav")));
+            SOUNDS.put(Instrument.PLING, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/pling.wav")));
         } catch (Throwable e) {
             throw new RuntimeException("Could not load audio buffer", e);
         }
@@ -68,16 +65,16 @@ public class JavaxSoundSystem {
 
     public static void playNote(final Instrument instrument, final float volume, final float pitch) {
         try {
-            Sound sound = SOUNDS.get(instrument);
-            int[] samples = mutate(sound.getSamples(), volume, pitch);
-            Sound newSound = new Sound(sound.getAudioFormat(), samples);
-            AudioInputStream audioStream = writeSound(newSound);
-            Clip clip = AudioSystem.getClip();
+            final Sound sound = SOUNDS.get(instrument);
+            final int[] samples = mutate(sound.getSamples(), volume, pitch);
+            final Sound newSound = new Sound(sound.getAudioFormat(), samples);
+            final AudioInputStream audioStream = writeSound(newSound);
+            final Clip clip = AudioSystem.getClip();
             clip.open(audioStream);
             clip.start();
             PLAYING_SOUNDS.add(clip);
         } catch (Throwable t) {
-            t.printStackTrace();
+            throw new RuntimeException("Could not play note", t);
         }
     }
 
@@ -98,42 +95,6 @@ public class JavaxSoundSystem {
         SOUNDS.clear();
     }
 
-    private static Sound readSound(final InputStream is) throws UnsupportedAudioFileException, IOException {
-        AudioInputStream in = AudioSystem.getAudioInputStream(is);
-        AudioFormat audioFormat = in.getFormat();
-        byte[] audioBytes = ByteStreams.toByteArray(in);
-
-        int sampleSize = audioFormat.getSampleSizeInBits() / 8;
-        int[] samples = new int[audioBytes.length / sampleSize];
-        for (int i = 0; i < samples.length; i++) {
-            byte[] sampleBytes = new byte[sampleSize];
-            System.arraycopy(audioBytes, i * sampleSize, sampleBytes, 0, sampleSize);
-            samples[i] = ByteBuffer.wrap(sampleBytes).order(ByteOrder.LITTLE_ENDIAN).getShort();
-        }
-
-        return new Sound(audioFormat, samples);
-    }
-
-    private static int[] mutate(final int[] samples, final float volume, final float pitchChangeFactor) {
-        int[] newSamples = new int[(int) (samples.length / pitchChangeFactor)];
-        for (int i = 0; i < newSamples.length; i++) {
-            //Long to prevent clipping of the index
-            long index = (long) i * samples.length / newSamples.length;
-            newSamples[i] = (int) (samples[(int) index] * volume);
-        }
-        return newSamples;
-    }
-
-    private static AudioInputStream writeSound(final Sound sound) throws IOException {
-        int sampleSize = sound.getAudioFormat().getSampleSizeInBits() / 8;
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream(sound.getSamples().length * sampleSize);
-        final LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(baos);
-        for (int sample : sound.getSamples()) {
-            dos.writeShort((short) sample);
-        }
-        return new AudioInputStream(new ByteArrayInputStream(baos.toByteArray()), sound.getAudioFormat(), baos.size() / sound.getAudioFormat().getFrameSize());
-    }
-
     private static void tick() {
         PLAYING_SOUNDS.removeIf(clip -> {
             if (clip.isRunning()) {
@@ -145,12 +106,48 @@ public class JavaxSoundSystem {
         });
     }
 
+    private static Sound readSound(final InputStream is) throws UnsupportedAudioFileException, IOException {
+        final AudioInputStream in = AudioSystem.getAudioInputStream(new BufferedInputStream(is));
+        final AudioFormat audioFormat = in.getFormat();
+        final byte[] audioBytes = ByteStreams.toByteArray(in);
+
+        final int sampleSize = audioFormat.getSampleSizeInBits() / 8;
+        final int[] samples = new int[audioBytes.length / sampleSize];
+        for (int i = 0; i < samples.length; i++) {
+            final byte[] sampleBytes = new byte[sampleSize];
+            System.arraycopy(audioBytes, i * sampleSize, sampleBytes, 0, sampleSize);
+            samples[i] = ByteBuffer.wrap(sampleBytes).order(ByteOrder.LITTLE_ENDIAN).getShort();
+        }
+
+        return new Sound(audioFormat, samples);
+    }
+
+    private static int[] mutate(final int[] samples, final float volume, final float pitchChangeFactor) {
+        final int[] newSamples = new int[(int) (samples.length / pitchChangeFactor)];
+        for (int i = 0; i < newSamples.length; i++) {
+            // Long to prevent clipping of the index
+            final long index = (long) i * samples.length / newSamples.length;
+            newSamples[i] = (int) (samples[(int) index] * volume);
+        }
+        return newSamples;
+    }
+
+    private static AudioInputStream writeSound(final Sound sound) throws IOException {
+        final int sampleSize = sound.getAudioFormat().getSampleSizeInBits() / 8;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(sound.getSamples().length * sampleSize);
+        final LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(baos);
+        for (int sample : sound.getSamples()) {
+            dos.writeShort((short) sample);
+        }
+        return new AudioInputStream(new ByteArrayInputStream(baos.toByteArray()), sound.getAudioFormat(), baos.size() / sound.getAudioFormat().getFrameSize());
+    }
+
 
     private static final class Sound {
         private AudioFormat audioFormat;
         private int[] samples;
 
-        private Sound(AudioFormat audioFormat, int[] samples) {
+        private Sound(final AudioFormat audioFormat, final int[] samples) {
             this.audioFormat = audioFormat;
             this.samples = samples;
         }

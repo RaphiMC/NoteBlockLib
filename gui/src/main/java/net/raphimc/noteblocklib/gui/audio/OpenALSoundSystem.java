@@ -26,6 +26,7 @@ import org.lwjgl.system.MemoryUtil;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.EnumMap;
@@ -176,7 +177,7 @@ public class OpenALSoundSystem {
         final int buffer = AL10.alGenBuffers();
         checkError("Could not generate audio buffer");
         try {
-            final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);
+            final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(inputStream));
             final AudioFormat audioFormat = audioInputStream.getFormat();
 
             final byte[] audioBytes = ByteStreams.toByteArray(audioInputStream);

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.gui;
+package net.raphimc.noteblocklib.gui.frames;
 
 import net.lenni0451.commons.swing.GBC;
 import net.raphimc.noteblocklib.NoteBlockLib;
@@ -62,7 +62,7 @@ public class ListFrame extends JFrame {
     }
 
     private void initComponents() {
-        JPanel root = new JPanel();
+        final JPanel root = new JPanel();
         root.setLayout(new BorderLayout());
         this.setContentPane(root);
 
@@ -76,7 +76,7 @@ public class ListFrame extends JFrame {
             }
         });
 
-        JPanel buttonPanel = new JPanel();
+        final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
         GBC.create(buttonPanel).gridx(0).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.addButton, () -> {
             this.addButton.addActionListener(e -> {
@@ -89,24 +89,13 @@ public class ListFrame extends JFrame {
                 if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                     this.load(fileChooser.getSelectedFiles());
                 }
-//                try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-//                    List<String> extensions = Arrays.stream(SongFormat.values()).flatMap(format -> format.getExtensions().stream()).map(s -> "*." + s).collect(Collectors.toList());
-//                    PointerBuffer buffer = memoryStack.mallocPointer(extensions.size());
-//                    for (String extension : extensions) buffer.put(memoryStack.UTF8(extension));
-//                    buffer.flip();
-//                    String response = TinyFileDialogs.tinyfd_openFileDialog("Add Songs", null, buffer, "Song Files (" + String.join(", ", extensions) + ")", true);
-//                    if (response != null) {
-//                        String[] files = response.split("\\|");
-//                        this.load(Arrays.stream(files).map(File::new).toArray(File[]::new));
-//                    }
-//                }
             });
         });
         GBC.create(buttonPanel).gridx(1).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.removeButton, () -> {
             this.removeButton.addActionListener(e -> {
-                int[] selectedRows = this.table.getSelectedRows();
+                final int[] selectedRows = this.table.getSelectedRows();
                 for (int i = selectedRows.length - 1; i >= 0; i--) {
-                    LoadedSong song = (LoadedSong) this.table.getValueAt(selectedRows[i], 0);
+                    final LoadedSong song = (LoadedSong) this.table.getValueAt(selectedRows[i], 0);
                     this.loadedSongs.remove(song);
                     ((DragTableModel) this.table.getModel()).removeRow(selectedRows[i]);
                 }
@@ -116,9 +105,9 @@ public class ListFrame extends JFrame {
         GBC.create(buttonPanel).gridx(3).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.editButton);
         GBC.create(buttonPanel).gridx(4).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.playButton, () -> {
             this.playButton.addActionListener(e -> {
-                int[] rows = this.table.getSelectedRows();
+                final int[] rows = this.table.getSelectedRows();
                 if (rows.length == 1) {
-                    LoadedSong song = (LoadedSong) this.table.getValueAt(rows[0], 0);
+                    final LoadedSong song = (LoadedSong) this.table.getValueAt(rows[0], 0);
                     if (this.songPlayerFrame != null) this.songPlayerFrame.dispose();
                     this.songPlayerFrame = new SongPlayerFrame(song);
                 }
@@ -126,10 +115,10 @@ public class ListFrame extends JFrame {
         });
         GBC.create(buttonPanel).gridx(5).insets(5, 5, 5, 5).anchor(GBC.LINE_START).add(this.exportButton, () -> {
             this.exportButton.addActionListener(e -> {
-                int[] rows = this.table.getSelectedRows();
+                final int[] rows = this.table.getSelectedRows();
                 if (rows.length == 1) {
-                    LoadedSong song = (LoadedSong) this.table.getValueAt(rows[0], 0);
-                    JFileChooser fileChooser = new JFileChooser();
+                    final LoadedSong song = (LoadedSong) this.table.getValueAt(rows[0], 0);
+                    final JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setDialogTitle("Export Song");
                     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                     fileChooser.setMultiSelectionEnabled(false);
@@ -146,15 +135,15 @@ public class ListFrame extends JFrame {
                         }
                     }
                 } else if (rows.length > 1) {
-                    JFileChooser fileChooser = new JFileChooser();
+                    final JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setDialogTitle("Export Songs");
                     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     fileChooser.setMultiSelectionEnabled(false);
                     if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                        File directory = fileChooser.getSelectedFile();
+                        final File directory = fileChooser.getSelectedFile();
                         for (int row : rows) {
-                            LoadedSong song = (LoadedSong) this.table.getValueAt(row, 0);
-                            File file = new File(directory, song.getFile().getName().substring(0, song.getFile().getName().lastIndexOf('.')) + ".nbs");
+                            final LoadedSong song = (LoadedSong) this.table.getValueAt(row, 0);
+                            final File file = new File(directory, song.getFile().getName().substring(0, song.getFile().getName().lastIndexOf('.')) + ".nbs");
                             try {
                                 NoteBlockLib.writeSong(song.getSong(), file);
                             } catch (Throwable t) {
@@ -179,13 +168,13 @@ public class ListFrame extends JFrame {
     private void load(final File... files) {
         for (File file : files) {
             if (file.isDirectory()) {
-                File[] subFiles = file.listFiles();
+                final File[] subFiles = file.listFiles();
                 if (subFiles != null) this.load(subFiles);
             } else if (file.isFile()) {
                 if (this.loadedSongs.stream().anyMatch(s -> s.getFile().equals(file))) continue;
                 try {
-                    Song<?, ?, ?> song = NoteBlockLib.readSong(file);
-                    LoadedSong loadedSong = new LoadedSong(file, song);
+                    final Song<?, ?, ?> song = NoteBlockLib.readSong(file);
+                    final LoadedSong loadedSong = new LoadedSong(file, song);
                     this.loadedSongs.add(loadedSong);
                     this.table.addRow(loadedSong);
                 } catch (Throwable t) {
@@ -222,10 +211,10 @@ public class ListFrame extends JFrame {
         public String getAuthor() {
             String author = "";
             if (this.song instanceof NbsSong) {
-                NbsSong nbsSong = (NbsSong) this.song;
+                final NbsSong nbsSong = (NbsSong) this.song;
                 author = nbsSong.getHeader().getAuthor();
             } else if (this.song instanceof McSpSong) {
-                McSpSong mcSpSong = (McSpSong) this.song;
+                final McSpSong mcSpSong = (McSpSong) this.song;
                 author = mcSpSong.getHeader().getAuthor();
             }
             if (author.isEmpty()) return "Unknown";

@@ -15,20 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.gui;
+package net.raphimc.noteblocklib.gui.frames;
 
 import net.lenni0451.commons.swing.GBC;
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
+import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.gui.audio.JavaxSoundSystem;
 import net.raphimc.noteblocklib.gui.audio.OpenALSoundSystem;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithPanning;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
+import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocklib.player.ISongPlayerCallback;
 import net.raphimc.noteblocklib.player.SongPlayer;
 import net.raphimc.noteblocklib.util.Instrument;
 import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import net.raphimc.noteblocklib.util.SongResampler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,9 +53,16 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
     public SongPlayerFrame(final ListFrame.LoadedSong song) {
         this.song = song;
-        this.songPlayer = new SongPlayer(song.getSong().getView(), this);
 
-        this.setTitle("NoteBlockLib Song Player - " + song.getSong().getView().getTitle());
+        final SongView<?> songView = song.getSong().getView();
+        if (song.getSong() instanceof NbsSong) {
+            SongResampler.applyNbsTempoChangers(((NbsSong) song.getSong()));
+            song.getSong().refreshView();
+        }
+
+        this.songPlayer = new SongPlayer(songView, this);
+
+        this.setTitle("NoteBlockLib Song Player - " + songView.getTitle());
         this.setSize(500, 400);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -60,17 +70,19 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
         this.initComponents();
         this.initFrameHandler();
 
+        this.playButton.doClick();
+
         this.setMinimumSize(this.getSize());
         this.setVisible(true);
     }
 
     private void initComponents() {
-        JPanel root = new JPanel();
+        final JPanel root = new JPanel();
         root.setLayout(new BorderLayout());
         this.setContentPane(root);
 
         { //North Panel
-            JPanel northPanel = new JPanel();
+            final JPanel northPanel = new JPanel();
             northPanel.setLayout(new GridBagLayout());
             root.add(northPanel, BorderLayout.NORTH);
 
@@ -106,11 +118,11 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             });
         }
         { //South Panel
-            JPanel southPanel = new JPanel();
+            final JPanel southPanel = new JPanel();
             southPanel.setLayout(new GridBagLayout());
             root.add(southPanel, BorderLayout.SOUTH);
 
-            JPanel buttonPanel = new JPanel();
+            final JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new GridLayout(1, 3, 5, 0));
             buttonPanel.add(this.playButton);
             this.playButton.addActionListener(e -> this.songPlayer.play());

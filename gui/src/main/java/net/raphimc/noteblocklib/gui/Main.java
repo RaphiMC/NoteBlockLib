@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.gui;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import net.raphimc.noteblocklib.gui.frames.ListFrame;
 
 import javax.swing.*;
 
