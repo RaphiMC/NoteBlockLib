@@ -66,6 +66,10 @@ public class JavaxSoundSystem {
         TICK_TASK = SCHEDULER.scheduleAtFixedRate(JavaxSoundSystem::tick, 0, 100, TimeUnit.MILLISECONDS);
     }
 
+    public static int getMaxSounds() {
+        return MAX_SOUNDS;
+    }
+
     public static void playNote(final Instrument instrument, final float volume, final float pitch) {
         if (PLAYING_SOUNDS.size() >= MAX_SOUNDS) return;
         try {

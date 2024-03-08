@@ -103,6 +103,10 @@ public class OpenALSoundSystem {
         System.out.println("Initialized OpenAL on " + ALC10.alcGetString(DEVICE, ALC11.ALC_ALL_DEVICES_SPECIFIER));
     }
 
+    public static int getMaxMonoSources() {
+        return MAX_MONO_SOURCES;
+    }
+
     public static void playNote(final Instrument instrument, final float volume, final float pitch, final float panning) {
         if (PLAYING_SOURCES.size() >= MAX_MONO_SOURCES) {
             AL10.alDeleteSources(PLAYING_SOURCES.remove(0));

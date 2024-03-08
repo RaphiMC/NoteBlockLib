@@ -182,7 +182,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
                     this.soundSystem.stopSounds();
                 } else {
                     SoundSystem selectedSoundSystem = SoundSystem.values()[this.soundSystemComboBox.getSelectedIndex()];
-                    if (!this.soundSystem.equals(selectedSoundSystem)) {
+                    if (!this.soundSystem.equals(selectedSoundSystem) || this.soundSystem.getMaxSounds() != (int) this.maxSoundsSpinner.getValue()) {
                         this.soundSystem.destroy();
                         this.soundSystem = selectedSoundSystem;
                     }
@@ -283,19 +283,21 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
 
     private enum SoundSystem {
-        OPENAL("OpenAL", OpenALSoundSystem::init, OpenALSoundSystem::getPlayingSources, OpenALSoundSystem::stopAllSources, OpenALSoundSystem::destroy),
-        JAVAX("Javax", JavaxSoundSystem::init, JavaxSoundSystem::getPlayingSounds, JavaxSoundSystem::stopAllSounds, JavaxSoundSystem::destroy);
+        OPENAL("OpenAL", OpenALSoundSystem::init, OpenALSoundSystem::getMaxMonoSources, OpenALSoundSystem::getPlayingSources, OpenALSoundSystem::stopAllSources, OpenALSoundSystem::destroy),
+        JAVAX("Javax", JavaxSoundSystem::init, JavaxSoundSystem::getMaxSounds, JavaxSoundSystem::getPlayingSounds, JavaxSoundSystem::stopAllSounds, JavaxSoundSystem::destroy);
 
         private final String name;
         private final IntConsumer init;
+        private final IntSupplier maxSounds;
         private final IntSupplier soundCount;
         private final Runnable stopSounds;
         private final Runnable destroy;
         private boolean initialized;
 
-        SoundSystem(final String name, final IntConsumer init, final IntSupplier soundCount, final Runnable stopSounds, final Runnable destroy) {
+        SoundSystem(final String name, final IntConsumer init, final IntSupplier maxSounds, final IntSupplier soundCount, final Runnable stopSounds, final Runnable destroy) {
             this.name = name;
             this.init = init;
+            this.maxSounds = maxSounds;
             this.soundCount = soundCount;
             this.stopSounds = stopSounds;
             this.destroy = destroy;
@@ -309,6 +311,11 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             if (this.initialized) return;
             this.init.accept(maxSounds);
             this.initialized = true;
+        }
+
+        public int getMaxSounds() {
+            if (!this.initialized) return 0;
+            return this.maxSounds.getAsInt();
         }
 
         public int getSoundCount() {
