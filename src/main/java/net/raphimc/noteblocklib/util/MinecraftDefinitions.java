@@ -68,6 +68,14 @@ public class MinecraftDefinitions {
     }
 
     /**
+     * @param nbsPitch The pitch of the note (Between 0 and 2400)
+     * @return The pitch of the note (Between 0 and 2 for input between 0 and 2400)
+     */
+    public static float nbsPitchToMcPitch(final int nbsPitch) {
+        return (float) Math.pow(2D, ((nbsPitch / 100F) - MC_LOWEST_KEY - NbsDefinitions.KEYS_PER_OCTAVE) / NbsDefinitions.KEYS_PER_OCTAVE);
+    }
+
+    /**
      * Converts a key from the NBS system to the minecraft system
      *
      * @param nbsKey The key of the note in the NBS system
