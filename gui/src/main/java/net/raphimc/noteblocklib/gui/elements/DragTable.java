@@ -23,22 +23,20 @@ import javax.swing.*;
 
 public class DragTable extends JTable {
 
-    public DragTable(final String... columns) {
-        super(new DragTableModel(columns));
+    public DragTable() {
+        super(new DragTableModel("Path", "Title", "Author", "Length", "Notes", "Speed"));
 
         this.getTableHeader().setReorderingAllowed(false);
     }
 
     public void addRow(final ListFrame.LoadedSong song) {
-        //"Path", "Name", "Length", "Author", "Notes", "Speed", "Playable Version"
         ((DragTableModel) this.getModel()).addRow(new Object[]{
                 song,
                 song.getSong().getView().getTitle(),
+                song.getAuthor().orElse("Unknown"),
                 song.getLength(),
-                song.getAuthor(),
                 song.getNoteCount(),
-                song.getSong().getView().getSpeed(),
-                "TODO"
+                song.getSong().getView().getSpeed()
         });
     }
 

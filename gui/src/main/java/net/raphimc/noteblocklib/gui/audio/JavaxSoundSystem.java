@@ -26,6 +26,7 @@ import javax.sound.sampled.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,11 @@ public class JavaxSoundSystem {
     private static final Map<Instrument, Sound> SOUNDS = new HashMap<>();
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Javax Sound System").setDaemon(true).build());
     private static final List<Clip> PLAYING_SOUNDS = new CopyOnWriteArrayList<>();
+    private static int MAX_SOUNDS = 256;
     private static ScheduledFuture<?> TICK_TASK;
 
-    public static void init() {
+    public static void init(final int maxSounds) {
+        MAX_SOUNDS = maxSounds;
         try {
             SOUNDS.put(Instrument.HARP, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/harp.wav")));
             SOUNDS.put(Instrument.BASS, readSound(JavaxSoundSystem.class.getResourceAsStream("/noteblock_sounds/bass.wav")));
@@ -64,6 +67,11 @@ public class JavaxSoundSystem {
     }
 
     public static void playNote(final Instrument instrument, final float volume, final float pitch) {
+        if (PLAYING_SOUNDS.size() >= MAX_SOUNDS) {
+            Clip clip = PLAYING_SOUNDS.remove(0);
+            clip.stop();
+            clip.close();
+        }
         try {
             final Sound sound = SOUNDS.get(instrument);
             final int[] samples = mutate(sound.getSamples(), volume, pitch);
@@ -78,12 +86,20 @@ public class JavaxSoundSystem {
         }
     }
 
+    public static int getPlayingSounds() {
+        return PLAYING_SOUNDS.size();
+    }
+
     public static void stopAllSounds() {
-        for (Clip clip : PLAYING_SOUNDS) {
-            clip.stop();
-            clip.close();
-        }
+        final List<Clip> playingSounds = new ArrayList<>(PLAYING_SOUNDS);
         PLAYING_SOUNDS.clear();
+        final Thread thread = new Thread(() -> {
+            for (Clip clip : playingSounds) {
+                clip.stop();
+                clip.close();
+            }
+        });
+        thread.start();
     }
 
     public static void destroy() {

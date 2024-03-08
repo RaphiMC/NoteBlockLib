@@ -36,11 +36,12 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ListFrame extends JFrame {
 
     private final List<LoadedSong> loadedSongs = new ArrayList<>();
-    private final DragTable table = new DragTable("Path", "Name", "Length", "Author", "Notes", "Speed", "Playable Version");
+    private final DragTable table = new DragTable();
     private final JButton addButton = new JButton("Add");
     private final JButton removeButton = new JButton("Remove");
     private final JButton editButton = new JButton("Edit");
@@ -208,7 +209,7 @@ public class ListFrame extends JFrame {
             return String.format("%02d:%02d:%02d", msLength / 3600000, (msLength / 60000) % 60, (msLength / 1000) % 60);
         }
 
-        public String getAuthor() {
+        public Optional<String> getAuthor() {
             String author = "";
             if (this.song instanceof NbsSong) {
                 final NbsSong nbsSong = (NbsSong) this.song;
@@ -217,8 +218,31 @@ public class ListFrame extends JFrame {
                 final McSpSong mcSpSong = (McSpSong) this.song;
                 author = mcSpSong.getHeader().getAuthor();
             }
-            if (author.isEmpty()) return "Unknown";
-            else return author;
+            if (author.isEmpty()) return Optional.empty();
+            else return Optional.of(author);
+        }
+
+        public Optional<String> getOriginalAuthor() {
+            String originalAuthor = "";
+            if (this.song instanceof NbsSong) {
+                final NbsSong nbsSong = (NbsSong) this.song;
+                originalAuthor = nbsSong.getHeader().getOriginalAuthor();
+            } else if (this.song instanceof McSpSong) {
+                final McSpSong mcSpSong = (McSpSong) this.song;
+                originalAuthor = mcSpSong.getHeader().getOriginalAuthor();
+            }
+            if (originalAuthor.isEmpty()) return Optional.empty();
+            else return Optional.of(originalAuthor);
+        }
+
+        public Optional<String> getDescription() {
+            String description = "";
+            if (this.song instanceof NbsSong) {
+                final NbsSong nbsSong = (NbsSong) this.song;
+                description = nbsSong.getHeader().getDescription();
+            }
+            if (description.isEmpty()) return Optional.empty();
+            else return Optional.of(description);
         }
 
         public int getNoteCount() {
