@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
-public class SoundSystem {
+public class OpenALSoundSystem {
 
     private static final int MAX_MONO_SOURCES = 2048;
-    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Sound System").setDaemon(true).build());
+    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("OpenAL Sound System").setDaemon(true).build());
     private static final Map<Instrument, Integer> INSTRUMENT_BUFFERS = new EnumMap<>(Instrument.class);
     private static final List<Integer> PLAYING_SOURCES = new CopyOnWriteArrayList<>();
     private static long DEVICE = 0L;
@@ -54,7 +54,8 @@ public class SoundSystem {
 
         if (!alcCapabilities.OpenALC11) {
             throw new RuntimeException("OpenAL 1.1 is not supported");
-        } else if (!alcCapabilities.ALC_SOFT_output_limiter) {
+        }
+        if (!alcCapabilities.ALC_SOFT_output_limiter) {
             throw new RuntimeException("ALC_SOFT_output_limiter is not supported");
         }
 
@@ -76,24 +77,24 @@ public class SoundSystem {
         AL10.alListenerfv(AL10.AL_ORIENTATION, new float[]{0F, 0F, -1F, 0F, 1F, 0F});
         checkError("Could not set listener orientation");
 
-        INSTRUMENT_BUFFERS.put(Instrument.HARP, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/harp.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.BASS, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/bass.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.BASS_DRUM, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/bd.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.SNARE, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/snare.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.HAT, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/hat.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.GUITAR, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/guitar.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.FLUTE, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/flute.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.BELL, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/bell.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.CHIME, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/icechime.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.XYLOPHONE, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/xylobone.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.IRON_XYLOPHONE, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/iron_xylophone.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.COW_BELL, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/cow_bell.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.DIDGERIDOO, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/didgeridoo.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.BIT, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/bit.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.BANJO, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/banjo.wav")));
-        INSTRUMENT_BUFFERS.put(Instrument.PLING, loadWav(SoundSystem.class.getResourceAsStream("/noteblock_sounds/pling.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.HARP, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/harp.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.BASS, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bass.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.BASS_DRUM, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bd.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.SNARE, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/snare.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.HAT, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/hat.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.GUITAR, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/guitar.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.FLUTE, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/flute.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.BELL, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bell.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.CHIME, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/icechime.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.XYLOPHONE, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/xylobone.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.IRON_XYLOPHONE, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/iron_xylophone.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.COW_BELL, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/cow_bell.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.DIDGERIDOO, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/didgeridoo.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.BIT, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/bit.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.BANJO, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/banjo.wav")));
+        INSTRUMENT_BUFFERS.put(Instrument.PLING, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/pling.wav")));
 
-        TICK_TASK = SCHEDULER.scheduleAtFixedRate(SoundSystem::tick, 0, 100, TimeUnit.MILLISECONDS);
+        TICK_TASK = SCHEDULER.scheduleAtFixedRate(OpenALSoundSystem::tick, 0, 100, TimeUnit.MILLISECONDS);
 
         System.out.println("Initialized OpenAL on " + ALC10.alcGetString(DEVICE, ALC11.ALC_ALL_DEVICES_SPECIFIER));
     }
@@ -123,7 +124,7 @@ public class SoundSystem {
     }
 
     public static void stopAllSources() {
-        for (Integer source : PLAYING_SOURCES) {
+        for (int source : PLAYING_SOURCES) {
             AL10.alDeleteSources(source);
             checkError("Could not delete audio source");
         }

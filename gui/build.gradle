@@ -9,9 +9,18 @@ configurations {
     api.extendsFrom include
 }
 
+repositories {
+    maven {
+        name = "lenni0451"
+        url = "https://maven.lenni0451.net/everything"
+    }
+}
+
 dependencies {
     include project(":")
 
+    include "com.formdev:flatlaf:3.3"
+    include "net.lenni0451.commons:swing:1.5.0-SNAPSHOT"
     include "org.lwjgl:lwjgl:3.3.3"
     include "org.lwjgl:lwjgl-openal:3.3.3"
     ["natives-windows", "natives-windows-arm64", "natives-linux", "natives-linux-arm64", "natives-macos", "natives-macos-arm64"].each {
