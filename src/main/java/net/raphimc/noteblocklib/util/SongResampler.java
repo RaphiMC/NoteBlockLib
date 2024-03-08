@@ -70,9 +70,8 @@ public class SongResampler {
         final List<TempoEvent> tempoEvents = new ArrayList<>();
         for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {
             for (NbsNote note : entry.getValue()) {
-                if (note instanceof NbsNote && note.getInstrument() == tempoChangerId) {
-                    final NbsNote v4Note = (NbsNote) note;
-                    tempoEvents.add(new TempoEvent(entry.getKey(), Math.abs(v4Note.getPitch()) / 15F));
+                if (note.getInstrument() == tempoChangerId) {
+                    tempoEvents.add(new TempoEvent(entry.getKey(), Math.abs(note.getPitch()) / 15F));
                 }
             }
         }
