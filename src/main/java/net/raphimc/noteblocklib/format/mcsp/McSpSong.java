@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.mcsp;
 
+import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpData;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpHeader;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpLayer;
@@ -32,7 +33,7 @@ import java.util.TreeMap;
 public class McSpSong extends Song<McSpHeader, McSpData, McSpNote> {
 
     public McSpSong(final String fileName, final McSpHeader header, final McSpData data) {
-        super(fileName, header, data);
+        super(SongFormat.MCSP, fileName, header, data);
     }
 
     @Override

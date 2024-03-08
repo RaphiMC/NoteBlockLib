@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.future;
 
+import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.future.model.FutureData;
 import net.raphimc.noteblocklib.format.future.model.FutureHeader;
 import net.raphimc.noteblocklib.format.future.model.FutureNote;
@@ -26,7 +27,7 @@ import net.raphimc.noteblocklib.model.SongView;
 public class FutureSong extends Song<FutureHeader, FutureData, FutureNote> {
 
     public FutureSong(final String fileName, final FutureHeader header, final FutureData data) {
-        super(fileName, header, data);
+        super(SongFormat.FUTURE, fileName, header, data);
     }
 
     @Override

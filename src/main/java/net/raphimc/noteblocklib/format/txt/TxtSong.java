@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
+import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.txt.model.TxtData;
 import net.raphimc.noteblocklib.format.txt.model.TxtHeader;
 import net.raphimc.noteblocklib.format.txt.model.TxtNote;
@@ -26,7 +27,7 @@ import net.raphimc.noteblocklib.model.SongView;
 public class TxtSong extends Song<TxtHeader, TxtData, TxtNote> {
 
     public TxtSong(final String fileName, final TxtHeader header, final TxtData data) {
-        super(fileName, header, data);
+        super(SongFormat.TXT, fileName, header, data);
     }
 
     @Override

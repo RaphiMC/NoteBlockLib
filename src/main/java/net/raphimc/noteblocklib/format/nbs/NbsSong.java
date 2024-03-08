@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
+import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.nbs.model.NbsData;
 import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
@@ -32,7 +33,7 @@ import java.util.TreeMap;
 public class NbsSong extends Song<NbsHeader, NbsData, NbsNote> {
 
     public NbsSong(final String fileName, final NbsHeader header, final NbsData data) {
-        super(fileName, header, data);
+        super(SongFormat.NBS, fileName, header, data);
     }
 
     @Override

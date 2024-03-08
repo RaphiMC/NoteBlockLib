@@ -17,15 +17,19 @@
  */
 package net.raphimc.noteblocklib.model;
 
+import net.raphimc.noteblocklib.format.SongFormat;
+
 public abstract class Song<H extends Header, D extends Data<N>, N extends Note> {
 
+    private final SongFormat format;
     protected final String fileName;
     private final H header;
     private final D data;
 
     private SongView<N> view;
 
-    public Song(final String fileName, final H header, final D data) {
+    public Song(final SongFormat format, final String fileName, final H header, final D data) {
+        this.format = format;
         this.fileName = fileName;
         this.header = header;
         this.data = data;
@@ -37,6 +41,10 @@ public abstract class Song<H extends Header, D extends Data<N>, N extends Note> 
 
     public void refreshView() {
         this.view = this.createView();
+    }
+
+    public SongFormat getFormat() {
+        return this.format;
     }
 
     public H getHeader() {
