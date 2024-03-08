@@ -140,22 +140,24 @@ public class OpenALSoundSystem {
     }
 
     public static void destroy() {
-        SHUTDOWN_HOOK = null;
-        if (TICK_TASK != null) {
-            TICK_TASK.cancel(true);
-            TICK_TASK = null;
+        if (DEVICE != 0L) {
+            SHUTDOWN_HOOK = null;
+            if (TICK_TASK != null) {
+                TICK_TASK.cancel(true);
+                TICK_TASK = null;
+            }
+            INSTRUMENT_BUFFERS.values().forEach(AL10::alDeleteBuffers);
+            INSTRUMENT_BUFFERS.clear();
+            PLAYING_SOURCES.forEach(AL10::alDeleteSources);
+            PLAYING_SOURCES.clear();
+            if (CONTEXT != 0L) {
+                ALC10.alcMakeContextCurrent(0);
+                ALC10.alcDestroyContext(CONTEXT);
+                CONTEXT = 0L;
+            }
+            ALC10.alcCloseDevice(DEVICE);
+            DEVICE = 0L;
         }
-        INSTRUMENT_BUFFERS.values().forEach(AL10::alDeleteBuffers);
-        INSTRUMENT_BUFFERS.clear();
-        PLAYING_SOURCES.forEach(AL10::alDeleteSources);
-        PLAYING_SOURCES.clear();
-        if (CONTEXT != 0L) {
-            ALC10.alcMakeContextCurrent(0);
-            ALC10.alcDestroyContext(CONTEXT);
-            CONTEXT = 0L;
-        }
-        ALC10.alcCloseDevice(DEVICE);
-        DEVICE = 0L;
     }
 
     public static void setMasterVolume(final float volume) {
