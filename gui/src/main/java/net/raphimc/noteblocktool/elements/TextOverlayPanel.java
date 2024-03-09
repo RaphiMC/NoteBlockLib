@@ -78,11 +78,17 @@ public class TextOverlayPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(50, 50, 50, 150));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        final FontMetrics metrics = g.getFontMetrics();
-        final int x = (this.getWidth() - metrics.stringWidth(this.text)) / 2;
-        final int y = ((this.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
         g.setColor(Color.WHITE);
-        g.drawString(this.text, x, y);
+        final FontMetrics metrics = g.getFontMetrics();
+        final String[] lines = this.text.split("\n");
+        int y = ((this.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
+        for (int i = 0; i < lines.length; i++) {
+            if (i == 1) g.setColor(Color.GRAY);
+            String line = lines[i];
+            int x = (this.getWidth() - metrics.stringWidth(line)) / 2;
+            g.drawString(line, x, y);
+            y += metrics.getHeight();
+        }
         super.paintComponent(g);
     }
 

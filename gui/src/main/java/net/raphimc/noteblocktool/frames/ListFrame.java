@@ -190,7 +190,14 @@ public class ListFrame extends JFrame {
                         this.loadedSongs.add(loadedSong);
                         this.runSync(() -> {
                             this.table.addRow(loadedSong);
-                            this.textOverlayPanel.setText("Loading Songs (" + this.loadedSongs.size() + ")...");
+                            StringBuilder text = new StringBuilder("Loading Songs (" + this.loadedSongs.size() + ")...\n");
+                            for (int i = 0; i < 5; i++) {
+                                int index = this.loadedSongs.size() - i - 1;
+                                if (index < 0) break;
+                                text.append(this.loadedSongs.get(index).getFile().getName()).append("\n");
+                            }
+                            if (text.toString().endsWith("\n")) text = new StringBuilder(text.substring(0, text.length() - 1));
+                            this.textOverlayPanel.setText(text.toString());
                         });
                     } catch (Throwable t) {
                         t.printStackTrace();
