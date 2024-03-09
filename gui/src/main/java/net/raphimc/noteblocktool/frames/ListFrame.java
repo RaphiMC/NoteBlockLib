@@ -23,10 +23,7 @@ import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.mcsp.McSpSong;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.model.Song;
-import net.raphimc.noteblocktool.elements.DragTable;
-import net.raphimc.noteblocktool.elements.DragTableDropTargetListener;
-import net.raphimc.noteblocktool.elements.DragTableModel;
-import net.raphimc.noteblocktool.elements.NoteBlockFileFilter;
+import net.raphimc.noteblocktool.elements.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,19 +31,23 @@ import java.awt.dnd.DropTarget;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Queue;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ListFrame extends JFrame {
 
-    private final List<LoadedSong> loadedSongs = new ArrayList<>();
+    private final List<LoadedSong> loadedSongs = new CopyOnWriteArrayList<>();
     private final DragTable table = new DragTable();
     private final JButton addButton = new JButton("Add");
     private final JButton removeButton = new JButton("Remove");
     private final JButton editButton = new JButton("Edit");
     private final JButton playButton = new JButton("Play");
     private final JButton exportButton = new JButton("Export NBS");
+    private DropTarget dropTarget;
+    private TextOverlayPanel textOverlayPanel;
     private SongPlayerFrame songPlayerFrame;
 
     public ListFrame() {
@@ -68,7 +69,7 @@ public class ListFrame extends JFrame {
         this.setContentPane(root);
 
         root.add(new JScrollPane(this.table), BorderLayout.CENTER);
-        new DropTarget(this, new DragTableDropTargetListener(this, this::load));
+        this.dropTarget = new DropTarget(this, new DragTableDropTargetListener(this, this::load));
         this.table.getSelectionModel().addListSelectionListener(e -> this.refreshButtons());
         this.table.addKeyListener(new KeyAdapter() {
             @Override
@@ -167,21 +168,50 @@ public class ListFrame extends JFrame {
     }
 
     private void load(final File... files) {
-        for (File file : files) {
-            if (file.isDirectory()) {
-                final File[] subFiles = file.listFiles();
-                if (subFiles != null) this.load(subFiles);
-            } else if (file.isFile()) {
-                if (this.loadedSongs.stream().anyMatch(s -> s.getFile().equals(file))) continue;
-                try {
-                    final Song<?, ?, ?> song = NoteBlockLib.readSong(file);
-                    final LoadedSong loadedSong = new LoadedSong(file, song);
-                    this.loadedSongs.add(loadedSong);
-                    this.table.addRow(loadedSong);
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "Failed to load song:\n" + file.getAbsolutePath() + "\n" + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        this.runSync(() -> {
+            this.setDropTarget(null);
+            this.textOverlayPanel = new TextOverlayPanel("Loading Songs...");
+            this.setGlassPane(this.textOverlayPanel);
+            this.textOverlayPanel.setVisible(true);
+        });
+        CompletableFuture.runAsync(() -> {
+            final Queue<File> queue = new ArrayDeque<>(Arrays.asList(files));
+            while (!queue.isEmpty()) {
+                final File file = queue.poll();
+                if (file.isDirectory()) {
+                    final File[] subFiles = file.listFiles();
+                    if (subFiles != null) queue.addAll(Arrays.asList(subFiles));
+                } else if (file.isFile()) {
+                    if (this.loadedSongs.stream().anyMatch(s -> s.getFile().equals(file))) continue;
+                    try {
+                        final Song<?, ?, ?> song = NoteBlockLib.readSong(file);
+                        final LoadedSong loadedSong = new LoadedSong(file, song);
+                        this.loadedSongs.add(loadedSong);
+                        this.runSync(() -> {
+                            this.table.addRow(loadedSong);
+                            this.textOverlayPanel.setText("Loading Songs (" + this.loadedSongs.size() + ")...");
+                        });
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Failed to load song:\n" + file.getAbsolutePath() + "\n" + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+            }
+        }).thenAcceptAsync(v -> this.runSync(() -> {
+            this.textOverlayPanel.setVisible(false);
+            this.setGlassPane(new JPanel());
+            this.setDropTarget(this.dropTarget);
+        }));
+    }
+
+    private void runSync(final Runnable task) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            task.run();
+        } else {
+            try {
+                SwingUtilities.invokeAndWait(task);
+            } catch (Throwable t) {
+                throw new RuntimeException("Failed to run task", t);
             }
         }
     }

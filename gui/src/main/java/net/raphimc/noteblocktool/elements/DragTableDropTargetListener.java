@@ -29,7 +29,7 @@ public class DragTableDropTargetListener implements DropTargetListener {
 
     private final JFrame frame;
     private final Consumer<File[]> fileConsumer;
-    private DragOverlayPanel dragOverlayPanel;
+    private TextOverlayPanel textOverlayPanel;
 
     public DragTableDropTargetListener(final JFrame frame, final Consumer<File[]> fileConsumer) {
         this.frame = frame;
@@ -41,14 +41,14 @@ public class DragTableDropTargetListener implements DropTargetListener {
     }
 
     private void showOverlay() {
-        this.dragOverlayPanel = new DragOverlayPanel();
-        this.frame.setGlassPane(this.dragOverlayPanel);
-        this.dragOverlayPanel.setVisible(true);
+        this.textOverlayPanel = new TextOverlayPanel("Drop files here to add them");
+        this.frame.setGlassPane(this.textOverlayPanel);
+        this.textOverlayPanel.setVisible(true);
     }
 
     private void hideOverlay() {
-        if (this.dragOverlayPanel != null) {
-            this.dragOverlayPanel.setVisible(false);
+        if (this.textOverlayPanel != null) {
+            this.textOverlayPanel.setVisible(false);
             this.frame.setGlassPane(new JPanel());
         }
     }

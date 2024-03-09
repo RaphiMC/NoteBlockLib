@@ -24,7 +24,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 
-public class DragOverlayPanel extends JPanel {
+public class TextOverlayPanel extends JPanel {
 
     private static final MouseAdapter VOID_MOUSE_ADAPTER = new MouseAdapter() {
     };
@@ -38,8 +38,18 @@ public class DragOverlayPanel extends JPanel {
     };
 
 
-    public DragOverlayPanel() {
+    private String text;
+
+    public TextOverlayPanel(final String text) {
+        this.text = text;
+
         this.setOpaque(false);
+    }
+
+    public void setText(final String text) {
+        this.text = text;
+        this.invalidate();
+        this.repaint();
     }
 
     @Override
@@ -68,12 +78,11 @@ public class DragOverlayPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         g.setColor(new Color(50, 50, 50, 150));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        final String text = "Drop files here to add them";
         final FontMetrics metrics = g.getFontMetrics();
-        final int x = (this.getWidth() - metrics.stringWidth(text)) / 2;
+        final int x = (this.getWidth() - metrics.stringWidth(this.text)) / 2;
         final int y = ((this.getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
         g.setColor(Color.WHITE);
-        g.drawString(text, x, y);
+        g.drawString(this.text, x, y);
         super.paintComponent(g);
     }
 
