@@ -174,6 +174,7 @@ public class ListFrame extends JFrame {
             this.setGlassPane(this.textOverlayPanel);
             this.textOverlayPanel.setVisible(true);
         });
+        final Map<File, Throwable> failedFiles = new HashMap<>();
         CompletableFuture.runAsync(() -> {
             final Queue<File> queue = new ArrayDeque<>(Arrays.asList(files));
             while (!queue.isEmpty()) {
@@ -193,15 +194,27 @@ public class ListFrame extends JFrame {
                         });
                     } catch (Throwable t) {
                         t.printStackTrace();
-                        JOptionPane.showMessageDialog(this, "Failed to load song:\n" + file.getAbsolutePath() + "\n" + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        failedFiles.put(file, t);
                     }
                 }
             }
-        }).thenAcceptAsync(v -> this.runSync(() -> {
-            this.textOverlayPanel.setVisible(false);
-            this.setGlassPane(new JPanel());
-            this.setDropTarget(this.dropTarget);
-        }));
+        }).thenAcceptAsync(v -> {
+            this.runSync(() -> {
+                this.textOverlayPanel.setVisible(false);
+                this.setGlassPane(new JPanel());
+                this.setDropTarget(this.dropTarget);
+            });
+            if (!failedFiles.isEmpty()) {
+                String message;
+                if (failedFiles.size() == 1) {
+                    Map.Entry<File, Throwable> entry = failedFiles.entrySet().iterator().next();
+                    message = "Failed to load song:\n" + entry.getKey().getAbsolutePath() + "\n" + entry.getValue().getMessage();
+                } else {
+                    message = "Failed to load " + failedFiles.size() + " songs";
+                }
+                JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     private void runSync(final Runnable task) {
