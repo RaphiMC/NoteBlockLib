@@ -55,6 +55,16 @@ public class SongResampler {
      * @param song The song
      */
     public static void applyNbsTempoChangers(final NbsSong song) {
+        applyNbsTempoChangers(song, song.getView());
+    }
+
+    /**
+     * Applies the undocumented tempo changers from Note Block Studio.
+     *
+     * @param song The song
+     * @param view The song view to modify
+     */
+    public static void applyNbsTempoChangers(final NbsSong song, final SongView<NbsNote> view) {
         if (song.getHeader().getVersion() < 4) return;
 
         int tempoChangerId = -1;
@@ -65,7 +75,6 @@ public class SongResampler {
             }
         }
         if (tempoChangerId == -1) return;
-        final SongView<NbsNote> view = song.getView();
 
         final List<TempoEvent> tempoEvents = new ArrayList<>();
         for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {

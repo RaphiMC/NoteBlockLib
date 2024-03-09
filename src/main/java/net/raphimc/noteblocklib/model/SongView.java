@@ -20,8 +20,11 @@ package net.raphimc.noteblocklib.model;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
-public class SongView<N extends Note> {
+public class SongView<N extends Note> implements Cloneable {
 
     private String title;
     private int length;
@@ -34,6 +37,13 @@ public class SongView<N extends Note> {
         this.notes = notes;
 
         this.recalculateLength();
+    }
+
+    private SongView(final String title, final float speed, final int length, final Map<Integer, List<N>> notes) {
+        this.title = title;
+        this.speed = speed;
+        this.length = length;
+        this.notes = notes;
     }
 
     /**
@@ -83,6 +93,22 @@ public class SongView<N extends Note> {
 
     public void setNotes(final Map<Integer, List<N>> notes) {
         this.notes = notes;
+    }
+
+    @Override
+    public SongView<N> clone() {
+        final Map<Integer, List<N>> notes = this.notes.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream()
+                        .map(n -> (N) n.clone())
+                        .collect(Collectors.toList()), throwingMerger(), TreeMap::new)
+                );
+        return new SongView<>(this.title, this.speed, this.length, notes);
+    }
+
+    private static <T> BinaryOperator<T> throwingMerger() {
+        return (u, v) -> {
+            throw new IllegalStateException(String.format("Duplicate key %s", u));
+        };
     }
 
 }
