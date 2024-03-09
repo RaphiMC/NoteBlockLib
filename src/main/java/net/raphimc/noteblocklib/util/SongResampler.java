@@ -101,6 +101,9 @@ public class SongResampler {
             newNotes.computeIfAbsent((int) Math.round(milliTime * newSpeed / 1000D), k -> new ArrayList<>()).addAll(entry.getValue());
         }
 
+        final int finalTempoChangerId = tempoChangerId;
+        SongUtil.removeNotesIf(view, note -> note.getInstrument() == finalTempoChangerId);
+
         view.setNotes(newNotes);
         view.setSpeed(newSpeed);
         view.recalculateLength();

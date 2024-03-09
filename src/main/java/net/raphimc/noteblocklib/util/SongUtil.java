@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class SongUtil {
 
@@ -40,6 +41,19 @@ public class SongUtil {
      */
     public static <N extends Note> void applyToAllNotes(final SongView<N> songView, final Consumer<N> noteConsumer) {
         songView.getNotes().values().stream().flatMap(Collection::stream).forEach(noteConsumer);
+    }
+
+    /**
+     * Removes all notes which match the given predicate.
+     *
+     * @param songView  The song view
+     * @param predicate The predicate
+     * @param <N>       The note type
+     */
+    public static <N extends Note> void removeNotesIf(final SongView<N> songView, final Predicate<N> predicate) {
+        for (List<N> list : songView.getNotes().values()) {
+            list.removeIf(predicate);
+        }
     }
 
     /**
@@ -75,15 +89,13 @@ public class SongUtil {
      * @param <N>       The note type
      */
     public static <N extends Note> void removeSilentNotes(final SongView<N> songView, final float threshold) {
-        for (List<N> list : songView.getNotes().values()) {
-            list.removeIf(note -> {
-                if (note instanceof NoteWithVolume) {
-                    return ((NoteWithVolume) note).getVolume() <= threshold;
-                } else {
-                    return false;
-                }
-            });
-        }
+        removeNotesIf(songView, note -> {
+            if (note instanceof NoteWithVolume) {
+                return ((NoteWithVolume) note).getVolume() <= threshold;
+            } else {
+                return false;
+            }
+        });
     }
 
 }
