@@ -62,8 +62,10 @@ public class MetadataTab extends JPanel {
         if (song instanceof NbsSong) {
             NbsHeader header = ((NbsSong) song).getHeader();
             this.addString(center, "Title", header::getTitle, title -> {
-                header.setTitle(title);
-                song.getView().setTitle(title);
+                if (!header.getTitle().isEmpty() || !title.isEmpty()) {
+                    header.setTitle(title);
+                    song.getView().setTitle(title);
+                }
             });
             this.addString(center, "Author", header::getAuthor, header::setAuthor);
             this.addString(center, "Original author", header::getOriginalAuthor, header::setOriginalAuthor);
@@ -83,8 +85,10 @@ public class MetadataTab extends JPanel {
         } else if (song instanceof McSpSong) {
             McSpHeader header = ((McSpSong) song).getHeader();
             this.addString(center, "Title", header::getTitle, title -> {
-                header.setTitle(title);
-                song.getView().setTitle(title);
+                if (!header.getTitle().isEmpty() || !title.isEmpty()) {
+                    header.setTitle(title);
+                    song.getView().setTitle(title);
+                }
             });
             this.addString(center, "Author", header::getAuthor, header::setAuthor);
             this.addString(center, "Original Author", header::getOriginalAuthor, header::setOriginalAuthor);
