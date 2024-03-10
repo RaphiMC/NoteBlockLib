@@ -45,6 +45,17 @@ import java.util.function.IntSupplier;
 public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    private static SongPlayerFrame instance;
+
+    public static void open(final ListFrame.LoadedSong song) {
+        open(song, song.getSong().getView());
+    }
+
+    public static void open(final ListFrame.LoadedSong song, final SongView<?> view) {
+        if (instance != null) instance.dispose();
+        instance = new SongPlayerFrame(song, view);
+    }
+
 
     private final ListFrame.LoadedSong song;
     private final SongPlayer songPlayer;
@@ -60,13 +71,13 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
     private SoundSystem soundSystem = SoundSystem.OPENAL;
     private float volume = 1F;
 
-    public SongPlayerFrame(final ListFrame.LoadedSong song) {
+    private SongPlayerFrame(final ListFrame.LoadedSong song, final SongView<?> view) {
         this.song = song;
-        this.songPlayer = new SongPlayer(this.getSongView(), this);
+        this.songPlayer = new SongPlayer(this.getSongView(view), this);
         this.updateTimer = new Timer(50, e -> this.tick());
         this.updateTimer.start();
 
-        this.setTitle("NoteBlockTool Song Player - " + this.song.getSong().getView().getTitle());
+        this.setTitle("NoteBlockTool Song Player - " + this.songPlayer.getSongView().getTitle());
         this.setSize(500, 400);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -80,13 +91,11 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
         this.setVisible(true);
     }
 
-    private SongView<?> getSongView() {
-        final SongView<?> songView = this.song.getSong().getView();
+    private SongView<?> getSongView(final SongView<?> view) {
         if (this.song.getSong() instanceof NbsSong) {
-            SongResampler.applyNbsTempoChangers(((NbsSong) this.song.getSong()));
-            this.song.getSong().refreshView();
+            SongResampler.applyNbsTempoChangers(((NbsSong) this.song.getSong()), (SongView<NbsNote>) view);
         }
-        return songView;
+        return view;
     }
 
     private void initComponents() {
@@ -125,7 +134,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
             int gridy = 0;
             GBC.create(centerPanel).grid(0, gridy).insets(5, 5, 0, 5).anchor(GBC.LINE_START).add(new JLabel("Title:"));
-            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(this.song.getSong().getView().getTitle()));
+            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(this.songPlayer.getSongView().getTitle()));
 
             Optional<String> author = this.song.getAuthor();
             if (author.isPresent()) {
@@ -146,13 +155,13 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             }
 
             GBC.create(centerPanel).grid(0, gridy).insets(5, 5, 0, 5).anchor(GBC.LINE_START).add(new JLabel("Length:"));
-            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(this.song.getLength()));
+            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(this.song.getLength(this.songPlayer.getSongView())));
 
             GBC.create(centerPanel).grid(0, gridy).insets(5, 5, 0, 5).anchor(GBC.LINE_START).add(new JLabel("Note count:"));
-            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(DECIMAL_FORMAT.format(this.song.getNoteCount())));
+            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(DECIMAL_FORMAT.format(this.song.getNoteCount(this.songPlayer.getSongView()))));
 
             GBC.create(centerPanel).grid(0, gridy).insets(5, 5, 0, 5).anchor(GBC.LINE_START).add(new JLabel("Speed:"));
-            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(DECIMAL_FORMAT.format(this.song.getSong().getView().getSpeed())));
+            GBC.create(centerPanel).grid(1, gridy++).insets(5, 0, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JLabel(DECIMAL_FORMAT.format(this.songPlayer.getSongView().getSpeed())));
 
             GBC.fillVerticalSpace(centerPanel);
         }
@@ -245,7 +254,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
         }
         this.soundCount.setText("Sounds: " + DECIMAL_FORMAT.format(this.soundSystem.getSoundCount()) + "/" + DECIMAL_FORMAT.format(this.maxSoundsSpinner.getValue()));
 
-        int msLength = (int) (this.songPlayer.getTick() / this.song.getSong().getView().getSpeed());
+        int msLength = (int) (this.songPlayer.getTick() / this.songPlayer.getSongView().getSpeed());
         this.progressLabel.setText("Current Position: " + String.format("%02d:%02d:%02d", msLength / 3600, (msLength / 60) % 60, msLength % 60));
     }
 

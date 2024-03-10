@@ -23,6 +23,7 @@ import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.mcsp.McSpSong;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocktool.elements.*;
 
 import javax.swing.*;
@@ -48,7 +49,6 @@ public class ListFrame extends JFrame {
     private final JButton exportButton = new JButton("Export NBS");
     private DropTarget dropTarget;
     private TextOverlayPanel textOverlayPanel;
-    private SongPlayerFrame songPlayerFrame;
 
     public ListFrame() {
         this.setTitle("NoteBlockTool");
@@ -104,14 +104,22 @@ public class ListFrame extends JFrame {
             });
         });
         GBC.create(buttonPanel).gridx(2).weightx(1).fill(GBC.HORIZONTAL).add(Box.createVerticalGlue());
-        GBC.create(buttonPanel).gridx(3).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.editButton);
+        GBC.create(buttonPanel).gridx(3).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.editButton, () -> {
+            this.editButton.addActionListener(e -> {
+                final int[] rows = this.table.getSelectedRows();
+                if (rows.length > 0) {
+                    final List<LoadedSong> songs = new ArrayList<>();
+                    for (int row : rows) songs.add((LoadedSong) this.table.getValueAt(row, 0));
+                    new EditFrame(songs, this.table::refreshRow);
+                }
+            });
+        });
         GBC.create(buttonPanel).gridx(4).insets(5, 5, 5, 0).anchor(GBC.LINE_START).add(this.playButton, () -> {
             this.playButton.addActionListener(e -> {
                 final int[] rows = this.table.getSelectedRows();
                 if (rows.length == 1) {
                     final LoadedSong song = (LoadedSong) this.table.getValueAt(rows[0], 0);
-                    if (this.songPlayerFrame != null) this.songPlayerFrame.dispose();
-                    this.songPlayerFrame = new SongPlayerFrame(song);
+                    SongPlayerFrame.open(song);
                 }
             });
         });
@@ -255,8 +263,12 @@ public class ListFrame extends JFrame {
         }
 
         public String getLength() {
-            int msLength = (int) (this.song.getView().getLength() / this.song.getView().getSpeed());
-            return String.format("%02d:%02d:%02d", msLength / 3600, (msLength / 60) % 60, msLength % 60);
+            return this.getLength(this.song.getView());
+        }
+
+        public String getLength(final SongView<?> view) {
+            int length = (int) Math.ceil(view.getLength() / view.getSpeed());
+            return String.format("%02d:%02d:%02d", length / 3600, (length / 60) % 60, length % 60);
         }
 
         public Optional<String> getAuthor() {
@@ -296,7 +308,11 @@ public class ListFrame extends JFrame {
         }
 
         public int getNoteCount() {
-            return (int) this.song.getView().getNotes().values().stream().mapToLong(List::size).sum();
+            return this.getNoteCount(this.song.getView());
+        }
+
+        public int getNoteCount(final SongView<?> view) {
+            return (int) view.getNotes().values().stream().mapToLong(List::size).sum();
         }
 
         @Override

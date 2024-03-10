@@ -40,4 +40,17 @@ public class DragTable extends JTable {
         });
     }
 
+    public void refreshRow(final ListFrame.LoadedSong song) {
+        for (int i = 0; i < this.getModel().getRowCount(); i++) {
+            if (this.getModel().getValueAt(i, 0) == song) {
+                this.getModel().setValueAt(song.getSong().getView().getTitle(), i, 1);
+                this.getModel().setValueAt(song.getAuthor().orElse("Unknown"), i, 2);
+                this.getModel().setValueAt(song.getLength(), i, 3);
+                this.getModel().setValueAt(song.getNoteCount(), i, 4);
+                this.getModel().setValueAt(song.getSong().getView().getSpeed(), i, 5);
+                break;
+            }
+        }
+    }
+
 }
