@@ -23,6 +23,7 @@ import net.raphimc.noteblocklib.format.mcsp.model.McSpHeader;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.InvisiblePanel;
 import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
@@ -51,68 +52,53 @@ public class MetadataTab extends JPanel {
     }
 
     private void initComponents() {
-        { //Center Panel
-            JScrollPane scrollPane = new FastScrollPane();
-            ScrollPaneSizedPanel center = new ScrollPaneSizedPanel(scrollPane);
-            center.setLayout(new GridBagLayout());
-            scrollPane.setViewportView(center);
-            this.add(scrollPane, BorderLayout.CENTER);
+        JScrollPane scrollPane = new FastScrollPane();
+        ScrollPaneSizedPanel center = new ScrollPaneSizedPanel(scrollPane);
+        center.setLayout(new GridBagLayout());
+        scrollPane.setViewportView(center);
+        this.add(scrollPane, BorderLayout.CENTER);
 
-            Song<?, ?, ?> song = this.songs.get(0).getSong();
-            if (song instanceof NbsSong) {
-                NbsHeader header = ((NbsSong) song).getHeader();
-                this.addString(center, "Title", header::getTitle, title -> {
-                    header.setTitle(title);
-                    song.getView().setTitle(title);
-                });
-                this.addString(center, "Author", header::getAuthor, header::setAuthor);
-                this.addString(center, "Original author", header::getOriginalAuthor, header::setOriginalAuthor);
-                this.addString(center, "Description", header::getDescription, header::setDescription);
-                this.addBoolean(center, "Auto Save", header::isAutoSave, header::setAutoSave);
-                this.addNumber(center, "AutoSave Interval", header::getAutoSaveInterval, num -> header.setAutoSaveInterval(num.byteValue()));
-                this.addNumber(center, "Time Signature", header::getTimeSignature, num -> header.setTimeSignature(num.byteValue()));
-                this.addNumber(center, "Minutes Spent", header::getMinutesSpent, num -> header.setMinutesSpent(num.intValue()));
-                this.addNumber(center, "Left Clicks", header::getLeftClicks, num -> header.setLeftClicks(num.intValue()));
-                this.addNumber(center, "Right Clicks", header::getRightClicks, num -> header.setRightClicks(num.intValue()));
-                this.addNumber(center, "Note Blocks Added", header::getNoteBlocksAdded, num -> header.setNoteBlocksAdded(num.intValue()));
-                this.addNumber(center, "Note Blocks Removed", header::getNoteBlocksRemoved, num -> header.setNoteBlocksRemoved(num.intValue()));
-                this.addString(center, "Source File Name", header::getSourceFileName, header::setSourceFileName);
-                this.addBoolean(center, "Loop", header::isLoop, header::setLoop);
-                this.addNumber(center, "Max Loop Count", header::getMaxLoopCount, num -> header.setMaxLoopCount(num.byteValue()));
-                this.addNumber(center, "Loop Start Tick", header::getLoopStartTick, num -> header.setLoopStartTick(num.shortValue()));
-            } else if (song instanceof McSpSong) {
-                McSpHeader header = ((McSpSong) song).getHeader();
-                this.addString(center, "Title", header::getTitle, title -> {
-                    header.setTitle(title);
-                    song.getView().setTitle(title);
-                });
-                this.addString(center, "Author", header::getAuthor, header::setAuthor);
-                this.addString(center, "Original Author", header::getOriginalAuthor, header::setOriginalAuthor);
-                this.addNumber(center, "Auto Save Interval", header::getAutoSaveInterval, num -> header.setAutoSaveInterval(num.intValue()));
-                this.addNumber(center, "Left Clicks", header::getLeftClicks, num -> header.setLeftClicks(num.intValue()));
-                this.addNumber(center, "Right Clicks", header::getRightClicks, num -> header.setRightClicks(num.intValue()));
-                this.addNumber(center, "Note Blocks Added", header::getNoteBlocksAdded, num -> header.setNoteBlocksAdded(num.intValue()));
-                this.addNumber(center, "Note Blocks Removed", header::getNoteBlocksRemoved, num -> header.setNoteBlocksRemoved(num.intValue()));
-                this.addNumber(center, "Minutes Spent", header::getMinutesSpent, num -> header.setMinutesSpent(num.intValue()));
-            } else {
-                GBC.create(center).grid(0, this.gridy).insets(5, 5, 0, 5).anchor(GBC.CENTER).add(new JLabel("No metadata available"));
-            }
-            GBC.create(center).grid(0, this.gridy++).insets(0).add(new InvisiblePanel(1, 5));
-            GBC.fillVerticalSpace(center);
-        }
-        { //South Panel
-            JPanel south = new JPanel();
-            south.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            this.add(south, BorderLayout.SOUTH);
-
-            JButton saveButton = new JButton("Save");
-            saveButton.addActionListener(e -> {
-                this.saves.forEach(Runnable::run);
-                JOptionPane.showMessageDialog(this, "Saved all changes", "Saved", JOptionPane.INFORMATION_MESSAGE);
-                this.songRefreshConsumer.accept(this.songs.get(0));
+        Song<?, ?, ?> song = this.songs.get(0).getSong();
+        if (song instanceof NbsSong) {
+            NbsHeader header = ((NbsSong) song).getHeader();
+            this.addString(center, "Title", header::getTitle, title -> {
+                header.setTitle(title);
+                song.getView().setTitle(title);
             });
-            south.add(saveButton);
+            this.addString(center, "Author", header::getAuthor, header::setAuthor);
+            this.addString(center, "Original author", header::getOriginalAuthor, header::setOriginalAuthor);
+            this.addString(center, "Description", header::getDescription, header::setDescription);
+            this.addBoolean(center, "Auto Save", header::isAutoSave, header::setAutoSave);
+            this.addNumber(center, "AutoSave Interval", header::getAutoSaveInterval, num -> header.setAutoSaveInterval(num.byteValue()));
+            this.addNumber(center, "Time Signature", header::getTimeSignature, num -> header.setTimeSignature(num.byteValue()));
+            this.addNumber(center, "Minutes Spent", header::getMinutesSpent, num -> header.setMinutesSpent(num.intValue()));
+            this.addNumber(center, "Left Clicks", header::getLeftClicks, num -> header.setLeftClicks(num.intValue()));
+            this.addNumber(center, "Right Clicks", header::getRightClicks, num -> header.setRightClicks(num.intValue()));
+            this.addNumber(center, "Note Blocks Added", header::getNoteBlocksAdded, num -> header.setNoteBlocksAdded(num.intValue()));
+            this.addNumber(center, "Note Blocks Removed", header::getNoteBlocksRemoved, num -> header.setNoteBlocksRemoved(num.intValue()));
+            this.addString(center, "Source File Name", header::getSourceFileName, header::setSourceFileName);
+            this.addBoolean(center, "Loop", header::isLoop, header::setLoop);
+            this.addNumber(center, "Max Loop Count", header::getMaxLoopCount, num -> header.setMaxLoopCount(num.byteValue()));
+            this.addNumber(center, "Loop Start Tick", header::getLoopStartTick, num -> header.setLoopStartTick(num.shortValue()));
+        } else if (song instanceof McSpSong) {
+            McSpHeader header = ((McSpSong) song).getHeader();
+            this.addString(center, "Title", header::getTitle, title -> {
+                header.setTitle(title);
+                song.getView().setTitle(title);
+            });
+            this.addString(center, "Author", header::getAuthor, header::setAuthor);
+            this.addString(center, "Original Author", header::getOriginalAuthor, header::setOriginalAuthor);
+            this.addNumber(center, "Auto Save Interval", header::getAutoSaveInterval, num -> header.setAutoSaveInterval(num.intValue()));
+            this.addNumber(center, "Left Clicks", header::getLeftClicks, num -> header.setLeftClicks(num.intValue()));
+            this.addNumber(center, "Right Clicks", header::getRightClicks, num -> header.setRightClicks(num.intValue()));
+            this.addNumber(center, "Note Blocks Added", header::getNoteBlocksAdded, num -> header.setNoteBlocksAdded(num.intValue()));
+            this.addNumber(center, "Note Blocks Removed", header::getNoteBlocksRemoved, num -> header.setNoteBlocksRemoved(num.intValue()));
+            this.addNumber(center, "Minutes Spent", header::getMinutesSpent, num -> header.setMinutesSpent(num.intValue()));
+        } else {
+            GBC.create(center).grid(0, this.gridy).insets(5, 5, 0, 5).anchor(GBC.CENTER).add(new JLabel("No metadata available"));
         }
+        GBC.create(center).grid(0, this.gridy++).insets(0).add(new InvisiblePanel(1, 5));
+        GBC.fillVerticalSpace(center);
     }
 
     private void addBoolean(final JPanel parent, final String name, final Supplier<Boolean> getter, final Consumer<Boolean> setter) {
@@ -134,6 +120,10 @@ public class MetadataTab extends JPanel {
         GBC.create(parent).grid(1, this.gridy++).insets(5, 5, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JTextField(getter.get()), textField -> {
             this.saves.add(() -> setter.accept(textField.getText()));
         });
+    }
+
+    public void apply(final Song<?, ?, ?> song, final SongView<?> view) {
+        this.saves.forEach(Runnable::run);
     }
 
 }

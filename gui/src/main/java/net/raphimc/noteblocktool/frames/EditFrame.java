@@ -17,11 +17,13 @@
  */
 package net.raphimc.noteblocktool.frames;
 
+import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocktool.frames.edittabs.MetadataTab;
 import net.raphimc.noteblocktool.frames.edittabs.NotesTab;
 import net.raphimc.noteblocktool.frames.edittabs.ResamplingTab;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -29,6 +31,9 @@ public class EditFrame extends JFrame {
 
     private final List<ListFrame.LoadedSong> songs;
     private final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
+    private NotesTab notesTab;
+    private ResamplingTab resamplingTab;
+    private MetadataTab metadataTab;
 
     public EditFrame(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
         this.songs = songs;
@@ -46,15 +51,52 @@ public class EditFrame extends JFrame {
     }
 
     private void initComponents() {
-        JTabbedPane root = new JTabbedPane();
+        JPanel root = new JPanel();
+        root.setLayout(new BorderLayout());
         this.setContentPane(root);
 
-        root.addTab("Notes", new NotesTab(this.songs, this.songRefreshConsumer));
-        root.addTab("Resampling", new ResamplingTab(this.songs, this.songRefreshConsumer));
-        root.addTab("Metadata", new MetadataTab(this.songs, this.songRefreshConsumer));
-        if (this.songs.size() != 1) {
-            root.setEnabledAt(2, false);
-            root.setToolTipTextAt(2, "This tab is only available when editing a single song");
+        { //Center Panel
+            JTabbedPane tabs = new JTabbedPane();
+            root.add(tabs, BorderLayout.CENTER);
+
+            tabs.addTab("Notes", this.notesTab = new NotesTab(this.songs, this.songRefreshConsumer));
+            tabs.addTab("Resampling", this.resamplingTab = new ResamplingTab(this.songs, this.songRefreshConsumer));
+            tabs.addTab("Metadata", this.metadataTab = new MetadataTab(this.songs, this.songRefreshConsumer));
+            if (this.songs.size() != 1) {
+                tabs.setEnabledAt(2, false);
+                tabs.setToolTipTextAt(2, "This tab is only available when editing a single song");
+            }
+        }
+        { //South Panel
+            JPanel south = new JPanel();
+            south.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            this.add(south, BorderLayout.SOUTH);
+
+            JButton apply = new JButton("Save");
+            apply.addActionListener(e -> {
+                for (ListFrame.LoadedSong song : this.songs) {
+                    this.notesTab.apply(song.getSong(), song.getSong().getView());
+                    this.resamplingTab.apply(song.getSong(), song.getSong().getView());
+                    this.metadataTab.apply(song.getSong(), song.getSong().getView());
+                }
+                JOptionPane.showMessageDialog(this, "Saved all changes", "Saved", JOptionPane.INFORMATION_MESSAGE);
+                for (ListFrame.LoadedSong song : this.songs) this.songRefreshConsumer.accept(song);
+            });
+            south.add(apply);
+            JButton preview = new JButton("Preview");
+            preview.addActionListener(e -> {
+                ListFrame.LoadedSong song = this.songs.get(0);
+                SongView<?> view = song.getSong().getView().clone();
+                this.notesTab.apply(song.getSong(), view);
+                this.resamplingTab.apply(song.getSong(), view);
+                this.metadataTab.apply(song.getSong(), view);
+                SongPlayerFrame.open(song, view);
+            });
+            if (this.songs.size() != 1) {
+                preview.setEnabled(false);
+                preview.setToolTipText("Preview is only available for one song at a time");
+            }
+            south.add(preview);
         }
     }
 
