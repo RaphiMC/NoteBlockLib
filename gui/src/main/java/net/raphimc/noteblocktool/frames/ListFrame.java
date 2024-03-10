@@ -53,7 +53,7 @@ public class ListFrame extends JFrame {
     public ListFrame() {
         this.setTitle("NoteBlockTool");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(500, 400);
+        this.setSize(800, 400);
         this.setLocationRelativeTo(null);
 
         this.initComponents();

@@ -27,6 +27,10 @@ public class DragTable extends JTable {
         super(new DragTableModel("Path", "Title", "Author", "Length", "Notes", "Speed"));
 
         this.getTableHeader().setReorderingAllowed(false);
+        this.getColumnModel().getColumn(1).setPreferredWidth(250);
+        this.getColumnModel().getColumn(3).setPreferredWidth(25);
+        this.getColumnModel().getColumn(4).setPreferredWidth(25);
+        this.getColumnModel().getColumn(5).setPreferredWidth(25);
     }
 
     public void addRow(final ListFrame.LoadedSong song) {
