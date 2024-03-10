@@ -23,6 +23,7 @@ import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocklib.util.SongResampler;
+import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.elements.formatter.DoubleFormatterFactory;
 import net.raphimc.noteblocktool.frames.ListFrame;
@@ -51,7 +52,7 @@ public class ResamplingTab extends JPanel {
 
     private void initComponents() {
         { //Center Panel
-            JScrollPane scrollPane = new JScrollPane();
+            JScrollPane scrollPane = new FastScrollPane();
             JPanel center = new ScrollPaneSizedPanel(scrollPane);
             center.setLayout(new VerticalLayout(5, 5));
             scrollPane.setViewportView(center);

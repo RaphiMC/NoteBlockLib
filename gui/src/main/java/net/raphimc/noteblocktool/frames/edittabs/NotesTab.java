@@ -21,6 +21,7 @@ import net.lenni0451.commons.swing.GBC;
 import net.lenni0451.commons.swing.layouts.VerticalLayout;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocklib.util.SongUtil;
+import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.IntFormatterFactory;
 import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
@@ -49,7 +50,7 @@ public class NotesTab extends JPanel {
 
     private void initComponents() {
         { //Center Panel
-            JScrollPane scrollPane = new JScrollPane();
+            JScrollPane scrollPane = new FastScrollPane();
             JPanel center = new ScrollPaneSizedPanel(scrollPane);
             center.setLayout(new VerticalLayout(5, 5));
             scrollPane.setViewportView(center);

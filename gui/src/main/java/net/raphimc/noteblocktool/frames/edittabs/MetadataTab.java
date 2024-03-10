@@ -23,6 +23,7 @@ import net.raphimc.noteblocklib.format.mcsp.model.McSpHeader;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.InvisiblePanel;
 import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
@@ -51,7 +52,7 @@ public class MetadataTab extends JPanel {
 
     private void initComponents() {
         { //Center Panel
-            JScrollPane scrollPane = new JScrollPane();
+            JScrollPane scrollPane = new FastScrollPane();
             ScrollPaneSizedPanel center = new ScrollPaneSizedPanel(scrollPane);
             center.setLayout(new GridBagLayout());
             scrollPane.setViewportView(center);
