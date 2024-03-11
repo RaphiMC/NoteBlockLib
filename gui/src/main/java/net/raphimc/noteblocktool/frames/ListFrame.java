@@ -31,6 +31,8 @@ import net.raphimc.noteblocktool.elements.drag.DragTableDropTargetListener;
 import net.raphimc.noteblocktool.elements.drag.DragTableModel;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.KeyAdapter;
@@ -176,6 +178,25 @@ public class ListFrame extends JFrame {
 
     private void addContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
+        contextMenu.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                int[] selectedRows = ListFrame.this.table.getSelectedRows();
+                int hoveredRow = ListFrame.this.table.rowAtPoint(contextMenu.getInvoker().getMousePosition());
+                if (hoveredRow >= 0 && Arrays.stream(selectedRows).noneMatch(i -> i == hoveredRow)) {
+                    ListFrame.this.table.setRowSelectionInterval(hoveredRow, hoveredRow);
+                }
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        });
+
         JMenuItem contextMenuRemove = new JMenuItem("Remove");
         contextMenuRemove.addActionListener(e -> this.removeButton.doClick());
         contextMenu.add(contextMenuRemove);
