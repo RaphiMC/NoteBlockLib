@@ -136,8 +136,8 @@ public class SongUtil {
      * @param songView The song view
      * @param <N>      The note type
      */
-    public static <N extends Note> List<Integer> getUsedCustomInstruments(final SongView<N> songView) {
-        final List<Integer> usedInstruments = new ArrayList<>();
+    public static <N extends Note> Set<Integer> getUsedCustomInstruments(final SongView<N> songView) {
+        final Set<Integer> usedInstruments = new HashSet<>();
         iterateAllNotes(songView, note -> {
             if (note.getInstrument() >= Instrument.values().length) {
                 usedInstruments.add((int) note.getInstrument());

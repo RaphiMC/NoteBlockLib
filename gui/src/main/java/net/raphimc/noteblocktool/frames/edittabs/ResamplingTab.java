@@ -29,7 +29,6 @@ import net.raphimc.noteblocktool.frames.ListFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ResamplingTab extends EditTab {
 
@@ -37,8 +36,8 @@ public class ResamplingTab extends EditTab {
     private JSpinner changeSpeedSpinner;
     private JCheckBox precomputeNbsTempoChanges;
 
-    public ResamplingTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
-        super(songs, songRefreshConsumer);
+    public ResamplingTab(final List<ListFrame.LoadedSong> songs) {
+        super(songs);
     }
 
     @Override

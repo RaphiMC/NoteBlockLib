@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocktool.frames;
 
+import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocktool.frames.edittabs.*;
 
@@ -32,6 +33,7 @@ public class EditFrame extends JFrame {
     private NotesTab notesTab;
     private ResamplingTab resamplingTab;
     private InstrumentsTab instrumentsTab;
+    private CustomInstrumentsTab customInstrumentsTab;
     private MetadataTab metadataTab;
 
     public EditFrame(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
@@ -58,13 +60,19 @@ public class EditFrame extends JFrame {
             JTabbedPane tabs = new JTabbedPane();
             root.add(tabs, BorderLayout.CENTER);
 
-            tabs.addTab("Notes", this.notesTab = new NotesTab(this.songs, this.songRefreshConsumer));
-            tabs.addTab("Resampling", this.resamplingTab = new ResamplingTab(this.songs, this.songRefreshConsumer));
-            tabs.addTab("Instruments", this.instrumentsTab = new InstrumentsTab(this.songs, this.songRefreshConsumer));
-            tabs.addTab("Metadata", this.metadataTab = new MetadataTab(this.songs, this.songRefreshConsumer));
+            tabs.addTab("Notes", this.notesTab = new NotesTab(this.songs));
+            tabs.addTab("Resampling", this.resamplingTab = new ResamplingTab(this.songs));
+            tabs.addTab("Instruments", this.instrumentsTab = new InstrumentsTab(this.songs));
+            tabs.addTab("Custom Instruments", this.customInstrumentsTab = new CustomInstrumentsTab(this.songs));
+            tabs.addTab("Metadata", this.metadataTab = new MetadataTab(this.songs));
             if (this.songs.size() != 1) {
-                tabs.setEnabledAt(3, false);
-                tabs.setToolTipTextAt(3, "This tab is only available when editing a single song");
+                int metadataTabIndex = tabs.indexOfTabComponent(this.metadataTab);
+                tabs.setEnabledAt(metadataTabIndex, false);
+                tabs.setToolTipTextAt(metadataTabIndex, "This tab is only available when editing a single song");
+            }
+            if (this.songs.size() != 1 || !(this.songs.get(0).getSong() instanceof NbsSong)) {
+                int customInstrumentsTabIndex = tabs.indexOfTabComponent(this.customInstrumentsTab);
+                tabs.removeTabAt(customInstrumentsTabIndex);
             }
             for (int i = 0; i < tabs.getTabCount(); i++) {
                 EditTab tab = (EditTab) tabs.getComponentAt(i);
@@ -79,9 +87,10 @@ public class EditFrame extends JFrame {
             JButton apply = new JButton("Save");
             apply.addActionListener(e -> {
                 for (ListFrame.LoadedSong song : this.songs) {
-                    this.instrumentsTab.apply(song.getSong(), song.getSong().getView());
-                    this.notesTab.apply(song.getSong(), song.getSong().getView());
                     this.resamplingTab.apply(song.getSong(), song.getSong().getView());
+                    this.instrumentsTab.apply(song.getSong(), song.getSong().getView());
+                    this.customInstrumentsTab.apply(song.getSong(), song.getSong().getView());
+                    this.notesTab.apply(song.getSong(), song.getSong().getView());
                     this.metadataTab.apply(song.getSong(), song.getSong().getView());
                 }
                 JOptionPane.showMessageDialog(this, "Saved all changes", "Saved", JOptionPane.INFORMATION_MESSAGE);
@@ -92,10 +101,10 @@ public class EditFrame extends JFrame {
             preview.addActionListener(e -> {
                 ListFrame.LoadedSong song = this.songs.get(0);
                 SongView<?> view = song.getSong().getView().clone();
-                this.instrumentsTab.apply(song.getSong(), view);
-                this.notesTab.apply(song.getSong(), view);
                 this.resamplingTab.apply(song.getSong(), view);
-                this.metadataTab.apply(song.getSong(), view);
+                this.instrumentsTab.apply(song.getSong(), view);
+                this.customInstrumentsTab.apply(null, view);
+                this.notesTab.apply(song.getSong(), view);
                 SongPlayerFrame.open(song, view);
             });
             if (this.songs.size() != 1) {

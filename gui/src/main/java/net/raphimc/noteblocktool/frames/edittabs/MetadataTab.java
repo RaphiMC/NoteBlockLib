@@ -39,8 +39,8 @@ public class MetadataTab extends EditTab {
     private final List<Runnable> saves = new ArrayList<>();
     private int gridy;
 
-    public MetadataTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
-        super(songs, songRefreshConsumer);
+    public MetadataTab(final List<ListFrame.LoadedSong> songs) {
+        super(songs);
     }
 
     @Override

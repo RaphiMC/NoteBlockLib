@@ -24,11 +24,13 @@ import javax.swing.table.DefaultTableModel;
 
 public class InstrumentsTable extends JTable {
 
-    public InstrumentsTable() {
+    public InstrumentsTable(final boolean addEmptyEntry) {
         super(new InstrumentsModel("Original", "Replacement"));
         this.getTableHeader().setReorderingAllowed(false);
 
-        JComboBox<Instrument> instruments = new JComboBox<>(Instrument.values());
+        JComboBox<Instrument> instruments = new JComboBox<>();
+        if (addEmptyEntry) instruments.addItem(null);
+        for (Instrument instrument : Instrument.values()) instruments.addItem(instrument);
         this.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(instruments));
     }
 

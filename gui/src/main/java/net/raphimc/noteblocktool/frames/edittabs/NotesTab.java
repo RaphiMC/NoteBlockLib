@@ -28,15 +28,14 @@ import net.raphimc.noteblocktool.util.MinecraftOctaveClamp;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class NotesTab extends EditTab {
 
     private JComboBox<MinecraftOctaveClamp> octaveClamp;
     private JSpinner volumeSpinner;
 
-    public NotesTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
-        super(songs, songRefreshConsumer);
+    public NotesTab(final List<ListFrame.LoadedSong> songs) {
+        super(songs);
     }
 
     @Override

@@ -27,17 +27,14 @@ import net.raphimc.noteblocktool.frames.ListFrame;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class EditTab extends JPanel {
 
     protected final List<ListFrame.LoadedSong> songs;
-    protected final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
     private final JPanel center;
 
-    public EditTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
+    public EditTab(final List<ListFrame.LoadedSong> songs) {
         this.songs = songs;
-        this.songRefreshConsumer = songRefreshConsumer;
 
         this.setLayout(new BorderLayout());
         JScrollPane scrollPane = new FastScrollPane();
