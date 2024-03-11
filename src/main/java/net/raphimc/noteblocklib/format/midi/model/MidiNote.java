@@ -41,7 +41,7 @@ public class MidiNote extends Note implements NoteWithVolume, NoteWithPanning {
     }
 
     /**
-     * The MIDI tick of this note.
+     * The MIDI tick of this note.<br>
      * This value is excluded from equals and hashcode.
      *
      * @return The tick of the note in the midi sequence.

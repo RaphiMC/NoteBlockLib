@@ -104,7 +104,7 @@ public class MinecraftDefinitions {
     }
 
     /**
-     * Clamps the key of the note to fall within minecraft octave range.
+     * Clamps the key of the note to fall within minecraft octave range.<br>
      * Any key below 33 will be set to 33, and any key above 57 will be set to 57.
      *
      * @param note The note to clamp
@@ -114,7 +114,7 @@ public class MinecraftDefinitions {
     }
 
     /**
-     * Transposes the key of the note to fall within minecraft octave range.
+     * Transposes the key of the note to fall within minecraft octave range.<br>
      * Any key below 33 will be transposed up an octave, and any key above 57 will be transposed down an octave.
      *
      * @param note The note to transpose
@@ -124,7 +124,7 @@ public class MinecraftDefinitions {
     }
 
     /**
-     * Transposes the key of the note to fall within minecraft octave range.
+     * Transposes the key of the note to fall within minecraft octave range.<br>
      * Any key below 33 will be transposed up by transposeAmount, and any key above 57 will be transposed down by transposeAmount.
      *
      * @param note            The note to transpose
@@ -142,8 +142,8 @@ public class MinecraftDefinitions {
     }
 
     /**
-     * "Transposes" the key of the note by shifting the instrument to a higher or lower sounding one.
-     * This often sounds the best of the three methods as it keeps the musical key the same and only changes the instrument.
+     * "Transposes" the key of the note by shifting the instrument to a higher or lower sounding one.<br>
+     * This often sounds the best of the three methods as it keeps the musical key the same and only changes the instrument.<br>
      * <b>The note might still be slightly outside of the minecraft octave range.</b> Use one of the other methods to fix this. Clamp is recommended.
      *
      * @param note The note to transpose

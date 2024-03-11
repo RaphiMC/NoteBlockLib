@@ -23,11 +23,36 @@ import java.util.Locale;
 
 public enum SongFormat {
 
-    NBS("nbs"), // Minecraft Note Block Studio (https://opennbs.org/)
-    MCSP("mcsp2", "mcsp"), // Minecraft Song Planner (Ancestor of Minecraft Note Block Studio) (https://web.archive.org/web/20110923175931/http://www.minecraftforum.net/topic/136749-minecraft-song-planner-25-a-tool-for-note-block-musicians/)
-    TXT("txt"), // BleachHack NoteBot (https://github.com/BleachDev/BleachHack)
-    FUTURE("notebot"), // Future client NoteBot (https://futureclient.net/)
-    MIDI("mid", "midi"), // Standard MIDI (https://en.wikipedia.org/wiki/MIDI)
+    /**
+     * Minecraft Note Block Studio
+     *
+     * @see <a href="https://opennbs.org/">OpenNBS Homepage</a>
+     */
+    NBS("nbs"),
+    /**
+     * Minecraft Song Planner (Ancestor of Minecraft Note Block Studio)
+     *
+     * @see <a href="https://web.archive.org/web/20110923175931/http://www.minecraftforum.net/topic/136749-minecraft-song-planner-25-a-tool-for-note-block-musicians/">Minecraft Forum</a>
+     */
+    MCSP("mcsp2", "mcsp"),
+    /**
+     * BleachHack NoteBot
+     *
+     * @see <a href="https://github.com/BleachDev/BleachHack">BleachHack GitHub</a>
+     */
+    TXT("txt"),
+    /**
+     * Future client NoteBot
+     *
+     * @see <a href="https://futureclient.net/">Future Client</a>
+     */
+    FUTURE("notebot"),
+    /**
+     * Standard MIDI
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/MIDI">WikiPedia</a>
+     */
+    MIDI("mid", "midi"),
     ;
 
     private final List<String> extensions;

@@ -56,8 +56,8 @@ public abstract class Song<H extends Header, D extends Data<N>, N extends Note> 
     }
 
     /**
-     * Returns an abstracted, generalized and unified view of this song.
-     * Any changes made to this view will not be reflected in the original song data.
+     * Returns an abstracted, generalized and unified view of this song.<br>
+     * Any changes made to this view will not be reflected in the original song data.<br>
      * The view may be recreated by using {@link #refreshView()}.
      *
      * @return The song view

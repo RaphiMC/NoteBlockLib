@@ -27,7 +27,7 @@ import java.util.*;
 public class SongResampler {
 
     /**
-     * Changes the tick speed (sample rate) of a song, without changing the musical speed or length.
+     * Changes the tick speed (sample rate) of a song, without changing the musical speed or length.<br>
      * Changing the speed to a lower one than original will result in a loss of timing precision.
      *
      * @param songView The song view
@@ -49,7 +49,7 @@ public class SongResampler {
     }
 
     /**
-     * Applies the undocumented tempo changers from Note Block Studio.
+     * Applies the undocumented tempo changers from Note Block Studio.<br>
      * Only updates the song view.
      *
      * @param song The song

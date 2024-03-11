@@ -117,6 +117,7 @@ public class SongUtil {
      *
      * @param songView The song view
      * @param <N>      The note type
+     * @return The used instruments
      */
     public static <N extends Note> Set<Instrument> getUsedVanillaInstruments(final SongView<N> songView) {
         final Set<Instrument> usedInstruments = EnumSet.noneOf(Instrument.class);
@@ -135,6 +136,7 @@ public class SongUtil {
      *
      * @param songView The song view
      * @param <N>      The note type
+     * @return The used custom instruments (NBS IDs)
      */
     public static <N extends Note> Set<Integer> getUsedCustomInstruments(final SongView<N> songView) {
         final Set<Integer> usedInstruments = new HashSet<>();

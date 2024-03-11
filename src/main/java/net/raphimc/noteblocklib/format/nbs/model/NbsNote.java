@@ -155,7 +155,7 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
     }
 
     /**
-     * 100 = 1 key
+     * 100 = 1 key<br>
      * 1200 = 1 octave
      *
      * @return The fine pitch of the note block, from -32,768 to 32,767 cents (but the max in Note Block Studio is limited to -1200 and +1200). 0 is no fine-tuning. ±100 cents is a single semitone difference.
