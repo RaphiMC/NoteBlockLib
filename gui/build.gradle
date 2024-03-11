@@ -19,7 +19,7 @@ repositories {
 dependencies {
     include project(":")
 
-    include "com.formdev:flatlaf:3.3"
+    include "com.formdev:flatlaf:3.4"
     include "net.lenni0451.commons:swing:1.5.0-SNAPSHOT"
     include "org.lwjgl:lwjgl:3.3.3"
     include "org.lwjgl:lwjgl-openal:3.3.3"
