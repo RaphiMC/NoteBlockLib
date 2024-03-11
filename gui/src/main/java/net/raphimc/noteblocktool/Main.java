@@ -28,6 +28,8 @@ public class Main {
         FlatDarkLaf.setup();
         UIManager.getLookAndFeelDefaults().put("TextComponent.arc", 5);
         UIManager.getLookAndFeelDefaults().put("Button.arc", 5);
+        ToolTipManager.sharedInstance().setInitialDelay(100);
+        ToolTipManager.sharedInstance().setDismissDelay(10_000);
 
         new ListFrame();
     }
