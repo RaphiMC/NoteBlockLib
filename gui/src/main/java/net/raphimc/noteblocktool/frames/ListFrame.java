@@ -56,6 +56,7 @@ public class ListFrame extends JFrame {
 
     public ListFrame() {
         this.setTitle("NoteBlockTool");
+        this.setIconImage(new ImageIcon(this.getClass().getResource("/icon.png")).getImage());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(800, 400);
         this.setLocationRelativeTo(null);

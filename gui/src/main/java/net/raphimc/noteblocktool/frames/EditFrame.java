@@ -41,6 +41,7 @@ public class EditFrame extends JFrame {
         this.songRefreshConsumer = songRefreshConsumer;
 
         this.setTitle("NoteBlockTool Editor");
+        this.setIconImage(new ImageIcon(this.getClass().getResource("/icon.png")).getImage());
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(500, 400);
         this.setLocationRelativeTo(null);
