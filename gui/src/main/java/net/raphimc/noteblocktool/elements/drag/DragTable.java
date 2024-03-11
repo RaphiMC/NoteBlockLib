@@ -23,8 +23,6 @@ import net.raphimc.noteblocklib.util.SongUtil;
 import net.raphimc.noteblocktool.frames.ListFrame;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,37 +66,27 @@ public class DragTable extends JTable {
     }
 
     @Override
-    public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-        if (column == 6) {
-            List<String> reasons = (List<String>) this.getModel().getValueAt(row, column);
-            if (reasons.isEmpty()) return new JLabel("Yes");
-            else return new JLabel("No");
-        }
-        return super.prepareRenderer(renderer, row, column);
-    }
-
-    @Override
     public String getToolTipText(MouseEvent event) {
         int row = this.rowAtPoint(event.getPoint());
         int column = this.columnAtPoint(event.getPoint());
         if (row < 0) return null;
         if (column == 0) return this.getModel().getValueAt(row, column).toString();
         if (column == 6) {
-            List<String> reasons = (List<String>) this.getModel().getValueAt(row, column);
-            if (!reasons.isEmpty()) return String.join("\n", reasons);
+            CompatibilityResult result = (CompatibilityResult) this.getModel().getValueAt(row, column);
+            return result.getTooltip();
         }
         return null;
     }
 
-    private List<String> isSchematicCompatible(final ListFrame.LoadedSong song) {
-        List<String> unsupportedReasons = new ArrayList<>();
+    private CompatibilityResult isSchematicCompatible(final ListFrame.LoadedSong song) {
+        CompatibilityResult result = new CompatibilityResult();
 
         float speed = song.getSong().getView().getSpeed();
-        if (speed != 2.5F && speed != 5F && speed != 10F) unsupportedReasons.add("The speed must be 2.5, 5 or 10 TPS");
+        if (speed != 2.5F && speed != 5F && speed != 10F) result.add("The speed must be 2.5, 5 or 10 TPS");
 
         SongUtil.iterateAllNotes(song.getSong().getView(), note -> {
             if (note.getKey() < MinecraftDefinitions.MC_LOWEST_KEY || note.getKey() > MinecraftDefinitions.MC_HIGHEST_KEY) {
-                unsupportedReasons.add("The song contains notes that are out of the Minecraft octave range");
+                result.add("The song contains notes that are out of the Minecraft octave range");
                 return true;
             }
             return false;
@@ -106,13 +94,36 @@ public class DragTable extends JTable {
 
         SongUtil.iterateAllNotes(song.getSong().getView(), note -> {
             if (note.getInstrument() >= Instrument.values().length) {
-                unsupportedReasons.add("The song contains notes with custom instruments");
+                result.add("The song contains notes with custom instruments");
                 return true;
             }
             return false;
         });
 
-        return unsupportedReasons;
+        return result;
+    }
+
+
+    private static class CompatibilityResult {
+        private final List<String> reasons;
+
+        private CompatibilityResult() {
+            this.reasons = new ArrayList<>();
+        }
+
+        private void add(final String reason) {
+            this.reasons.add(reason);
+        }
+
+        private String getTooltip() {
+            if (this.reasons.isEmpty()) return null;
+            return String.join("\n", this.reasons);
+        }
+
+        @Override
+        public String toString() {
+            return this.reasons.isEmpty() ? "Yes" : "No";
+        }
     }
 
 }
