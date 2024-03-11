@@ -46,6 +46,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
     private static SongPlayerFrame instance;
+    private static SoundSystem forcedSoundSystem;
 
     public static void open(final ListFrame.LoadedSong song) {
         open(song, song.getSong().getView());
@@ -84,6 +85,10 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
 
         this.initComponents();
         this.initFrameHandler();
+        if (forcedSoundSystem != null) {
+            this.soundSystem = forcedSoundSystem;
+            this.soundSystemComboBox.setSelectedIndex(this.soundSystem.ordinal());
+        }
 
         this.playStopButton.doClick();
 
@@ -199,7 +204,17 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
                         this.soundSystem.destroy();
                         this.soundSystem = selectedSoundSystem;
                     }
-                    this.soundSystem.init((int) this.maxSoundsSpinner.getValue());
+                    try {
+                        this.soundSystem.init((int) this.maxSoundsSpinner.getValue());
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Failed to initialize the " + this.soundSystem.getName() + " sound system:\n" + t.getClass().getSimpleName() + ": " + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        this.soundSystem = SoundSystem.values()[(this.soundSystem.ordinal() + 1) % SoundSystem.values().length];
+                        this.soundSystem.init((int) this.maxSoundsSpinner.getValue());
+                        forcedSoundSystem = this.soundSystem;
+                        this.soundSystemComboBox.setEnabled(false);
+                        this.soundSystemComboBox.setSelectedIndex(this.soundSystem.ordinal());
+                    }
                     if (this.soundSystem.equals(SoundSystem.OPENAL)) OpenALSoundSystem.setMasterVolume(this.volume);
                     this.songPlayer.play();
                 }
@@ -245,7 +260,7 @@ public class SongPlayerFrame extends JFrame implements ISongPlayerCallback {
             if (this.progressSlider.getMaximum() != tickCount) this.progressSlider.setMaximum(tickCount);
             this.progressSlider.setValue(this.songPlayer.getTick());
         } else {
-            this.soundSystemComboBox.setEnabled(true);
+            this.soundSystemComboBox.setEnabled(forcedSoundSystem == null);
             this.maxSoundsSpinner.setEnabled(true);
             this.playStopButton.setText("Play");
             this.pauseResumeButton.setText("Pause");
