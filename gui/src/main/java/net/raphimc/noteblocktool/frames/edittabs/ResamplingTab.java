@@ -37,7 +37,7 @@ public class ResamplingTab extends EditTab {
     private JCheckBox precomputeNbsTempoChanges;
 
     public ResamplingTab(final List<ListFrame.LoadedSong> songs) {
-        super(songs);
+        super("Resampling", songs);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class MetadataTab extends EditTab {
     private int gridy;
 
     public MetadataTab(final List<ListFrame.LoadedSong> songs) {
-        super(songs);
+        super("Metadata", songs);
     }
 
     @Override

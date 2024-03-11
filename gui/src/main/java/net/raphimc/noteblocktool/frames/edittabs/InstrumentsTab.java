@@ -33,7 +33,7 @@ public class InstrumentsTab extends EditTab {
     private Set<Instrument> usedInstruments;
 
     public InstrumentsTab(final List<ListFrame.LoadedSong> songs) {
-        super(songs);
+        super("Instruments", songs);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class NotesTab extends EditTab {
     private JSpinner volumeSpinner;
 
     public NotesTab(final List<ListFrame.LoadedSong> songs) {
-        super(songs);
+        super("Notes", songs);
     }
 
     @Override

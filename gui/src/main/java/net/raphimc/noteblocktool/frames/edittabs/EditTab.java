@@ -30,10 +30,12 @@ import java.util.List;
 
 public abstract class EditTab extends JPanel {
 
+    private final String title;
     protected final List<ListFrame.LoadedSong> songs;
     private final JPanel center;
 
-    public EditTab(final List<ListFrame.LoadedSong> songs) {
+    public EditTab(final String title, final List<ListFrame.LoadedSong> songs) {
+        this.title = title;
         this.songs = songs;
 
         this.setLayout(new BorderLayout());
@@ -42,6 +44,10 @@ public abstract class EditTab extends JPanel {
         this.center.setLayout(new VerticalLayout(5, 5));
         scrollPane.setViewportView(this.center);
         this.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public String getTitle() {
+        return this.title;
     }
 
     public void init() {

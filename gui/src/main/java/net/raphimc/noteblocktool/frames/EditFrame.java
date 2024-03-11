@@ -17,8 +17,8 @@
  */
 package net.raphimc.noteblocktool.frames;
 
-import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.model.SongView;
+import net.raphimc.noteblocklib.util.SongUtil;
 import net.raphimc.noteblocktool.frames.edittabs.*;
 
 import javax.swing.*;
@@ -61,18 +61,23 @@ public class EditFrame extends JFrame {
             JTabbedPane tabs = new JTabbedPane();
             root.add(tabs, BorderLayout.CENTER);
 
-            tabs.addTab("Notes", this.notesTab = new NotesTab(this.songs));
-            tabs.addTab("Resampling", this.resamplingTab = new ResamplingTab(this.songs));
-            tabs.addTab("Instruments", this.instrumentsTab = new InstrumentsTab(this.songs));
-            tabs.addTab("Custom Instruments", this.customInstrumentsTab = new CustomInstrumentsTab(this.songs));
-            tabs.addTab("Metadata", this.metadataTab = new MetadataTab(this.songs));
+            this.notesTab = new NotesTab(this.songs);
+            this.resamplingTab = new ResamplingTab(this.songs);
+            this.instrumentsTab = new InstrumentsTab(this.songs);
+            this.customInstrumentsTab = new CustomInstrumentsTab(this.songs);
+            this.metadataTab = new MetadataTab(this.songs);
+            tabs.addTab(this.notesTab.getTitle(), this.notesTab);
+            tabs.addTab(this.resamplingTab.getTitle(), this.resamplingTab);
+            tabs.addTab(this.instrumentsTab.getTitle(), this.instrumentsTab);
+            tabs.addTab(this.customInstrumentsTab.getTitle(), this.customInstrumentsTab);
+            tabs.addTab(this.metadataTab.getTitle(), this.metadataTab);
             if (this.songs.size() != 1) {
-                int metadataTabIndex = tabs.indexOfTabComponent(this.metadataTab);
+                int metadataTabIndex = tabs.indexOfTab(this.metadataTab.getTitle());
                 tabs.setEnabledAt(metadataTabIndex, false);
                 tabs.setToolTipTextAt(metadataTabIndex, "This tab is only available when editing a single song");
             }
-            if (this.songs.size() != 1 || !(this.songs.get(0).getSong() instanceof NbsSong)) {
-                int customInstrumentsTabIndex = tabs.indexOfTabComponent(this.customInstrumentsTab);
+            if (this.songs.size() != 1 || SongUtil.getUsedCustomInstruments(this.songs.get(0).getSong().getView()).isEmpty()) {
+                int customInstrumentsTabIndex = tabs.indexOfTab(this.customInstrumentsTab.getTitle());
                 tabs.removeTabAt(customInstrumentsTabIndex);
             }
             for (int i = 0; i < tabs.getTabCount(); i++) {

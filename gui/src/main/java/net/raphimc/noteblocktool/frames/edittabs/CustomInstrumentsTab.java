@@ -35,7 +35,7 @@ public class CustomInstrumentsTab extends EditTab {
     private Set<Integer> usedInstruments;
 
     public CustomInstrumentsTab(final List<ListFrame.LoadedSong> songs) {
-        super(songs);
+        super("Custom Instruments", songs);
     }
 
     @Override
