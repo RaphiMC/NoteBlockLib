@@ -77,6 +77,7 @@ public class ListFrame extends JFrame {
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) ListFrame.this.removeButton.doClick();
             }
         });
+        this.addContextMenu();
 
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
@@ -166,6 +167,24 @@ public class ListFrame extends JFrame {
             });
         });
         root.add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void addContextMenu() {
+        JPopupMenu contextMenu = new JPopupMenu();
+        JMenuItem contextMenuRemove = new JMenuItem("Remove");
+        contextMenuRemove.addActionListener(e -> this.removeButton.doClick());
+        contextMenu.add(contextMenuRemove);
+        JMenuItem contextMenuEdit = new JMenuItem("Edit");
+        contextMenuEdit.addActionListener(e -> this.editButton.doClick());
+        contextMenu.add(contextMenuEdit);
+        JMenuItem contextMenuPlay = new JMenuItem("Play");
+        contextMenuPlay.addActionListener(e -> this.playButton.doClick());
+        contextMenu.add(contextMenuPlay);
+        this.table.getSelectionModel().addListSelectionListener(e -> contextMenuPlay.setEnabled(this.table.getSelectedRows().length == 1));
+        JMenuItem contextMenuExport = new JMenuItem("Export NBS");
+        contextMenuExport.addActionListener(e -> this.exportButton.doClick());
+        contextMenu.add(contextMenuExport);
+        this.table.setComponentPopupMenu(contextMenu);
     }
 
     private void refreshButtons() {
