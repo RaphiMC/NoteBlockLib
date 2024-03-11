@@ -26,7 +26,7 @@ import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.IntFormatterFactory;
 import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
-import net.raphimc.noteblocktool.util.PitchCorrection;
+import net.raphimc.noteblocktool.util.MinecraftOctaveClamp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class NotesTab extends JPanel {
 
     private final List<ListFrame.LoadedSong> songs;
     private final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
-    private JComboBox<PitchCorrection> pitchCorrection;
+    private JComboBox<MinecraftOctaveClamp> octaveClamp;
     private JSpinner volumeSpinner;
 
     public NotesTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
@@ -55,14 +55,14 @@ public class NotesTab extends JPanel {
         scrollPane.setViewportView(center);
         this.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel pitchCorrection = new JPanel();
-        pitchCorrection.setLayout(new GridBagLayout());
-        pitchCorrection.setBorder(BorderFactory.createTitledBorder("Pitch Correction"));
-        center.add(pitchCorrection);
-        GBC.create(pitchCorrection).grid(0, 0).insets(5, 5, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JComboBox<>(PitchCorrection.values()), comboBox -> {
-            this.pitchCorrection = comboBox;
+        JPanel octaveClamp = new JPanel();
+        octaveClamp.setLayout(new GridBagLayout());
+        octaveClamp.setBorder(BorderFactory.createTitledBorder("Minecraft Octave Clamp"));
+        center.add(octaveClamp);
+        GBC.create(octaveClamp).grid(0, 0).insets(5, 5, 0, 5).weightx(1).fill(GBC.HORIZONTAL).add(new JComboBox<>(MinecraftOctaveClamp.values()), comboBox -> {
+            this.octaveClamp = comboBox;
         });
-        GBC.create(pitchCorrection).grid(0, 1).insets(5, 5, 5, 5).width(2).weightx(1).fill(GBC.HORIZONTAL).add(html(
+        GBC.create(octaveClamp).grid(0, 1).insets(5, 5, 5, 5).width(2).weightx(1).fill(GBC.HORIZONTAL).add(html(
                 "<b>NONE:</b> Don't change the key of the note.",
                 "<b>INSTRUMENT_SHIFT:</b> \"Transposes\" the key of the note by shifting the instrument to a higher or lower sounding one. This often sounds the best of the three methods as it keeps the musical key the same and only changes the instrument.",
                 "<b>TRANSPOSE:</b> Transposes the key of the note to fall within minecraft octave range. Any key below 33 will be transposed up an octave, and any key above 57 will be transposed down an octave.",
@@ -85,7 +85,7 @@ public class NotesTab extends JPanel {
     }
 
     public void apply(final Song<?, ?, ?> song, final SongView<?> view) {
-        SongUtil.applyToAllNotes(view, note -> ((PitchCorrection) this.pitchCorrection.getSelectedItem()).correctNote(note));
+        SongUtil.applyToAllNotes(view, note -> ((MinecraftOctaveClamp) this.octaveClamp.getSelectedItem()).correctNote(note));
         SongUtil.removeSilentNotes(view, (int) this.volumeSpinner.getValue());
     }
 

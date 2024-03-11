@@ -20,7 +20,7 @@ package net.raphimc.noteblocktool.util;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
-public enum PitchCorrection {
+public enum MinecraftOctaveClamp {
 
     NONE {
         @Override
