@@ -24,9 +24,7 @@ import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
-import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.InvisiblePanel;
-import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
 
 import javax.swing.*;
@@ -36,27 +34,18 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class MetadataTab extends JPanel {
+public class MetadataTab extends EditTab {
 
-    private final List<ListFrame.LoadedSong> songs;
-    private final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
     private final List<Runnable> saves = new ArrayList<>();
     private int gridy;
 
     public MetadataTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
-        this.songs = songs;
-        this.songRefreshConsumer = songRefreshConsumer;
-
-        this.setLayout(new BorderLayout());
-        this.initComponents();
+        super(songs, songRefreshConsumer);
     }
 
-    private void initComponents() {
-        JScrollPane scrollPane = new FastScrollPane();
-        ScrollPaneSizedPanel center = new ScrollPaneSizedPanel(scrollPane);
+    @Override
+    protected void initComponents(JPanel center) {
         center.setLayout(new GridBagLayout());
-        scrollPane.setViewportView(center);
-        this.add(scrollPane, BorderLayout.CENTER);
 
         Song<?, ?, ?> song = this.songs.get(0).getSong();
         if (song instanceof NbsSong) {
@@ -126,6 +115,7 @@ public class MetadataTab extends JPanel {
         });
     }
 
+    @Override
     public void apply(final Song<?, ?, ?> song, final SongView<?> view) {
         this.saves.forEach(Runnable::run);
     }

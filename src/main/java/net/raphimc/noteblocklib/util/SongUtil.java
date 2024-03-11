@@ -21,10 +21,7 @@ import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 import net.raphimc.noteblocklib.model.SongView;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -113,6 +110,42 @@ public class SongUtil {
                 return false;
             }
         });
+    }
+
+    /**
+     * Returns a list of all used vanilla instruments in a song.
+     *
+     * @param songView The song view
+     * @param <N>      The note type
+     */
+    public static <N extends Note> Set<Instrument> getUsedVanillaInstruments(final SongView<N> songView) {
+        final Set<Instrument> usedInstruments = EnumSet.noneOf(Instrument.class);
+        iterateAllNotes(songView, note -> {
+            if (note.getInstrument() < Instrument.values().length) {
+                usedInstruments.add(Instrument.fromNbsId(note.getInstrument()));
+            }
+            return false;
+        });
+
+        return usedInstruments;
+    }
+
+    /**
+     * Returns a list of all used custom instruments in a song.
+     *
+     * @param songView The song view
+     * @param <N>      The note type
+     */
+    public static <N extends Note> List<Integer> getUsedCustomInstruments(final SongView<N> songView) {
+        final List<Integer> usedInstruments = new ArrayList<>();
+        iterateAllNotes(songView, note -> {
+            if (note.getInstrument() >= Instrument.values().length) {
+                usedInstruments.add((int) note.getInstrument());
+            }
+            return false;
+        });
+
+        return usedInstruments;
     }
 
 }

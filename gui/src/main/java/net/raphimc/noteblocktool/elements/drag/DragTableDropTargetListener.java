@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocktool.elements;
+package net.raphimc.noteblocktool.elements.drag;
+
+import net.raphimc.noteblocktool.elements.TextOverlayPanel;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;

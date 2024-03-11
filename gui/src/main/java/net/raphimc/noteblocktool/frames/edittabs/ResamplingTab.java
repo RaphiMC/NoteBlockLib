@@ -18,14 +18,11 @@
 package net.raphimc.noteblocktool.frames.edittabs;
 
 import net.lenni0451.commons.swing.GBC;
-import net.lenni0451.commons.swing.layouts.VerticalLayout;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocklib.util.SongResampler;
-import net.raphimc.noteblocktool.elements.FastScrollPane;
-import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.elements.formatter.DoubleFormatterFactory;
 import net.raphimc.noteblocktool.frames.ListFrame;
 
@@ -34,29 +31,18 @@ import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ResamplingTab extends JPanel {
+public class ResamplingTab extends EditTab {
 
-    private final List<ListFrame.LoadedSong> songs;
-    private final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
     private JCheckBox changeSpeedEnabled;
     private JSpinner changeSpeedSpinner;
     private JCheckBox precomputeNbsTempoChanges;
 
     public ResamplingTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
-        this.songs = songs;
-        this.songRefreshConsumer = songRefreshConsumer;
-
-        this.setLayout(new BorderLayout());
-        this.initComponents();
+        super(songs, songRefreshConsumer);
     }
 
-    private void initComponents() {
-        JScrollPane scrollPane = new FastScrollPane();
-        JPanel center = new ScrollPaneSizedPanel(scrollPane);
-        center.setLayout(new VerticalLayout(5, 5));
-        scrollPane.setViewportView(center);
-        this.add(scrollPane, BorderLayout.CENTER);
-
+    @Override
+    protected void initComponents(JPanel center) {
         JPanel resampling = new JPanel();
         resampling.setLayout(new GridBagLayout());
         resampling.setBorder(BorderFactory.createTitledBorder("Change speed"));
@@ -80,10 +66,7 @@ public class ResamplingTab extends JPanel {
         GBC.create(nbsTempoChanger).grid(0, 1).insets(5, 5, 5, 5).weightx(1).fill(GBC.HORIZONTAL).add(html("Applies the undocumented tempo changers from Note Block Studio.This allows the song to be played in players which aren't handling those."));
     }
 
-    private JLabel html(final String... lines) {
-        return new JLabel("<html>" + String.join("<br>", lines) + "</html>");
-    }
-
+    @Override
     public void apply(final Song<?, ?, ?> song, final SongView<?> view) {
         if ((this.precomputeNbsTempoChanges.isSelected() || this.changeSpeedEnabled.isSelected()) && song instanceof NbsSong) {
             SongResampler.applyNbsTempoChangers((NbsSong) song, (SongView<NbsNote>) view);

@@ -18,13 +18,10 @@
 package net.raphimc.noteblocktool.frames.edittabs;
 
 import net.lenni0451.commons.swing.GBC;
-import net.lenni0451.commons.swing.layouts.VerticalLayout;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocklib.util.SongUtil;
-import net.raphimc.noteblocktool.elements.FastScrollPane;
 import net.raphimc.noteblocktool.elements.IntFormatterFactory;
-import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
 import net.raphimc.noteblocktool.util.MinecraftOctaveClamp;
 
@@ -33,28 +30,17 @@ import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class NotesTab extends JPanel {
+public class NotesTab extends EditTab {
 
-    private final List<ListFrame.LoadedSong> songs;
-    private final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
     private JComboBox<MinecraftOctaveClamp> octaveClamp;
     private JSpinner volumeSpinner;
 
     public NotesTab(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
-        this.songs = songs;
-        this.songRefreshConsumer = songRefreshConsumer;
-
-        this.setLayout(new BorderLayout());
-        this.initComponents();
+        super(songs, songRefreshConsumer);
     }
 
-    private void initComponents() {
-        JScrollPane scrollPane = new FastScrollPane();
-        JPanel center = new ScrollPaneSizedPanel(scrollPane);
-        center.setLayout(new VerticalLayout(5, 5));
-        scrollPane.setViewportView(center);
-        this.add(scrollPane, BorderLayout.CENTER);
-
+    @Override
+    protected void initComponents(JPanel center) {
         JPanel octaveClamp = new JPanel();
         octaveClamp.setLayout(new GridBagLayout());
         octaveClamp.setBorder(BorderFactory.createTitledBorder("Minecraft Octave Clamp"));
@@ -80,10 +66,7 @@ public class NotesTab extends JPanel {
         });
     }
 
-    private JLabel html(final String... lines) {
-        return new JLabel("<html>" + String.join("<br>", lines) + "</html>");
-    }
-
+    @Override
     public void apply(final Song<?, ?, ?> song, final SongView<?> view) {
         SongUtil.applyToAllNotes(view, note -> ((MinecraftOctaveClamp) this.octaveClamp.getSelectedItem()).correctNote(note));
         SongUtil.removeSilentNotes(view, (int) this.volumeSpinner.getValue());

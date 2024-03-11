@@ -18,9 +18,7 @@
 package net.raphimc.noteblocktool.frames;
 
 import net.raphimc.noteblocklib.model.SongView;
-import net.raphimc.noteblocktool.frames.edittabs.MetadataTab;
-import net.raphimc.noteblocktool.frames.edittabs.NotesTab;
-import net.raphimc.noteblocktool.frames.edittabs.ResamplingTab;
+import net.raphimc.noteblocktool.frames.edittabs.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +31,7 @@ public class EditFrame extends JFrame {
     private final Consumer<ListFrame.LoadedSong> songRefreshConsumer;
     private NotesTab notesTab;
     private ResamplingTab resamplingTab;
+    private InstrumentsTab instrumentsTab;
     private MetadataTab metadataTab;
 
     public EditFrame(final List<ListFrame.LoadedSong> songs, final Consumer<ListFrame.LoadedSong> songRefreshConsumer) {
@@ -61,10 +60,15 @@ public class EditFrame extends JFrame {
 
             tabs.addTab("Notes", this.notesTab = new NotesTab(this.songs, this.songRefreshConsumer));
             tabs.addTab("Resampling", this.resamplingTab = new ResamplingTab(this.songs, this.songRefreshConsumer));
+            tabs.addTab("Instruments", this.instrumentsTab = new InstrumentsTab(this.songs, this.songRefreshConsumer));
             tabs.addTab("Metadata", this.metadataTab = new MetadataTab(this.songs, this.songRefreshConsumer));
             if (this.songs.size() != 1) {
-                tabs.setEnabledAt(2, false);
-                tabs.setToolTipTextAt(2, "This tab is only available when editing a single song");
+                tabs.setEnabledAt(3, false);
+                tabs.setToolTipTextAt(3, "This tab is only available when editing a single song");
+            }
+            for (int i = 0; i < tabs.getTabCount(); i++) {
+                EditTab tab = (EditTab) tabs.getComponentAt(i);
+                tab.init();
             }
         }
         { //South Panel
@@ -75,6 +79,7 @@ public class EditFrame extends JFrame {
             JButton apply = new JButton("Save");
             apply.addActionListener(e -> {
                 for (ListFrame.LoadedSong song : this.songs) {
+                    this.instrumentsTab.apply(song.getSong(), song.getSong().getView());
                     this.notesTab.apply(song.getSong(), song.getSong().getView());
                     this.resamplingTab.apply(song.getSong(), song.getSong().getView());
                     this.metadataTab.apply(song.getSong(), song.getSong().getView());
@@ -87,6 +92,7 @@ public class EditFrame extends JFrame {
             preview.addActionListener(e -> {
                 ListFrame.LoadedSong song = this.songs.get(0);
                 SongView<?> view = song.getSong().getView().clone();
+                this.instrumentsTab.apply(song.getSong(), view);
                 this.notesTab.apply(song.getSong(), view);
                 this.resamplingTab.apply(song.getSong(), view);
                 this.metadataTab.apply(song.getSong(), view);
