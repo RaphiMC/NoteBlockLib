@@ -27,12 +27,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class SongUtil {
 
     /**
-     * Applies the given consumer to all notes in the song view.
-     * This method will also modify the notes of the original song as the view references the original song notes.
+     * Applies the given consumer to all notes in the song view.<br>
+     * This method will also modify the notes of the original song as the view references the original song notes.<br>
      * Use cases for this method can be for example to transpose all notes in a song to be within the minecraft octave range.
      *
      * @param songView     The song view
@@ -44,20 +45,36 @@ public class SongUtil {
     }
 
     /**
-     * Removes all notes which match the given predicate.
+     * Applies the given predicate to all notes in the song view.<br>
+     * The predicate can return true to break the iteration.
      *
-     * @param songView  The song view
-     * @param predicate The predicate
-     * @param <N>       The note type
+     * @param songView      The song view
+     * @param notePredicate The note predicate
+     * @param <N>           The note type
      */
-    public static <N extends Note> void removeNotesIf(final SongView<N> songView, final Predicate<N> predicate) {
-        for (List<N> list : songView.getNotes().values()) {
-            list.removeIf(predicate);
+    public static <N extends Note> void iterateAllNotes(final SongView<N> songView, final Predicate<N> notePredicate) {
+        for (N note : songView.getNotes().values().stream().flatMap(Collection::stream).collect(Collectors.toList())) {
+            if (notePredicate.test(note)) {
+                break;
+            }
         }
     }
 
     /**
-     * Removes duplicate notes which are on the same tick.
+     * Removes all notes which match the given predicate.
+     *
+     * @param songView      The song view
+     * @param notePredicate The predicate
+     * @param <N>           The note type
+     */
+    public static <N extends Note> void removeNotesIf(final SongView<N> songView, final Predicate<N> notePredicate) {
+        for (List<N> list : songView.getNotes().values()) {
+            list.removeIf(notePredicate);
+        }
+    }
+
+    /**
+     * Removes duplicate notes which are on the same tick.<br>
      * Useful when reading large MIDI files with a lot of duplicate notes.
      *
      * @param songView The song view
