@@ -79,6 +79,7 @@ public class EditFrame extends JFrame {
             if (this.songs.size() != 1 || SongUtil.getUsedCustomInstruments(this.songs.get(0).getSong().getView()).isEmpty()) {
                 int customInstrumentsTabIndex = tabs.indexOfTab(this.customInstrumentsTab.getTitle());
                 tabs.removeTabAt(customInstrumentsTabIndex);
+                this.customInstrumentsTab = null;
             }
             for (int i = 0; i < tabs.getTabCount(); i++) {
                 EditTab tab = (EditTab) tabs.getComponentAt(i);
@@ -95,7 +96,9 @@ public class EditFrame extends JFrame {
                 for (ListFrame.LoadedSong song : this.songs) {
                     this.resamplingTab.apply(song.getSong(), song.getSong().getView());
                     this.instrumentsTab.apply(song.getSong(), song.getSong().getView());
-                    this.customInstrumentsTab.apply(song.getSong(), song.getSong().getView());
+                    if (this.customInstrumentsTab != null) {
+                        this.customInstrumentsTab.apply(song.getSong(), song.getSong().getView());
+                    }
                     this.notesTab.apply(song.getSong(), song.getSong().getView());
                     this.metadataTab.apply(song.getSong(), song.getSong().getView());
                 }
@@ -109,7 +112,9 @@ public class EditFrame extends JFrame {
                 SongView<?> view = song.getSong().getView().clone();
                 this.resamplingTab.apply(song.getSong(), view);
                 this.instrumentsTab.apply(song.getSong(), view);
-                this.customInstrumentsTab.apply(null, view);
+                if (this.customInstrumentsTab != null) {
+                    this.customInstrumentsTab.apply(null, view);
+                }
                 this.notesTab.apply(song.getSong(), view);
                 SongPlayerFrame.open(song, view);
             });
