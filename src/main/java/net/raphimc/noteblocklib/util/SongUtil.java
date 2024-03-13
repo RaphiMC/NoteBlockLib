@@ -72,7 +72,7 @@ public class SongUtil {
 
     /**
      * Removes duplicate notes which are on the same tick.<br>
-     * Useful when reading large MIDI files with a lot of duplicate notes.
+     * Useful when handling large MIDI files with a lot of duplicate notes.
      *
      * @param songView The song view
      * @param <N>      The note type

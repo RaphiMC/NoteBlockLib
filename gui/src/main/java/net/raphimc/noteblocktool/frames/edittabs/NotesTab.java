@@ -33,6 +33,7 @@ public class NotesTab extends EditTab {
 
     private JComboBox<MinecraftOctaveClamp> octaveClamp;
     private JSpinner volumeSpinner;
+    private JCheckBox removeDoubleNotes;
 
     public NotesTab(final List<ListFrame.LoadedSong> songs) {
         super("Notes", songs);
@@ -63,12 +64,24 @@ public class NotesTab extends EditTab {
             this.volumeSpinner = spinner;
             ((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().setFormatterFactory(new IntFormatterFactory("%"));
         });
+
+        JPanel removeDoubleNotes = new JPanel();
+        removeDoubleNotes.setLayout(new GridBagLayout());
+        removeDoubleNotes.setBorder(BorderFactory.createTitledBorder("Deduplication"));
+        center.add(removeDoubleNotes);
+        GBC.create(removeDoubleNotes).grid(0, 0).insets(5, 5, 0, 5).anchor(GBC.LINE_START).add(new JCheckBox("Remove duplicate notes"), checkBox -> {
+            this.removeDoubleNotes = checkBox;
+        });
+        GBC.create(removeDoubleNotes).grid(0, 1).insets(5, 5, 5, 5).weightx(1).fill(GBC.HORIZONTAL).add(html("Removes notes which would be played multiple times in the same tick. Useful when handling large MIDI files with a lot of duplicate notes or when downsampling the tick speed of the song."));
     }
 
     @Override
     public void apply(final Song<?, ?, ?> song, final SongView<?> view) {
         SongUtil.applyToAllNotes(view, note -> ((MinecraftOctaveClamp) this.octaveClamp.getSelectedItem()).correctNote(note));
         SongUtil.removeSilentNotes(view, (int) this.volumeSpinner.getValue());
+        if (this.removeDoubleNotes.isSelected()) {
+            SongUtil.removeDoubleNotes(view);
+        }
     }
 
 }
