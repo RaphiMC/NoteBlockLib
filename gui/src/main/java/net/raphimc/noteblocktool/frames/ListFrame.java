@@ -21,7 +21,9 @@ import net.lenni0451.commons.swing.GBC;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.mcsp.McSpSong;
+import net.raphimc.noteblocklib.format.mcsp.model.McSpHeader;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
+import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocktool.elements.NoteBlockFileFilter;
@@ -145,12 +147,7 @@ public class ListFrame extends JFrame {
                     if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                         File file = fileChooser.getSelectedFile();
                         if (!file.getName().toLowerCase().endsWith(".nbs")) file = new File(file.getParentFile(), file.getName() + ".nbs");
-                        try {
-                            NoteBlockLib.writeSong(song.getSong(), file);
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                            JOptionPane.showMessageDialog(this, "Failed to export song:\n" + song.getFile().getAbsolutePath() + "\n" + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                        }
+                        this.exportSong(song, file);
                     }
                 } else if (rows.length > 1) {
                     final JFileChooser fileChooser = new JFileChooser();
@@ -162,12 +159,7 @@ public class ListFrame extends JFrame {
                         for (int row : rows) {
                             final LoadedSong song = (LoadedSong) this.table.getValueAt(row, 0);
                             final File file = new File(directory, song.getFile().getName().substring(0, song.getFile().getName().lastIndexOf('.')) + ".nbs");
-                            try {
-                                NoteBlockLib.writeSong(song.getSong(), file);
-                            } catch (Throwable t) {
-                                t.printStackTrace();
-                                JOptionPane.showMessageDialog(this, "Failed to export song:\n" + song.getFile().getAbsolutePath() + "\n" + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                            }
+                            this.exportSong(song, file);
                         }
                     }
                 }
@@ -286,6 +278,50 @@ public class ListFrame extends JFrame {
             } catch (Throwable t) {
                 throw new RuntimeException("Failed to run task", t);
             }
+        }
+    }
+
+    private void exportSong(final LoadedSong song, final File file) {
+        try {
+            final Song<?, ?, ?> exportSong = NoteBlockLib.createSongFromView(song.getSong().getView(), SongFormat.NBS);
+            final NbsSong exportNbsSong = (NbsSong) exportSong;
+            final NbsHeader exportNbsHeader = exportNbsSong.getHeader();
+            if (song.getSong() instanceof NbsSong) {
+                final NbsSong nbsSong = (NbsSong) song.getSong();
+                final NbsHeader nbsHeader = ((NbsSong) song.getSong()).getHeader();
+                exportNbsHeader.setVersion((byte) Math.max(nbsHeader.getVersion(), exportNbsHeader.getVersion()));
+                exportNbsHeader.setAuthor(nbsHeader.getAuthor());
+                exportNbsHeader.setOriginalAuthor(nbsHeader.getOriginalAuthor());
+                exportNbsHeader.setDescription(nbsHeader.getDescription());
+                exportNbsHeader.setAutoSave(nbsHeader.isAutoSave());
+                exportNbsHeader.setAutoSaveInterval(nbsHeader.getAutoSaveInterval());
+                exportNbsHeader.setTimeSignature(nbsHeader.getTimeSignature());
+                exportNbsHeader.setMinutesSpent(nbsHeader.getMinutesSpent());
+                exportNbsHeader.setLeftClicks(nbsHeader.getLeftClicks());
+                exportNbsHeader.setRightClicks(nbsHeader.getRightClicks());
+                exportNbsHeader.setNoteBlocksAdded(nbsHeader.getNoteBlocksAdded());
+                exportNbsHeader.setNoteBlocksRemoved(nbsHeader.getNoteBlocksRemoved());
+                exportNbsHeader.setSourceFileName(nbsHeader.getSourceFileName());
+                exportNbsHeader.setLoop(nbsHeader.isLoop());
+                exportNbsHeader.setMaxLoopCount(nbsHeader.getMaxLoopCount());
+                exportNbsHeader.setLoopStartTick(nbsHeader.getLoopStartTick());
+                exportNbsSong.getData().setCustomInstruments(nbsSong.getData().getCustomInstruments());
+            } else if (song.getSong() instanceof McSpSong) {
+                final McSpHeader mcSpHeader = ((McSpSong) song.getSong()).getHeader();
+                exportNbsHeader.setAuthor(mcSpHeader.getAuthor());
+                exportNbsHeader.setOriginalAuthor(mcSpHeader.getOriginalAuthor());
+                exportNbsHeader.setAutoSave(mcSpHeader.getAutoSaveInterval() != 0);
+                exportNbsHeader.setAutoSaveInterval((byte) mcSpHeader.getAutoSaveInterval());
+                exportNbsHeader.setMinutesSpent(mcSpHeader.getMinutesSpent());
+                exportNbsHeader.setLeftClicks(mcSpHeader.getLeftClicks());
+                exportNbsHeader.setRightClicks(mcSpHeader.getRightClicks());
+                exportNbsHeader.setNoteBlocksAdded(mcSpHeader.getNoteBlocksAdded());
+                exportNbsHeader.setNoteBlocksRemoved(mcSpHeader.getNoteBlocksRemoved());
+            }
+            NoteBlockLib.writeSong(exportSong, file);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to export song:\n" + song.getFile().getAbsolutePath() + "\n" + t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
