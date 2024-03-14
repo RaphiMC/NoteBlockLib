@@ -98,7 +98,10 @@ public class OpenALSoundSystem {
         INSTRUMENT_BUFFERS.put(Instrument.PLING, loadWav(OpenALSoundSystem.class.getResourceAsStream("/noteblock_sounds/pling.wav")));
 
         TICK_TASK = SCHEDULER.scheduleAtFixedRate(OpenALSoundSystem::tick, 0, 100, TimeUnit.MILLISECONDS);
-        Runtime.getRuntime().addShutdownHook(SHUTDOWN_HOOK = new Thread(OpenALSoundSystem::destroy));
+        Runtime.getRuntime().addShutdownHook(SHUTDOWN_HOOK = new Thread(() -> {
+            SHUTDOWN_HOOK = null;
+            OpenALSoundSystem.destroy();
+        }));
 
         System.out.println("Initialized OpenAL on " + ALC10.alcGetString(DEVICE, ALC11.ALC_ALL_DEVICES_SPECIFIER));
     }
@@ -140,7 +143,10 @@ public class OpenALSoundSystem {
     }
 
     public static void destroy() {
-        SHUTDOWN_HOOK = null;
+        if (SHUTDOWN_HOOK != null) {
+            Runtime.getRuntime().removeShutdownHook(SHUTDOWN_HOOK);
+            SHUTDOWN_HOOK = null;
+        }
         if (TICK_TASK != null) {
             TICK_TASK.cancel(true);
             TICK_TASK = null;
