@@ -173,8 +173,11 @@ public class ListFrame extends JFrame {
         contextMenu.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                Point mousePosition = contextMenu.getInvoker().getMousePosition();
+                if (mousePosition == null) return;
+
                 int[] selectedRows = ListFrame.this.table.getSelectedRows();
-                int hoveredRow = ListFrame.this.table.rowAtPoint(contextMenu.getInvoker().getMousePosition());
+                int hoveredRow = ListFrame.this.table.rowAtPoint(mousePosition);
                 if (hoveredRow >= 0 && Arrays.stream(selectedRows).noneMatch(i -> i == hoveredRow)) {
                     ListFrame.this.table.setRowSelectionInterval(hoveredRow, hoveredRow);
                 }
