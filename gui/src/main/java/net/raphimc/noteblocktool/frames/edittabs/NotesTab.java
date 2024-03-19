@@ -21,7 +21,7 @@ import net.lenni0451.commons.swing.GBC;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocklib.util.SongUtil;
-import net.raphimc.noteblocktool.elements.IntFormatterFactory;
+import net.raphimc.noteblocktool.elements.formatter.IntFormatterFactory;
 import net.raphimc.noteblocktool.frames.ListFrame;
 import net.raphimc.noteblocktool.util.MinecraftOctaveClamp;
 
