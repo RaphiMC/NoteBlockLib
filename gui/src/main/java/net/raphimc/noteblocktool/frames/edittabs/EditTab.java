@@ -17,11 +17,11 @@
  */
 package net.raphimc.noteblocktool.frames.edittabs;
 
+import net.lenni0451.commons.swing.components.ScrollPaneSizedPanel;
 import net.lenni0451.commons.swing.layouts.VerticalLayout;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
 import net.raphimc.noteblocktool.elements.FastScrollPane;
-import net.raphimc.noteblocktool.elements.ScrollPaneSizedPanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
 
 import javax.swing.*;

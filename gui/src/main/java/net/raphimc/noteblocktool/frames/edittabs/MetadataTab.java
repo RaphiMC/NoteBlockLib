@@ -18,13 +18,13 @@
 package net.raphimc.noteblocktool.frames.edittabs;
 
 import net.lenni0451.commons.swing.GBC;
+import net.lenni0451.commons.swing.components.InvisiblePanel;
 import net.raphimc.noteblocklib.format.mcsp.McSpSong;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpHeader;
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.model.SongView;
-import net.raphimc.noteblocktool.elements.InvisiblePanel;
 import net.raphimc.noteblocktool.frames.ListFrame;
 
 import javax.swing.*;

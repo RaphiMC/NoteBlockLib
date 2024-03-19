@@ -17,67 +17,23 @@
  */
 package net.raphimc.noteblocktool.elements;
 
-import javax.swing.*;
+import net.lenni0451.commons.swing.components.OverlayPanel;
+
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.MouseAdapter;
 
-public class TextOverlayPanel extends JPanel {
-
-    private static final MouseAdapter VOID_MOUSE_ADAPTER = new MouseAdapter() {
-    };
-    private static final KeyAdapter VOID_KEY_ADAPTER = new KeyAdapter() {
-    };
-    private static final FocusAdapter STEALING_FOCUS_ADAPTER = new FocusAdapter() {
-        @Override
-        public void focusLost(FocusEvent e) {
-            e.getComponent().requestFocus();
-        }
-    };
-
+public class TextOverlayPanel extends OverlayPanel {
 
     private String text;
 
     public TextOverlayPanel(final String text) {
+        super(new Color(50, 50, 50, 150));
         this.text = text;
 
         this.setOpaque(false);
     }
 
-    public void setText(final String text) {
-        this.text = text;
-        this.invalidate();
-        this.repaint();
-    }
-
     @Override
-    public void addNotify() {
-        super.addNotify();
-
-        this.addMouseListener(VOID_MOUSE_ADAPTER);
-        this.addMouseMotionListener(VOID_MOUSE_ADAPTER);
-        this.addMouseWheelListener(VOID_MOUSE_ADAPTER);
-        this.addKeyListener(VOID_KEY_ADAPTER);
-        this.addFocusListener(STEALING_FOCUS_ADAPTER);
-    }
-
-    @Override
-    public void removeNotify() {
-        super.removeNotify();
-
-        this.removeMouseListener(VOID_MOUSE_ADAPTER);
-        this.removeMouseMotionListener(VOID_MOUSE_ADAPTER);
-        this.removeMouseWheelListener(VOID_MOUSE_ADAPTER);
-        this.removeKeyListener(VOID_KEY_ADAPTER);
-        this.removeFocusListener(STEALING_FOCUS_ADAPTER);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        g.setColor(new Color(50, 50, 50, 150));
-        g.fillRect(0, 0, this.getWidth(), this.getHeight());
+    protected void paintOverlay(Graphics g) {
         g.setColor(Color.WHITE);
         final FontMetrics metrics = g.getFontMetrics();
         final String[] lines = this.text.split("\n");
@@ -89,7 +45,12 @@ public class TextOverlayPanel extends JPanel {
             g.drawString(line, x, y);
             y += metrics.getHeight();
         }
-        super.paintComponent(g);
+    }
+
+    public void setText(final String text) {
+        this.text = text;
+        this.invalidate();
+        this.repaint();
     }
 
 }
