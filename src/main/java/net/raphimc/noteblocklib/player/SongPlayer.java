@@ -18,7 +18,6 @@
 package net.raphimc.noteblocklib.player;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.SongView;
 
 import java.util.concurrent.Executors;
@@ -98,9 +97,7 @@ public class SongPlayer {
                 return;
             }
 
-            for (Note note : this.songView.getNotesAtTick(this.tick)) {
-                this.callback.playNote(note);
-            }
+            this.callback.playNotes(this.songView.getNotesAtTick(this.tick));
         } catch (Throwable e) {
             if (e.getCause() instanceof InterruptedException) return;
 

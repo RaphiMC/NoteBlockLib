@@ -19,6 +19,9 @@ package net.raphimc.noteblocklib.player;
 
 import net.raphimc.noteblocklib.model.Note;
 
+import java.util.List;
+
+@FunctionalInterface
 public interface ISongPlayerCallback {
 
     default void onFinished() {
@@ -34,6 +37,12 @@ public interface ISongPlayerCallback {
 
     default int getLoopDelay() {
         return 0;
+    }
+
+    default void playNotes(final List<? extends Note> notes) {
+        for (Note note : notes) {
+            this.playNote(note);
+        }
     }
 
     void playNote(final Note note);
