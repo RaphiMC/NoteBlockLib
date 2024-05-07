@@ -150,4 +150,15 @@ public class SongUtil {
         return usedInstruments;
     }
 
+    /**
+     * Returns the total amount of notes in a song.
+     *
+     * @param songView The song view
+     * @param <N>      The note type
+     * @return The note count
+     */
+    public static <N extends Note> long getNoteCount(final SongView<N> songView) {
+        return songView.getNotes().values().stream().mapToLong(List::size).sum();
+    }
+
 }
