@@ -17,22 +17,19 @@
  */
 package net.raphimc.noteblocklib.player;
 
+import net.raphimc.noteblocklib.model.Note;
+
+import java.util.List;
+
 @FunctionalInterface
-public interface ISongPlayerCallback extends NoteConsumer {
+public interface NoteConsumer {
 
-    default void onFinished() {
+    default void playNotes(final List<? extends Note> notes) {
+        for (Note note : notes) {
+            this.playNote(note);
+        }
     }
 
-    default boolean shouldTick() {
-        return true;
-    }
-
-    default boolean shouldLoop() {
-        return false;
-    }
-
-    default int getLoopDelay() {
-        return 0;
-    }
+    void playNote(final Note note);
 
 }
