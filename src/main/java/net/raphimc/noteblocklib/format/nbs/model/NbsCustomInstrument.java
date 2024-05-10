@@ -21,6 +21,7 @@ import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
 import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
@@ -130,6 +131,19 @@ public class NbsCustomInstrument {
      */
     public void setPressKey(final boolean pressKey) {
         this.pressKey = pressKey;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NbsCustomInstrument that = (NbsCustomInstrument) o;
+        return pitch == that.pitch && pressKey == that.pressKey && Objects.equals(name, that.name) && Objects.equals(soundFileName, that.soundFileName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, soundFileName, pitch, pressKey);
     }
 
 }

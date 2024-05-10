@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.format.mcsp.model;
 
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.Instrument;
 import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
 public class McSpNote extends Note {
@@ -25,10 +26,10 @@ public class McSpNote extends Note {
     private static final String MAPPING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§½#£¤$%&/{[(])=}?\\+´`^~¨*'.;,:-_<µ€ÌìíÍïÏîÎóÓòÒöÖåÅäÄñÑõÕúÚùÙüûÜÛéÉèÈêÊë";
 
     public McSpNote(final char noteData) {
-        this((byte) (MAPPING.indexOf(noteData) % 25), (byte) (MAPPING.indexOf(noteData) / 25));
+        this((byte) (MAPPING.indexOf(noteData) % 25), Instrument.fromNbsId((byte) (MAPPING.indexOf(noteData) / 25)));
     }
 
-    public McSpNote(final byte key, final byte instrument) {
+    public McSpNote(final byte key, final Instrument instrument) {
         super(instrument, key);
     }
 

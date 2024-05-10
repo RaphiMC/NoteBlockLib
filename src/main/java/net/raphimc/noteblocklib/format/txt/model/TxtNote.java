@@ -26,25 +26,15 @@ import java.util.Scanner;
 public class TxtNote extends Note {
 
     public TxtNote(final Scanner scanner) {
-        this(scanner.nextByte(), scanner.nextByte());
+        this(scanner.nextByte(), Instrument.fromMcId(scanner.nextByte()));
     }
 
-    public TxtNote(final byte key, final byte instrument) {
+    public TxtNote(final byte key, final Instrument instrument) {
         super(instrument, key);
     }
 
     public void write(final StringBuilder builder) {
-        builder.append(this.key).append(":").append(this.instrument);
-    }
-
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
-    }
-
-    @Override
-    public void setInstrument(final byte instrument) {
-        super.setInstrument(Instrument.fromNbsId(instrument).mcId());
+        builder.append(this.key).append(":").append(this.instrument.mcId());
     }
 
     @Override

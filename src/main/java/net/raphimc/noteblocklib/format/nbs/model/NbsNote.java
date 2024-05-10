@@ -22,6 +22,7 @@ import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithPanning;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
+import net.raphimc.noteblocklib.util.Instrument;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -32,6 +33,11 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
      * @since v0
      */
     private NbsLayer layer;
+
+    /**
+     * @since v0
+     */
+    private NbsCustomInstrument customInstrument;
 
     /**
      * @since v4
@@ -48,8 +54,17 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
      */
     private short pitch = 0;
 
+    // For internal use
+    private int rawInstrumentId;
+
     public NbsNote(final NbsHeader header, final NbsLayer layer, final LittleEndianDataInputStream dis) throws IOException {
-        super(dis.readByte(), dis.readByte());
+        super(null, (byte) 0);
+
+        this.rawInstrumentId = dis.readUnsignedByte();
+        if (this.rawInstrumentId < header.getVanillaInstrumentCount()) {
+            this.instrument = Instrument.fromNbsId((byte) this.rawInstrumentId);
+        }
+        this.key = dis.readByte();
 
         if (header.getVersion() >= 4) {
             this.velocity = dis.readByte();
@@ -60,27 +75,42 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
         this.layer = layer;
     }
 
-    public NbsNote(final NbsLayer layer, final byte instrument, final byte key, final byte velocity, final short panning, final short pitch) {
-        super(instrument, key);
+    public NbsNote(final NbsLayer layer, final Instrument instrument, final byte key, final byte velocity, final short panning, final short pitch, final NbsCustomInstrument customInstrument) {
+        this(layer, instrument, key, velocity, panning, pitch);
+        if (instrument != null && customInstrument != null) {
+            throw new IllegalArgumentException("Cannot set both instrument and custom instrument");
+        }
 
-        this.layer = layer;
+        this.customInstrument = customInstrument;
+    }
+
+    public NbsNote(final NbsLayer layer, final Instrument instrument, final byte key, final byte velocity, final short panning, final short pitch) {
+        this(layer, instrument, key);
+
         this.velocity = velocity;
         this.panning = panning;
         this.pitch = pitch;
     }
 
-    public NbsNote(final NbsLayer layer, final byte instrument, final byte key) {
+    public NbsNote(final NbsLayer layer, final Instrument instrument, final byte key) {
         super(instrument, key);
 
         this.layer = layer;
     }
 
-    public NbsNote(final byte instrument, final byte key) {
+    public NbsNote(final Instrument instrument, final byte key) {
         super(instrument, key);
     }
 
-    public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
-        dos.writeByte(this.instrument);
+    public void write(final NbsHeader header, final NbsData data, final LittleEndianDataOutputStream dos) throws IOException {
+        if (this.customInstrument != null) {
+            if (!data.getCustomInstruments().contains(this.customInstrument)) {
+                throw new IllegalArgumentException("Custom instrument not found in NBS data custom instruments list");
+            }
+            dos.writeByte((byte) (header.getVanillaInstrumentCount() + data.getCustomInstruments().indexOf(this.customInstrument)));
+        } else {
+            dos.writeByte(this.instrument.nbsId());
+        }
         dos.writeByte(this.key);
 
         if (header.getVersion() >= 4) {
@@ -90,7 +120,22 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
         }
     }
 
+    // For internal use
+    void resolveCustomInstrument(final NbsHeader header, final NbsData data) {
+        if (this.rawInstrumentId >= header.getVanillaInstrumentCount()) {
+            this.customInstrument = data.getCustomInstruments().get(this.rawInstrumentId - header.getVanillaInstrumentCount());
+        }
+    }
+
+    @Override
+    public void setInstrument(final Instrument instrument) {
+        super.setInstrument(instrument);
+        this.customInstrument = null;
+    }
+
     /**
+     * This value is excluded from equals and hashcode.
+     *
      * @return The NBS layer this note is in.
      * @since v0
      */
@@ -99,11 +144,31 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
     }
 
     /**
-     * @param layer The NBS layer this note is in.
+     * This value is excluded from equals and hashcode.
+     *
+     * @param layer The NBS layer this note is in. The layer has to be added to the layer list of the {@link NbsData} class.
      * @since v0
      */
     public void setLayer(final NbsLayer layer) {
         this.layer = layer;
+    }
+
+    /**
+     * @return The custom instrument of the note if set or else null.
+     * @since v0
+     */
+    public NbsCustomInstrument getCustomInstrument() {
+        return this.customInstrument;
+    }
+
+    /**
+     * @param customInstrument The custom instrument of the note. If null, the note will use the {@link #instrument} value instead.
+     *                         The custom instrument has to be added to the custom instrument list of the {@link NbsData} class.
+     * @since v0
+     */
+    public void setCustomInstrument(final NbsCustomInstrument customInstrument) {
+        this.customInstrument = customInstrument;
+        this.instrument = null;
     }
 
     /**
@@ -175,7 +240,7 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
 
     @Override
     public NbsNote clone() {
-        return new NbsNote(this.layer, this.instrument, this.key, this.velocity, this.panning, this.pitch);
+        return new NbsNote(this.layer, this.instrument, this.key, this.velocity, this.panning, this.pitch, this.customInstrument);
     }
 
     @Override
@@ -184,12 +249,12 @@ public class NbsNote extends Note implements NoteWithVolume, NoteWithPanning {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         NbsNote nbsNote = (NbsNote) o;
-        return velocity == nbsNote.velocity && panning == nbsNote.panning && pitch == nbsNote.pitch;
+        return velocity == nbsNote.velocity && panning == nbsNote.panning && pitch == nbsNote.pitch && Objects.equals(customInstrument, nbsNote.customInstrument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), velocity, panning, pitch);
+        return Objects.hash(super.hashCode(), customInstrument, velocity, panning, pitch);
     }
 
 }

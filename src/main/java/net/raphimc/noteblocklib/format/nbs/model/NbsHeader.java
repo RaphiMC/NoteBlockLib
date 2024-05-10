@@ -45,7 +45,7 @@ public class NbsHeader implements Header {
     /**
      * @since v0
      */
-    private byte vanillaInstrumentCount;
+    private int vanillaInstrumentCount;
 
     /**
      * @since v0
@@ -141,7 +141,7 @@ public class NbsHeader implements Header {
         final short length = dis.readShort();
         if (length == 0) {
             this.version = dis.readByte();
-            this.vanillaInstrumentCount = dis.readByte();
+            this.vanillaInstrumentCount = dis.readUnsignedByte();
             if (this.version >= 3) {
                 this.length = dis.readShort();
             } else {
@@ -180,7 +180,7 @@ public class NbsHeader implements Header {
         }
     }
 
-    public NbsHeader(final short length, final byte version, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName, final boolean loop, final byte maxLoopCount, final short loopStartTick) {
+    public NbsHeader(final short length, final byte version, final int vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName, final boolean loop, final byte maxLoopCount, final short loopStartTick) {
         this(length, version, vanillaInstrumentCount, layerCount, title, author, originalAuthor, description, speed, autoSave, autoSaveInterval, timeSignature, minutesSpent, leftClicks, rightClicks, noteBlocksAdded, noteBlocksRemoved, sourceFileName);
 
         this.loop = loop;
@@ -188,7 +188,7 @@ public class NbsHeader implements Header {
         this.loopStartTick = loopStartTick;
     }
 
-    public NbsHeader(final short length, final byte version, final byte vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName) {
+    public NbsHeader(final short length, final byte version, final int vanillaInstrumentCount, final short layerCount, final String title, final String author, final String originalAuthor, final String description, final short speed, final boolean autoSave, final byte autoSaveInterval, final byte timeSignature, final int minutesSpent, final int leftClicks, final int rightClicks, final int noteBlocksAdded, final int noteBlocksRemoved, final String sourceFileName) {
         this.length = length;
         this.version = version;
         this.vanillaInstrumentCount = vanillaInstrumentCount;
@@ -214,7 +214,7 @@ public class NbsHeader implements Header {
 
     public <N extends Note> NbsHeader(final SongView<N> songView) {
         this.version = 4;
-        this.vanillaInstrumentCount = (byte) Instrument.values().length;
+        this.vanillaInstrumentCount = Instrument.values().length;
         this.title = songView.getTitle();
         this.length = (short) songView.getLength();
         this.speed = (short) (songView.getSpeed() * 100F);
@@ -314,7 +314,7 @@ public class NbsHeader implements Header {
      * @return Amount of default instruments when the song was saved. This is needed to determine at what index custom instruments start.
      * @since v0
      */
-    public byte getVanillaInstrumentCount() {
+    public int getVanillaInstrumentCount() {
         return this.vanillaInstrumentCount;
     }
 
@@ -322,7 +322,7 @@ public class NbsHeader implements Header {
      * @param vanillaInstrumentCount Amount of default instruments when the song was saved. This is needed to determine at what index custom instruments start.
      * @since v0
      */
-    public void setVanillaInstrumentCount(final byte vanillaInstrumentCount) {
+    public void setVanillaInstrumentCount(final int vanillaInstrumentCount) {
         this.vanillaInstrumentCount = vanillaInstrumentCount;
     }
 

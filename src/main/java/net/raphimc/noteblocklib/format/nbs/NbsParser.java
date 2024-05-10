@@ -21,6 +21,7 @@ import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.format.nbs.model.NbsData;
 import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
+import net.raphimc.noteblocklib.util.Instrument;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,7 @@ public class NbsParser {
         final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         final LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(bytes);
 
+        song.getHeader().setVanillaInstrumentCount(Instrument.values().length);
         song.getHeader().write(dos);
         song.getData().write(song.getHeader(), dos);
 

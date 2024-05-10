@@ -149,8 +149,8 @@ public class MinecraftDefinitions {
      * @param note The note to transpose
      */
     public static void instrumentShiftNote(final Note note) {
-        Instrument instrument = Instrument.fromNbsId(note.getInstrument());
-        if (instrument == null) { // Most likely a custom instrument
+        Instrument instrument = note.getInstrument();
+        if (instrument == null) { // Custom instrument
             return;
         }
 
@@ -172,7 +172,7 @@ public class MinecraftDefinitions {
             nbsKey -= MinecraftDefinitions.MC_KEYS;
         }
 
-        note.setInstrument(instrument.nbsId());
+        note.setInstrument(instrument);
         note.setKey(nbsKey);
     }
 

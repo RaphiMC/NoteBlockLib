@@ -19,6 +19,7 @@ package net.raphimc.noteblocklib.format.future.model;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import net.raphimc.noteblocklib.model.NotemapData;
+import net.raphimc.noteblocklib.util.Instrument;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class FutureData extends NotemapData<FutureNote> {
             if (b == (header.useMagicValue() ? 5 : 64)) {
                 tick += dis.readUnsignedShort();
             } else {
-                this.notes.computeIfAbsent(tick, k -> new ArrayList<>()).add(new FutureNote(dis.readByte(), b));
+                this.notes.computeIfAbsent(tick, k -> new ArrayList<>()).add(new FutureNote(dis.readByte(), Instrument.fromMcId(b)));
             }
         }
     }

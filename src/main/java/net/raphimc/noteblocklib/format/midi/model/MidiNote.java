@@ -20,6 +20,7 @@ package net.raphimc.noteblocklib.format.midi.model;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithPanning;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
+import net.raphimc.noteblocklib.util.Instrument;
 
 import java.util.Objects;
 
@@ -32,7 +33,7 @@ public class MidiNote extends Note implements NoteWithVolume, NoteWithPanning {
     private byte velocity;
     private byte panning;
 
-    public MidiNote(final long midiTick, final byte instrument, final byte key, final byte velocity, final byte panning) {
+    public MidiNote(final long midiTick, final Instrument instrument, final byte key, final byte velocity, final byte panning) {
         super(instrument, key);
 
         this.midiTick = midiTick;

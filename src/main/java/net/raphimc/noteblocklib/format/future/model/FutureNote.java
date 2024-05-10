@@ -23,18 +23,8 @@ import net.raphimc.noteblocklib.util.MinecraftDefinitions;
 
 public class FutureNote extends Note {
 
-    public FutureNote(final byte key, final byte instrument) {
+    public FutureNote(final byte key, final Instrument instrument) {
         super(instrument, key);
-    }
-
-    @Override
-    public byte getInstrument() {
-        return Instrument.fromMcId(super.getInstrument()).nbsId();
-    }
-
-    @Override
-    public void setInstrument(final byte instrument) {
-        super.setInstrument(Instrument.fromNbsId(instrument).mcId());
     }
 
     @Override

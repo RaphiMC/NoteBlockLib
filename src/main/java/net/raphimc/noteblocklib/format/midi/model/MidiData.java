@@ -103,14 +103,14 @@ public class MidiData extends NotemapData<MidiNote> {
                             final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS.get(key);
                             if (mapping == null) continue;
 
-                            note = new MidiNote(event.getTick(), mapping.getInstrument().nbsId(), mapping.getKey(), effectiveVelocity, pan);
+                            note = new MidiNote(event.getTick(), mapping.getInstrument(), mapping.getKey(), effectiveVelocity, pan);
                         } else {
                             final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS.get(instrument);
                             if (mapping == null) continue;
 
                             final int transposedKey = key - NBS_KEY_OFFSET + KEYS_PER_OCTAVE * mapping.getOctaveModifier();
                             final byte clampedKey = (byte) Math.max(NBS_LOWEST_KEY, Math.min(transposedKey, NBS_HIGHEST_KEY));
-                            note = new MidiNote(event.getTick(), mapping.getInstrument().nbsId(), clampedKey, effectiveVelocity, pan);
+                            note = new MidiNote(event.getTick(), mapping.getInstrument(), clampedKey, effectiveVelocity, pan);
                         }
 
                         this.notes.computeIfAbsent((int) Math.round(microTime * SONG_TICKS_PER_SECOND / 1_000_000D), k -> new ArrayList<>()).add(note);

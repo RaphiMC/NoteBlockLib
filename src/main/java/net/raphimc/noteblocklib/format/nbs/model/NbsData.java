@@ -20,7 +20,7 @@ package net.raphimc.noteblocklib.format.nbs.model;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.model.*;
-import net.raphimc.noteblocklib.util.Instrument;
+import net.raphimc.noteblocklib.util.SongUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,9 +44,6 @@ public class NbsData implements Data<NbsNote> {
         this.layers = new ArrayList<>(header.getLayerCount());
         this.customInstruments = new ArrayList<>();
 
-        final int customInstrumentDiff = Instrument.values().length - header.getVanillaInstrumentCount();
-        header.setVanillaInstrumentCount((byte) Instrument.values().length);
-
         for (int i = 0; i < header.getLayerCount(); i++) {
             layers.add(new NbsLayer());
         }
@@ -66,11 +63,7 @@ public class NbsData implements Data<NbsNote> {
                     this.layers.add(new NbsLayer());
                 }
 
-                final NbsNote note = new NbsNote(header, this.layers.get(layer), dis);
-                if (note.getInstrument() >= header.getVanillaInstrumentCount() && customInstrumentDiff > 0) {
-                    note.setInstrument((byte) (note.getInstrument() + customInstrumentDiff));
-                }
-                this.layers.get(layer).getNotesAtTick().put(tick, note);
+                this.layers.get(layer).getNotesAtTick().put(tick, new NbsNote(header, this.layers.get(layer), dis));
             }
         }
 
@@ -90,6 +83,12 @@ public class NbsData implements Data<NbsNote> {
             final int customInstrumentsAmount = dis.readUnsignedByte();
             for (int i = 0; i < customInstrumentsAmount; i++) {
                 this.customInstruments.add(new NbsCustomInstrument(dis));
+            }
+
+            for (NbsLayer layer : this.layers) {
+                for (NbsNote note : layer.getNotesAtTick().values()) {
+                    note.resolveCustomInstrument(header, this);
+                }
             }
         }
     }
@@ -112,19 +111,27 @@ public class NbsData implements Data<NbsNote> {
                 } else {
                     layer = this.layers.get(i);
                 }
-                final NbsNote nbsNote = new NbsNote(layer, note.getInstrument(), note.getKey());
-                if (note instanceof NoteWithVolume) {
-                    final NoteWithVolume noteWithVolume = (NoteWithVolume) note;
-                    nbsNote.setVolume(noteWithVolume.getVolume());
-                }
-                if (note instanceof NoteWithPanning) {
-                    final NoteWithPanning noteWithPanning = (NoteWithPanning) note;
-                    nbsNote.setPanning(noteWithPanning.getPanning());
-                }
+                if (note instanceof NbsNote) {
+                    final NbsNote clonedNote = (NbsNote) note.clone();
+                    clonedNote.setLayer(layer);
+                    layer.getNotesAtTick().put(entry.getKey(), clonedNote);
+                } else {
+                    final NbsNote nbsNote = new NbsNote(layer, note.getInstrument(), note.getKey());
+                    if (note instanceof NoteWithVolume) {
+                        final NoteWithVolume noteWithVolume = (NoteWithVolume) note;
+                        nbsNote.setVolume(noteWithVolume.getVolume());
+                    }
+                    if (note instanceof NoteWithPanning) {
+                        final NoteWithPanning noteWithPanning = (NoteWithPanning) note;
+                        nbsNote.setPanning(noteWithPanning.getPanning());
+                    }
 
-                layer.getNotesAtTick().put(entry.getKey(), nbsNote);
+                    layer.getNotesAtTick().put(entry.getKey(), nbsNote);
+                }
             }
         }
+
+        this.customInstruments.addAll(SongUtil.getUsedCustomInstruments(songView));
     }
 
     public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
@@ -142,9 +149,12 @@ public class NbsData implements Data<NbsNote> {
 
             int lastLayer = -1;
             for (NbsNote note : entry.getValue()) {
+                if (!this.layers.contains(note.getLayer())) {
+                    throw new IllegalArgumentException("Note layer not found in NbsData layers list");
+                }
                 dos.writeShort(this.layers.indexOf(note.getLayer()) - lastLayer);
                 lastLayer = this.layers.indexOf(note.getLayer());
-                note.write(header, dos);
+                note.write(header, this, dos);
             }
             dos.writeShort(0);
         }

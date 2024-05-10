@@ -17,6 +17,8 @@
  */
 package net.raphimc.noteblocklib.util;
 
+import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
+import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.NoteWithVolume;
 import net.raphimc.noteblocklib.model.SongView;
@@ -122,8 +124,8 @@ public class SongUtil {
     public static <N extends Note> Set<Instrument> getUsedVanillaInstruments(final SongView<N> songView) {
         final Set<Instrument> usedInstruments = EnumSet.noneOf(Instrument.class);
         iterateAllNotes(songView, note -> {
-            if (note.getInstrument() < Instrument.values().length) {
-                usedInstruments.add(Instrument.fromNbsId(note.getInstrument()));
+            if (note.getInstrument() != null) {
+                usedInstruments.add(note.getInstrument());
             }
             return false;
         });
@@ -136,13 +138,13 @@ public class SongUtil {
      *
      * @param songView The song view
      * @param <N>      The note type
-     * @return The used custom instruments (NBS IDs)
+     * @return The used custom instruments
      */
-    public static <N extends Note> Set<Integer> getUsedCustomInstruments(final SongView<N> songView) {
-        final Set<Integer> usedInstruments = new HashSet<>();
+    public static <N extends Note> Set<NbsCustomInstrument> getUsedCustomInstruments(final SongView<N> songView) {
+        final Set<NbsCustomInstrument> usedInstruments = new HashSet<>();
         iterateAllNotes(songView, note -> {
-            if (note.getInstrument() >= Instrument.values().length) {
-                usedInstruments.add((int) note.getInstrument());
+            if (note instanceof NbsNote && ((NbsNote) note).getCustomInstrument() != null) {
+                usedInstruments.add(((NbsNote) note).getCustomInstrument());
             }
             return false;
         });

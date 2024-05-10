@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.util;
 
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
+import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.SongView;
@@ -67,24 +68,28 @@ public class SongResampler {
     public static void applyNbsTempoChangers(final NbsSong song, final SongView<NbsNote> view) {
         if (song.getHeader().getVersion() < 4) return;
 
-        int tempoChangerId = -1;
-        for (int i = 0; i < song.getData().getCustomInstruments().size(); i++) {
-            if (song.getData().getCustomInstruments().get(i).getName().equals("Tempo Changer")) {
-                tempoChangerId = i + song.getHeader().getVanillaInstrumentCount();
+        boolean hasTempoChanger = false;
+        for (NbsCustomInstrument customInstrument : song.getData().getCustomInstruments()) {
+            if (customInstrument.getName().equals("Tempo Changer")) {
+                song.getData().getCustomInstruments().remove(customInstrument);
+                hasTempoChanger = true;
                 break;
             }
         }
-        if (tempoChangerId == -1) return;
+        if (!hasTempoChanger) return;
 
         final List<TempoEvent> tempoEvents = new ArrayList<>();
         for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {
             for (NbsNote note : entry.getValue()) {
-                if (note.getInstrument() == tempoChangerId) {
+                if (note.getCustomInstrument() != null && note.getCustomInstrument().getName().equals("Tempo Changer")) {
                     tempoEvents.add(new TempoEvent(entry.getKey(), Math.abs(note.getPitch()) / 15F));
+                    entry.getValue().remove(note);
+                    break;
                 }
             }
         }
         if (tempoEvents.isEmpty()) return;
+
         if (tempoEvents.get(0).getTick() != 0) {
             tempoEvents.add(0, new TempoEvent(0, view.getSpeed()));
         }
@@ -112,8 +117,6 @@ public class SongResampler {
 
         view.setNotes(newNotes);
         view.setSpeed(newSpeed);
-        final int finalTempoChangerId = tempoChangerId;
-        SongUtil.removeNotesIf(view, note -> note.getInstrument() == finalTempoChangerId);
         view.recalculateLength();
     }
 

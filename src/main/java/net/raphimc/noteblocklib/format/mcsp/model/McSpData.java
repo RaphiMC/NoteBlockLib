@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.format.mcsp.model;
 
 import net.raphimc.noteblocklib.model.Data;
+import net.raphimc.noteblocklib.util.Instrument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class McSpData implements Data<McSpNote> {
                         this.layers.add(new McSpLayer());
                     }
 
-                    this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote((byte) key, (byte) (instrument - 1)));
+                    this.layers.get(layer).getNotesAtTick().put(tick, new McSpNote((byte) key, Instrument.fromNbsId((byte) (instrument - 1))));
                 }
             }
         } else {

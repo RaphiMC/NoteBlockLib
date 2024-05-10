@@ -17,34 +17,32 @@
  */
 package net.raphimc.noteblocklib.model;
 
+import net.raphimc.noteblocklib.util.Instrument;
+
 import java.util.Objects;
 
 public abstract class Note implements Cloneable {
 
-    protected byte instrument;
+    protected Instrument instrument;
     protected byte key;
 
-    public Note(final byte instrument, final byte key) {
+    public Note(final Instrument instrument, final byte key) {
         this.instrument = instrument;
         this.key = key;
     }
 
     /**
-     * @return The instrument of the note. Uses the NBS id system. See {@link net.raphimc.noteblocklib.util.Instrument#fromNbsId(byte)}
+     * @return The instrument of the note. Null if the note uses a custom instrument.
      */
-    public byte getInstrument() {
+    public Instrument getInstrument() {
         return this.instrument;
     }
 
     /**
-     * @param instrument The instrument of the note. Uses the NBS id system. See {@link net.raphimc.noteblocklib.util.Instrument#fromNbsId(byte)}
+     * @param instrument The instrument of the note. Null if the note uses a custom instrument.
      */
-    public void setInstrument(final byte instrument) {
+    public void setInstrument(final Instrument instrument) {
         this.instrument = instrument;
-    }
-
-    public byte getRawInstrument() {
-        return this.instrument;
     }
 
     /**
@@ -72,7 +70,7 @@ public abstract class Note implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Note note = (Note) o;
-        return instrument == note.instrument && key == note.key;
+        return key == note.key && instrument == note.instrument;
     }
 
     @Override
