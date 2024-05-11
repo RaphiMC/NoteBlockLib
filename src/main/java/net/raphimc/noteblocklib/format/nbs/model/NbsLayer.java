@@ -61,7 +61,7 @@ public class NbsLayer {
         }
         this.volume = dis.readByte();
         if (header.getVersion() >= 2) {
-            this.panning = dis.readByte();
+            this.panning = (short) dis.readUnsignedByte();
         }
     }
 
