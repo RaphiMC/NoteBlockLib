@@ -18,7 +18,7 @@
 package net.raphimc.noteblocklib.player;
 
 @FunctionalInterface
-public interface ISongPlayerCallback extends NoteConsumer {
+public interface SongPlayerCallback extends NoteConsumer {
 
     default void onFinished() {
     }

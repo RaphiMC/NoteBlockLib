@@ -30,13 +30,13 @@ public class SongPlayer {
     private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player").setDaemon(true).build());
 
     private final SongView<?> songView;
-    private final ISongPlayerCallback callback;
+    private final SongPlayerCallback callback;
 
     private ScheduledFuture<?> timer;
     private int tick = -1;
     private boolean paused;
 
-    public SongPlayer(final SongView<?> songView, final ISongPlayerCallback callback) {
+    public SongPlayer(final SongView<?> songView, final SongPlayerCallback callback) {
         this.songView = songView;
         this.callback = callback;
     }
