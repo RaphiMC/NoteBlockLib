@@ -49,4 +49,15 @@ public class NbsDefinitions {
         return (int) ((float) getPitch(note) / PITCHES_PER_KEY);
     }
 
+    /**
+     * Applies the pitch value to the key and updates the note. This results in the pitch value of the note being set to the smallest possible value (-99 - 99).
+     *
+     * @param note The NBS note
+     */
+    public static void applyPitchToKey(final NbsNote note) {
+        final int pitch = getPitch(note);
+        note.setKey((byte) getKey(note));
+        note.setPitch((short) (pitch % PITCHES_PER_KEY));
+    }
+
 }

@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.util;
 
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
+import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 
 import java.util.HashMap;
@@ -110,7 +111,11 @@ public class MinecraftDefinitions {
      * @param note The note to clamp
      */
     public static void clampNoteKey(final Note note) {
+        if (note instanceof NbsNote) {
+            NbsDefinitions.applyPitchToKey((NbsNote) note);
+        }
         note.setKey((byte) Math.max(MC_LOWEST_KEY, Math.min(MC_HIGHEST_KEY, note.getKey())));
+        ensureNbsPitchWithinOctaveRange(note);
     }
 
     /**
@@ -131,6 +136,9 @@ public class MinecraftDefinitions {
      * @param transposeAmount The amount of keys to transpose by
      */
     public static void transposeNoteKey(final Note note, final int transposeAmount) {
+        if (note instanceof NbsNote) {
+            NbsDefinitions.applyPitchToKey((NbsNote) note);
+        }
         byte nbsKey = note.getKey();
         while (nbsKey < MC_LOWEST_KEY) {
             nbsKey += transposeAmount;
@@ -139,6 +147,7 @@ public class MinecraftDefinitions {
             nbsKey -= transposeAmount;
         }
         note.setKey(nbsKey);
+        ensureNbsPitchWithinOctaveRange(note);
     }
 
     /**
@@ -159,6 +168,10 @@ public class MinecraftDefinitions {
             return;
         }
 
+        if (note instanceof NbsNote) {
+            NbsDefinitions.applyPitchToKey((NbsNote) note);
+        }
+
         byte nbsKey = note.getKey();
         int downShifts = 0;
         while (nbsKey < MC_LOWEST_KEY && downShifts < shifts[0].length) {
@@ -174,6 +187,20 @@ public class MinecraftDefinitions {
 
         note.setInstrument(instrument);
         note.setKey(nbsKey);
+        ensureNbsPitchWithinOctaveRange(note);
+    }
+
+    private static void ensureNbsPitchWithinOctaveRange(final Note note) {
+        if (note instanceof NbsNote) {
+            final NbsNote nbsNote = (NbsNote) note;
+            if (nbsNote.getPitch() != 0) {
+                if (nbsNote.getPitch() < 0 && nbsNote.getKey() == MinecraftDefinitions.MC_LOWEST_KEY) {
+                    nbsNote.setPitch((short) 0);
+                } else if (nbsNote.getPitch() > 0 && nbsNote.getKey() == MinecraftDefinitions.MC_HIGHEST_KEY) {
+                    nbsNote.setPitch((short) 0);
+                }
+            }
+        }
     }
 
 }
