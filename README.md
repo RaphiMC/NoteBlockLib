@@ -116,13 +116,8 @@ NoteBlockLib.writeSong(nbsSong, new File("output.nbs"));
 **Reading a song, changing its sample rate to 10 TPS and writing it back**
 ```java
 Song<?, ?, ?> song = NoteBlockLib.readSong(new File("input.nbs"));
-
 SongResampler.changeTickSpeed(song.getView(), 10F);
-
 Song<?, ?, ?> newSong = NoteBlockLib.createSongFromView(song.getView(), SongFormat.NBS);
-// For songs with custom instruments make sure to copy them over to the new song
-// ((NbsSong)newSong).getData().setCustomInstruments(((NbsSong)song).getData().getCustomInstruments());
-
 NoteBlockLib.writeSong(newSong, new File("output.nbs"));
 ```
 **Creating a new song and saving it as NBS**
@@ -130,31 +125,50 @@ NoteBlockLib.writeSong(newSong, new File("output.nbs"));
 // tick -> list of notes
 Map<Integer, List<Note>> notes = new TreeMap<>();
 // Add the notes to the song
-notes.put(0, Lists.newArrayList(new NbsNote(Instrument.HARP.nbsId(), (byte) 46)));
-notes.put(5, Lists.newArrayList(new NbsNote(Instrument.BASS.nbsId(), (byte) 60)));
-notes.put(8, Lists.newArrayList(new NbsNote(Instrument.BIT.nbsId(), (byte) 84)));
+notes.put(0, Lists.newArrayList(new NbsNote(Instrument.HARP, (byte) 46)));
+notes.put(5, Lists.newArrayList(new NbsNote(Instrument.BASS, (byte) 60)));
+notes.put(8, Lists.newArrayList(new NbsNote(Instrument.BIT, (byte) 84)));
 SongView<Note> mySong = new SongView<>("My song" /*title*/, 10F /*ticks per second*/, notes);
-
 Song<?, ?, ?> nbsSong = NoteBlockLib.createSongFromView(mySong, SongFormat.NBS);
-
 NoteBlockLib.writeSong(nbsSong, new File("C:\\Users\\Koppe\\Desktop\\output.nbs"));
 ```
 **Playing a song**
+
+Define a callback class
+```java
+// Default callback. This callback has a method which receives the already calculated pitch, volume and panning.
+// Note: The FullNoteConsumer interface may change over time when new note data is added by one of the formats.
+public class MyCallback implements SongPlayerCallback, FullNoteConsumer {
+    @Override
+    public void playNote(final Instrument instrument, final float pitch, final float volume, final float panning) {
+        // This method gets called in real time as the song is played.
+        System.out.println(instrument + " " + pitch + " " + volume + " " + panning);
+    }
+  
+    // There are other methods like playCustomNote, onFinished which can be overridden.
+}
+
+// Raw callback. This callback receives the raw Note class. Data like pitch, volume or panning have to be calculated/accessed manually.
+public class MyRawCallback implements SongPlayerCallback {
+    @Override
+    public void playNote(Note note) {
+        // This method gets called in real time as the song is played.
+        // For an example to calculate the various note data see the FullNoteConsumer class.
+        System.out.println(note.getInstrument() + " " + note.getKey());
+    }
+  
+    // There are other methods like onFinished which can be overridden.
+}
+```
+
+Start playing the song
 ```java
 Song<?, ?, ?> song = NoteBlockLib.readSong(new File("input.nbs"));
 
 // Optionally apply a modification to all notes here (For example to transpose the note keys)
 
-SongPlayer player = new SongPlayer(song.getView(), new ISongPlayerCallback() {
-    @Override
-    public void playNote(Note note) {
-        // This method gets called in real time when the song is played.
-        // NBS Notes have a fine pitch besides the normal key. To calculate the key which factors that in use the NbsDefinitions class.
-        System.out.println(note.getInstrument() + " " + note.getKey());
-    }
-
-    // There are other methods like onFinished which can be overridden.
-});
+// Create a song player
+SongPlayer player = new SongPlayer(song.getView(), new MyCallback());
 
 // Start playing
 player.play();
