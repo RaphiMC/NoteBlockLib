@@ -190,6 +190,40 @@ public class MinecraftDefinitions {
         ensureNbsPitchWithinOctaveRange(note);
     }
 
+    /**
+     * Returns the octave delta to use as a suffix for the sound name and modifies the note key to be within the Minecraft octave range.<br>
+     * The octave delta value has to be appended to the sound name to play the note at the correct pitch. (For example: "block.note_block.harp_" + octaveDelta)<br>
+     * Link to the resource pack: <a href="https://github.com/koca2000/NoteBlockAPI/blob/master/Instruments.zip">Extended Notes</a>
+     *
+     * @param note The note to modify
+     * @return The octave delta to use as a suffix for the sound name
+     */
+    public static int applyExtendedNotesResourcePack(final Note note) {
+        int octavesDelta = 0;
+        while (note.getKey() < MC_LOWEST_KEY) {
+            note.setKey((byte) (note.getKey() + MC_KEYS));
+            octavesDelta--;
+        }
+        while (note.getKey() > MC_HIGHEST_KEY) {
+            note.setKey((byte) (note.getKey() - MC_KEYS));
+            octavesDelta++;
+        }
+        if (note instanceof NbsNote) {
+            final NbsNote nbsNote = (NbsNote) note;
+            if (nbsNote.getPitch() != 0) {
+                if (nbsNote.getPitch() < 0 && nbsNote.getKey() == MC_LOWEST_KEY) {
+                    nbsNote.setKey((byte) (nbsNote.getKey() + MC_KEYS));
+                    octavesDelta--;
+                } else if (nbsNote.getPitch() > 0 && nbsNote.getKey() == MC_HIGHEST_KEY) {
+                    nbsNote.setKey((byte) (nbsNote.getKey() - MC_KEYS));
+                    octavesDelta++;
+                }
+            }
+        }
+
+        return octavesDelta;
+    }
+
     private static void ensureNbsPitchWithinOctaveRange(final Note note) {
         if (note instanceof NbsNote) {
             final NbsNote nbsNote = (NbsNote) note;
