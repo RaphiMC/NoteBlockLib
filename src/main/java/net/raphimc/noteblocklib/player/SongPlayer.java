@@ -22,17 +22,15 @@ import net.raphimc.noteblocklib.model.SongView;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class SongPlayer {
 
-    private static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player").setDaemon(true).build());
 
     private final SongView<?> songView;
     private final SongPlayerCallback callback;
 
-    private ScheduledFuture<?> timer;
+    private ScheduledExecutorService scheduler;
     private int tick = -1;
     private boolean paused;
 
@@ -46,7 +44,7 @@ public class SongPlayer {
     }
 
     public boolean isRunning() {
-        return this.timer != null && !this.timer.isDone() && !this.timer.isCancelled();
+        return this.scheduler != null && !this.scheduler.isTerminated();
     }
 
     public int getTick() {
@@ -61,7 +59,8 @@ public class SongPlayer {
         this.paused = false;
         if (this.isRunning()) this.stop();
 
-        this.timer = SCHEDULER.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.songView.getSpeed()), TimeUnit.NANOSECONDS);
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player - " + this.songView.getTitle()).setDaemon(true).build());
+        this.scheduler.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.songView.getSpeed()), TimeUnit.NANOSECONDS);
     }
 
     public void setPaused(final boolean paused) {
@@ -75,7 +74,12 @@ public class SongPlayer {
     public void stop() {
         if (!this.isRunning()) return;
 
-        this.timer.cancel(true);
+        this.scheduler.shutdownNow();
+        try {
+            this.scheduler.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException ignored) {
+        }
+        this.scheduler = null;
         this.paused = false;
     }
 
