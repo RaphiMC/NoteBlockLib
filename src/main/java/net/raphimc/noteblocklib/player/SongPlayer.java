@@ -31,7 +31,7 @@ public class SongPlayer {
     private final SongPlayerCallback callback;
 
     private ScheduledExecutorService scheduler;
-    private int tick = -1;
+    private int tick;
     private boolean paused;
 
     public SongPlayer(final SongView<?> songView, final SongPlayerCallback callback) {
@@ -80,6 +80,7 @@ public class SongPlayer {
         } catch (InterruptedException ignored) {
         }
         this.scheduler = null;
+        this.tick = 0;
         this.paused = false;
     }
 
@@ -88,20 +89,20 @@ public class SongPlayer {
             if (this.paused || !this.callback.shouldTick()) {
                 return;
             }
-            this.tick++;
 
-            if (this.tick > this.songView.getLength()) {
+            if (this.tick >= this.songView.getLength()) {
                 if (this.callback.shouldLoop()) {
                     this.tick = -this.callback.getLoopDelay();
                 } else {
                     this.callback.onFinished();
-                    this.tick = -1;
                     this.stop();
+                    return;
                 }
-                return;
             }
 
             this.callback.playNotes(this.songView.getNotesAtTick(this.tick));
+
+            this.tick++;
         } catch (Throwable e) {
             if (e.getCause() instanceof InterruptedException) return;
 

@@ -65,7 +65,7 @@ public class SongView<N extends Note> implements Cloneable {
     }
 
     public void recalculateLength() {
-        this.length = this.notes.keySet().stream().mapToInt(i -> i).max().orElse(0);
+        this.length = this.notes.keySet().stream().mapToInt(i -> i).max().orElse(-1) + 1;
     }
 
     /**
