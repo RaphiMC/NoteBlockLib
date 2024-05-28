@@ -26,9 +26,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SongPlayer {
 
-
     private final SongView<?> songView;
-    private final SongPlayerCallback callback;
+    protected final SongPlayerCallback callback;
 
     private ScheduledExecutorService scheduler;
     private int tick;
