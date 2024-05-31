@@ -83,7 +83,7 @@ public class SongPlayer {
         this.paused = false;
     }
 
-    private void tick() {
+    protected void tick() {
         try {
             if (this.paused || !this.callback.shouldTick()) {
                 return;
