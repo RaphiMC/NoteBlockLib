@@ -91,44 +91,59 @@ public class MidiData extends NotemapData<MidiNote> {
 
                 if (message instanceof ShortMessage) {
                     final ShortMessage shortMessage = (ShortMessage) message;
-                    if (shortMessage.getCommand() == NOTE_ON) {
-                        final byte instrument = channelInstruments[shortMessage.getChannel()];
-                        final byte key = (byte) shortMessage.getData1();
-                        final byte velocity = (byte) shortMessage.getData2();
-                        final byte effectiveVelocity = (byte) ((float) velocity * channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
-                        final byte pan = channelPans[shortMessage.getChannel()];
+                    switch (shortMessage.getCommand()) {
+                        case NOTE_ON:
+                            final byte instrument = channelInstruments[shortMessage.getChannel()];
+                            final byte key = (byte) shortMessage.getData1();
+                            final byte velocity = (byte) shortMessage.getData2();
+                            final byte effectiveVelocity = (byte) ((float) velocity * channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
+                            final byte pan = channelPans[shortMessage.getChannel()];
 
-                        final MidiNote note;
-                        if (shortMessage.getChannel() == PERCUSSION_CHANNEL) {
-                            final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS.get(key);
-                            if (mapping == null) continue;
+                            final MidiNote note;
+                            if (shortMessage.getChannel() == PERCUSSION_CHANNEL) {
+                                final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS.get(key);
+                                if (mapping == null) continue;
 
-                            note = new MidiNote(event.getTick(), mapping.getInstrument(), mapping.getKey(), effectiveVelocity, pan);
-                        } else {
-                            final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS.get(instrument);
-                            if (mapping == null) continue;
+                                note = new MidiNote(event.getTick(), mapping.getInstrument(), mapping.getKey(), effectiveVelocity, pan);
+                            } else {
+                                final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS.get(instrument);
+                                if (mapping == null) continue;
 
-                            final int transposedKey = key - NBS_KEY_OFFSET + KEYS_PER_OCTAVE * mapping.getOctaveModifier();
-                            final byte clampedKey = (byte) Math.max(NBS_LOWEST_KEY, Math.min(transposedKey, NBS_HIGHEST_KEY));
-                            note = new MidiNote(event.getTick(), mapping.getInstrument(), clampedKey, effectiveVelocity, pan);
-                        }
+                                final int transposedKey = key - NBS_KEY_OFFSET + KEYS_PER_OCTAVE * mapping.getOctaveModifier();
+                                final byte clampedKey = (byte) Math.max(NBS_LOWEST_KEY, Math.min(transposedKey, NBS_HIGHEST_KEY));
+                                note = new MidiNote(event.getTick(), mapping.getInstrument(), clampedKey, effectiveVelocity, pan);
+                            }
 
-                        this.notes.computeIfAbsent((int) Math.round(microTime * SONG_TICKS_PER_SECOND / 1_000_000D), k -> new ArrayList<>()).add(note);
-                    } else if (shortMessage.getCommand() == PROGRAM_CHANGE) {
-                        channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
-                    } else if (shortMessage.getCommand() == CONTROL_CHANGE) {
-                        if (shortMessage.getData1() == VOLUME_CONTROL_MSB) {
-                            channelVolumes[shortMessage.getChannel()] = (byte) shortMessage.getData2();
-                        } else if (shortMessage.getData1() == PAN_CONTROL_MSB) {
-                            channelPans[shortMessage.getChannel()] = (byte) shortMessage.getData2();
-                        } else if (shortMessage.getData1() == RESET_CONTROLS) {
-                            channelVolumes[shortMessage.getChannel()] = MAX_VELOCITY;
-                            channelPans[shortMessage.getChannel()] = CENTER_PAN;
-                        }
-                    } else if (shortMessage.getCommand() == SYSTEM_RESET) {
-                        Arrays.fill(channelInstruments, (byte) 0);
-                        Arrays.fill(channelVolumes, MAX_VELOCITY);
-                        Arrays.fill(channelPans, CENTER_PAN);
+                            this.notes.computeIfAbsent((int) Math.round(microTime * SONG_TICKS_PER_SECOND / 1_000_000D), k -> new ArrayList<>()).add(note);
+                            break;
+                        case NOTE_OFF:
+                            // Ignore note off events
+                            break;
+                        case PROGRAM_CHANGE:
+                            channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
+                            break;
+                        case CONTROL_CHANGE:
+                            switch (shortMessage.getData1()) {
+                                case VOLUME_CONTROL_MSB:
+                                    channelVolumes[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                                    break;
+                                case PAN_CONTROL_MSB:
+                                    channelPans[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                                    break;
+                                case RESET_CONTROLS:
+                                    channelVolumes[shortMessage.getChannel()] = MAX_VELOCITY;
+                                    channelPans[shortMessage.getChannel()] = CENTER_PAN;
+                                    break;
+                            }
+                            break;
+                        case PITCH_BEND:
+                            // Ignore pitch bend events
+                            break;
+                        case SYSTEM_RESET:
+                            Arrays.fill(channelInstruments, (byte) 0);
+                            Arrays.fill(channelVolumes, MAX_VELOCITY);
+                            Arrays.fill(channelPans, CENTER_PAN);
+                            break;
                     }
                 }
             }
