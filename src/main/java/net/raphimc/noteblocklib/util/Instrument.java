@@ -19,32 +19,33 @@ package net.raphimc.noteblocklib.util;
 
 public enum Instrument {
 
-    HARP(0, 0, 0),
-    BASS(1, 4, 4),
-    BASS_DRUM(2, 1, 1),
-    SNARE(3, 2, 2),
-    HAT(4, 3, 3),
-    GUITAR(5, 7, 8),
-    FLUTE(6, 5, 6),
-    BELL(7, 6, 5),
-    CHIME(8, 8, 7),
-    XYLOPHONE(9, 9, 9),
-    IRON_XYLOPHONE(10, 10, 10),
-    COW_BELL(11, 11, 11),
-    DIDGERIDOO(12, 12, 12),
-    BIT(13, 13, 13),
-    BANJO(14, 14, 14),
-    PLING(15, 15, 15),
-    ;
+    HARP(0, 0, 0, "block.note_block.harp"),
+    BASS(1, 4, 4, "block.note_block.bass"),
+    BASS_DRUM(2, 1, 1, "block.note_block.basedrum"),
+    SNARE(3, 2, 2, "block.note_block.snare"),
+    HAT(4, 3, 3, "block.note_block.hat"),
+    GUITAR(5, 7, 8, "block.note_block.guitar"),
+    FLUTE(6, 5, 6, "block.note_block.flute"),
+    BELL(7, 6, 5, "block.note_block.bell"),
+    CHIME(8, 8, 7, "block.note_block.chime"),
+    XYLOPHONE(9, 9, 9, "block.note_block.xylophone"),
+    IRON_XYLOPHONE(10, 10, 10, "block.note_block.iron_xylophone"),
+    COW_BELL(11, 11, 11, "block.note_block.cow_bell"),
+    DIDGERIDOO(12, 12, 12, "block.note_block.didgeridoo"),
+    BIT(13, 13, 13, "block.note_block.bit"),
+    BANJO(14, 14, 14, "block.note_block.banjo"),
+    PLING(15, 15, 15, "block.note_block.pling");
 
     private final byte nbsId;
     private final byte mcId;
     private final byte mcbeId;
+    private final String mcSoundName;
 
-    Instrument(final int nbsId, final int mcId, final int mcbeId) {
+    Instrument(final int nbsId, final int mcId, final int mcbeId, final String mcSoundName) {
         this.nbsId = (byte) nbsId;
         this.mcId = (byte) mcId;
         this.mcbeId = (byte) mcbeId;
+        this.mcSoundName = mcSoundName;
     }
 
     public byte nbsId() {
@@ -57,6 +58,10 @@ public enum Instrument {
 
     public byte mcbeId() {
         return this.mcbeId;
+    }
+
+    public String mcSoundName() {
+        return this.mcSoundName;
     }
 
     public static Instrument fromNbsId(final byte nbsId) {
@@ -80,6 +85,15 @@ public enum Instrument {
     public static Instrument fromMcbeId(final byte mcbeId) {
         for (final Instrument instrument : Instrument.values()) {
             if (instrument.mcbeId == mcbeId) {
+                return instrument;
+            }
+        }
+        return null;
+    }
+
+    public static Instrument fromMcSoundName(final String mcSoundName) {
+        for (final Instrument instrument : Instrument.values()) {
+            if (instrument.mcSoundName.equals(mcSoundName)) {
                 return instrument;
             }
         }
