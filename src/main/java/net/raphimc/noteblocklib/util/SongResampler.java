@@ -18,7 +18,6 @@
 package net.raphimc.noteblocklib.util;
 
 import net.raphimc.noteblocklib.format.nbs.NbsSong;
-import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.SongView;
@@ -68,14 +67,7 @@ public class SongResampler {
     public static void applyNbsTempoChangers(final NbsSong song, final SongView<NbsNote> view) {
         if (song.getHeader().getVersion() < 4) return;
 
-        boolean hasTempoChanger = false;
-        for (NbsCustomInstrument customInstrument : song.getData().getCustomInstruments()) {
-            if (customInstrument.getName().equals("Tempo Changer")) {
-                song.getData().getCustomInstruments().remove(customInstrument);
-                hasTempoChanger = true;
-                break;
-            }
-        }
+        final boolean hasTempoChanger = song.getData().getCustomInstruments().stream().anyMatch(ci -> ci.getName().equals("Tempo Changer"));
         if (!hasTempoChanger) return;
 
         final List<TempoEvent> tempoEvents = new ArrayList<>();
