@@ -130,7 +130,7 @@ notes.put(5, Lists.newArrayList(new NbsNote(Instrument.BASS, (byte) 60)));
 notes.put(8, Lists.newArrayList(new NbsNote(Instrument.BIT, (byte) 84)));
 SongView<Note> mySong = new SongView<>("My song" /*title*/, 10F /*ticks per second*/, notes);
 Song<?, ?, ?> nbsSong = NoteBlockLib.createSongFromView(mySong, SongFormat.NBS);
-NoteBlockLib.writeSong(nbsSong, new File("C:\\Users\\Koppe\\Desktop\\output.nbs"));
+NoteBlockLib.writeSong(nbsSong, new File("C:\\Users\\User\\Desktop\\output.nbs"));
 ```
 **Playing a song**
 

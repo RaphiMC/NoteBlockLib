@@ -193,7 +193,7 @@ public class MinecraftDefinitions {
     /**
      * Returns the octave delta to use as a suffix for the sound name and modifies the note key to be within the Minecraft octave range.<br>
      * The octave delta value has to be appended to the sound name to play the note at the correct pitch. (For example: "block.note_block.harp_" + octaveDelta)<br>
-     * Link to the resource pack: <a href="https://github.com/koca2000/NoteBlockAPI/blob/master/Instruments.zip">Extended Notes</a>
+     * Link to the resource pack: <a href="https://github.com/RaphiMC/NoteBlockLib/blob/main/Extended Octave Range Notes Pack.zip">Extended Notes</a>
      *
      * @param note The note to modify
      * @return The octave delta to use as a suffix for the sound name
