@@ -190,7 +190,7 @@ public class MidiMappings {
         PERCUSSION_MAPPINGS.put((byte) 53, new PercussionMapping(Instrument.SNARE, (byte) 46));
         PERCUSSION_MAPPINGS.put((byte) 54, new PercussionMapping(Instrument.HAT, (byte) 51));
         PERCUSSION_MAPPINGS.put((byte) 55, new PercussionMapping(Instrument.SNARE, (byte) 51));
-        PERCUSSION_MAPPINGS.put((byte) 56, new PercussionMapping(Instrument.HAT, (byte) 34));
+        PERCUSSION_MAPPINGS.put((byte) 56, new PercussionMapping(Instrument.COW_BELL, (byte) 38));
         PERCUSSION_MAPPINGS.put((byte) 57, new PercussionMapping(Instrument.SNARE, (byte) 46));
         PERCUSSION_MAPPINGS.put((byte) 58, new PercussionMapping(Instrument.HAT, (byte) 35));
         PERCUSSION_MAPPINGS.put((byte) 59, new PercussionMapping(Instrument.SNARE, (byte) 46));
@@ -201,8 +201,8 @@ public class MidiMappings {
         PERCUSSION_MAPPINGS.put((byte) 64, new PercussionMapping(Instrument.BASS_DRUM, (byte) 48));
         PERCUSSION_MAPPINGS.put((byte) 65, new PercussionMapping(Instrument.SNARE, (byte) 46));
         PERCUSSION_MAPPINGS.put((byte) 66, new PercussionMapping(Instrument.SNARE, (byte) 41));
-        PERCUSSION_MAPPINGS.put((byte) 67, new PercussionMapping(Instrument.HAT, (byte) 41));
-        PERCUSSION_MAPPINGS.put((byte) 68, new PercussionMapping(Instrument.HAT, (byte) 36));
+        PERCUSSION_MAPPINGS.put((byte) 67, new PercussionMapping(Instrument.XYLOPHONE, (byte) 45));
+        PERCUSSION_MAPPINGS.put((byte) 68, new PercussionMapping(Instrument.XYLOPHONE, (byte) 38));
         PERCUSSION_MAPPINGS.put((byte) 69, new PercussionMapping(Instrument.HAT, (byte) 53));
         PERCUSSION_MAPPINGS.put((byte) 70, new PercussionMapping(Instrument.HAT, (byte) 56));
         PERCUSSION_MAPPINGS.put((byte) 71, new PercussionMapping(Instrument.FLUTE, (byte) 67));
@@ -210,12 +210,12 @@ public class MidiMappings {
         PERCUSSION_MAPPINGS.put((byte) 73, new PercussionMapping(Instrument.HAT, (byte) 50));
         PERCUSSION_MAPPINGS.put((byte) 74, new PercussionMapping(Instrument.HAT, (byte) 44));
         PERCUSSION_MAPPINGS.put((byte) 75, new PercussionMapping(Instrument.HAT, (byte) 51));
-        PERCUSSION_MAPPINGS.put((byte) 76, new PercussionMapping(Instrument.HAT, (byte) 42));
-        PERCUSSION_MAPPINGS.put((byte) 77, new PercussionMapping(Instrument.HAT, (byte) 38));
+        PERCUSSION_MAPPINGS.put((byte) 76, new PercussionMapping(Instrument.XYLOPHONE, (byte) 47));
+        PERCUSSION_MAPPINGS.put((byte) 77, new PercussionMapping(Instrument.XYLOPHONE, (byte) 42));
         PERCUSSION_MAPPINGS.put((byte) 78, new PercussionMapping(Instrument.DIDGERIDOO, (byte) 58));
         PERCUSSION_MAPPINGS.put((byte) 79, new PercussionMapping(Instrument.DIDGERIDOO, (byte) 59));
-        PERCUSSION_MAPPINGS.put((byte) 80, new PercussionMapping(Instrument.HAT, (byte) 50));
-        PERCUSSION_MAPPINGS.put((byte) 81, new PercussionMapping(Instrument.HAT, (byte) 55));
+        PERCUSSION_MAPPINGS.put((byte) 80, new PercussionMapping(Instrument.HAT, (byte) 49));
+        PERCUSSION_MAPPINGS.put((byte) 81, new PercussionMapping(Instrument.CHIME, (byte) 52));
         PERCUSSION_MAPPINGS.put((byte) 82, new PercussionMapping(Instrument.SNARE, (byte) 55));
         PERCUSSION_MAPPINGS.put((byte) 83, new PercussionMapping(Instrument.CHIME, (byte) 39));
         PERCUSSION_MAPPINGS.put((byte) 84, new PercussionMapping(Instrument.CHIME, (byte) 48));
