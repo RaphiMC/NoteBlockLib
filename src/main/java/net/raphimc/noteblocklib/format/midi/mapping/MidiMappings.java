@@ -210,8 +210,8 @@ public class MidiMappings {
         PERCUSSION_MAPPINGS.put((byte) 73, new PercussionMapping(Instrument.HAT, (byte) 50));
         PERCUSSION_MAPPINGS.put((byte) 74, new PercussionMapping(Instrument.HAT, (byte) 44));
         PERCUSSION_MAPPINGS.put((byte) 75, new PercussionMapping(Instrument.HAT, (byte) 51));
-        PERCUSSION_MAPPINGS.put((byte) 76, new PercussionMapping(Instrument.XYLOPHONE, (byte) 47));
-        PERCUSSION_MAPPINGS.put((byte) 77, new PercussionMapping(Instrument.XYLOPHONE, (byte) 42));
+        PERCUSSION_MAPPINGS.put((byte) 76, new PercussionMapping(Instrument.HAT, (byte) 43));
+        PERCUSSION_MAPPINGS.put((byte) 77, new PercussionMapping(Instrument.HAT, (byte) 38));
         PERCUSSION_MAPPINGS.put((byte) 78, new PercussionMapping(Instrument.DIDGERIDOO, (byte) 58));
         PERCUSSION_MAPPINGS.put((byte) 79, new PercussionMapping(Instrument.DIDGERIDOO, (byte) 59));
         PERCUSSION_MAPPINGS.put((byte) 80, new PercussionMapping(Instrument.HAT, (byte) 49));
