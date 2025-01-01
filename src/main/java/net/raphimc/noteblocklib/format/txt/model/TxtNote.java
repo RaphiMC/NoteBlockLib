@@ -17,39 +17,48 @@
  */
 package net.raphimc.noteblocklib.format.txt.model;
 
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.util.Instrument;
-import net.raphimc.noteblocklib.util.MinecraftDefinitions;
+import java.util.Objects;
 
-import java.util.Scanner;
+public class TxtNote {
 
-public class TxtNote extends Note {
+    private byte instrument;
+    private byte key;
 
-    public TxtNote(final Scanner scanner) {
-        this(scanner.nextByte(), Instrument.fromMcId(scanner.nextByte()));
+    public byte getInstrument() {
+        return this.instrument;
     }
 
-    public TxtNote(final byte key, final Instrument instrument) {
-        super(instrument, key);
+    public TxtNote setInstrument(final byte instrument) {
+        this.instrument = instrument;
+        return this;
     }
 
-    public void write(final StringBuilder builder) {
-        builder.append(this.key).append(":").append(this.instrument.mcId());
-    }
-
-    @Override
     public byte getKey() {
-        return (byte) (super.getKey() + MinecraftDefinitions.MC_LOWEST_KEY);
+        return this.key;
+    }
+
+    public TxtNote setKey(final byte key) {
+        this.key = key;
+        return this;
+    }
+
+    public TxtNote copy() {
+        final TxtNote copyNote = new TxtNote();
+        copyNote.setInstrument(this.getInstrument());
+        copyNote.setKey(this.getKey());
+        return copyNote;
     }
 
     @Override
-    public void setKey(final byte key) {
-        super.setKey((byte) (key - MinecraftDefinitions.MC_LOWEST_KEY));
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TxtNote txtNote = (TxtNote) o;
+        return instrument == txtNote.instrument && key == txtNote.key;
     }
 
     @Override
-    public TxtNote clone() {
-        return new TxtNote(this.key, this.instrument);
+    public int hashCode() {
+        return Objects.hash(instrument, key);
     }
 
 }

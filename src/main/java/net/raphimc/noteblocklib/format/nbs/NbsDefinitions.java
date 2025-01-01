@@ -21,11 +21,18 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 
 public class NbsDefinitions {
 
+    public static final int NBS_LOWEST_MIDI_KEY = 21;
+    public static final int NBS_HIGHEST_MIDI_KEY = 108;
     public static final int NBS_LOWEST_KEY = 0;
     public static final int NBS_HIGHEST_KEY = 87;
+    public static final int F_SHARP_4_NBS_KEY = 45;
 
-    public static final int KEYS_PER_OCTAVE = 12;
     public static final int PITCHES_PER_KEY = 100;
+    public static final int PITCHES_PER_OCTAVE = 1200;
+
+    public static final int CENTER_PANNING = 100;
+
+    public static final String TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME = "Tempo Changer";
 
     /**
      * Calculates the effective pitch of a note. (100 = 1 key, 1200 = 1 octave)
@@ -33,7 +40,7 @@ public class NbsDefinitions {
      * @param note The NBS note
      * @return The effective pitch of the note
      */
-    public static int getPitch(final NbsNote note) {
+    public static int getEffectivePitch(final NbsNote note) {
         final byte key = note.getKey();
         final short pitch = note.getPitch();
         return key * PITCHES_PER_KEY + pitch;
@@ -45,19 +52,8 @@ public class NbsDefinitions {
      * @param note The NBS note
      * @return The effective key of the note
      */
-    public static int getKey(final NbsNote note) {
-        return (int) ((float) getPitch(note) / PITCHES_PER_KEY);
-    }
-
-    /**
-     * Applies the pitch value to the key and updates the note. This results in the pitch value of the note being set to the smallest possible value (-99 - 99).
-     *
-     * @param note The NBS note
-     */
-    public static void applyPitchToKey(final NbsNote note) {
-        final int pitch = getPitch(note);
-        note.setKey((byte) getKey(note));
-        note.setPitch((short) (pitch % PITCHES_PER_KEY));
+    public static int getEffectiveKey(final NbsNote note) {
+        return (int) ((float) getEffectivePitch(note) / PITCHES_PER_KEY);
     }
 
 }

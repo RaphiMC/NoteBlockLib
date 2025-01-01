@@ -17,57 +17,43 @@
  */
 package net.raphimc.noteblocklib.player;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.raphimc.noteblocklib.model.SongView;
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.util.TimerHack;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class SongPlayer {
+public abstract class SongPlayer {
 
-    private final SongView<?> songView;
-    protected final SongPlayerCallback callback;
-
+    private Song song;
     private ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> tickTask;
+    private float ticksPerSecond;
     private int tick;
     private boolean paused;
 
-    public SongPlayer(final SongView<?> songView, final SongPlayerCallback callback) {
-        this.songView = songView;
-        this.callback = callback;
+    public SongPlayer(final Song song) {
+        this.song = song;
     }
 
-    public SongView<?> getSongView() {
-        return this.songView;
-    }
-
-    public boolean isRunning() {
-        return this.scheduler != null && !this.scheduler.isTerminated();
-    }
-
-    public int getTick() {
-        return this.tick;
-    }
-
-    public void setTick(final int tick) {
-        this.tick = tick;
-    }
-
-    public void play() {
-        this.paused = false;
+    public void start() {
         if (this.isRunning()) this.stop();
 
-        this.scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player - " + this.songView.getTitle()).setDaemon(true).build());
-        this.scheduler.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.songView.getSpeed()), TimeUnit.NANOSECONDS);
-    }
+        this.ticksPerSecond = this.song.getTempoEvents().getTempo(0);
+        this.tick = 0;
 
-    public void setPaused(final boolean paused) {
-        this.paused = paused;
-    }
-
-    public boolean isPaused() {
-        return this.paused;
+        TimerHack.ensureRunning();
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            final Thread thread = new Thread(r, "NoteBlockLib Song Player - " + this.song.getTitleOrFileNameOr("No Title"));
+            thread.setPriority(Thread.NORM_PRIORITY + 1);
+            thread.setDaemon(true);
+            return thread;
+        });
+        this.createTickTask();
     }
 
     public void stop() {
@@ -79,35 +65,98 @@ public class SongPlayer {
         } catch (InterruptedException ignored) {
         }
         this.scheduler = null;
-        this.tick = 0;
+        this.tickTask = null;
         this.paused = false;
+    }
+
+    public boolean isRunning() {
+        return this.scheduler != null && !this.scheduler.isTerminated();
+    }
+
+    public Song getSong() {
+        return this.song;
+    }
+
+    protected void setSong(final Song song) {
+        this.song = song;
+    }
+
+    public float getCurrentTicksPerSecond() {
+        return this.ticksPerSecond;
+    }
+
+    public int getTick() {
+        return this.tick;
+    }
+
+    public void setTick(final int tick) {
+        this.tick = tick;
+    }
+
+    public int getMillisecondPosition() {
+        return this.song.tickToMilliseconds(this.tick);
+    }
+
+    public void setMillisecondPosition(final int milliseconds) {
+        this.tick = this.song.millisecondsToTick(milliseconds);
+    }
+
+    public boolean isPaused() {
+        return this.paused;
+    }
+
+    public void setPaused(final boolean paused) {
+        this.paused = paused;
+    }
+
+    protected void createTickTask() {
+        if (this.tickTask != null) {
+            this.tickTask.cancel(false);
+        }
+        final long period = (long) (1_000_000_000D / this.ticksPerSecond);
+        this.tickTask = this.scheduler.scheduleAtFixedRate(this::tick, this.tickTask != null ? period : 0L, period, TimeUnit.NANOSECONDS);
     }
 
     protected void tick() {
         try {
-            if (this.paused || !this.callback.shouldTick()) {
-                return;
-            }
-
-            if (this.tick >= this.songView.getLength()) {
-                if (this.callback.shouldLoop()) {
-                    this.tick = -this.callback.getLoopDelay();
-                } else {
-                    this.callback.onFinished();
-                    this.stop();
+            this.preTick();
+            try {
+                if (this.paused) {
                     return;
                 }
+
+                this.playNotes(this.song.getNotes().getOrEmpty(this.tick));
+
+                this.tick++;
+                if (this.tick >= this.song.getNotes().getLengthInTicks()) {
+                    this.stop();
+                    this.onFinished();
+                    return;
+                }
+                if (this.ticksPerSecond != this.song.getTempoEvents().getEffectiveTempo(this.tick)) {
+                    this.ticksPerSecond = this.song.getTempoEvents().getEffectiveTempo(this.tick);
+                    this.createTickTask();
+                }
+            } finally {
+                this.postTick();
             }
-
-            this.callback.playNotes(this.songView.getNotesAtTick(this.tick));
-
-            this.tick++;
         } catch (Throwable e) {
             if (e.getCause() instanceof InterruptedException) return;
 
             e.printStackTrace();
             this.stop();
         }
+    }
+
+    protected void preTick() {
+    }
+
+    protected abstract void playNotes(final List<Note> notes);
+
+    protected void onFinished() {
+    }
+
+    protected void postTick() {
     }
 
 }

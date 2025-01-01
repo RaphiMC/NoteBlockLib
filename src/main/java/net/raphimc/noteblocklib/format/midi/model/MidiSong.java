@@ -15,26 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi.mapping;
+package net.raphimc.noteblocklib.format.midi.model;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
+import net.raphimc.noteblocklib.format.SongFormat;
+import net.raphimc.noteblocklib.model.Song;
 
-public class PercussionMapping {
+public class MidiSong extends Song {
 
-    private final MinecraftInstrument instrument;
-    private final byte nbsKey;
-
-    public PercussionMapping(final MinecraftInstrument instrument, final byte nbsKey) {
-        this.instrument = instrument;
-        this.nbsKey = nbsKey;
+    public MidiSong() {
+        this(null);
     }
 
-    public MinecraftInstrument getInstrument() {
-        return this.instrument;
+    public MidiSong(final String fileName) {
+        super(SongFormat.MIDI, fileName);
     }
 
-    public byte getNbsKey() {
-        return this.nbsKey;
+    @Override
+    public MidiSong copy() {
+        final MidiSong copySong = new MidiSong(this.getFileName());
+        copySong.copyGeneralData(this);
+
+        return copySong;
     }
 
 }

@@ -17,20 +17,18 @@
  */
 package net.raphimc.noteblocklib;
 
-import com.google.common.io.ByteStreams;
 import net.raphimc.noteblocklib.format.SongFormat;
-import net.raphimc.noteblocklib.format.future.FutureParser;
-import net.raphimc.noteblocklib.format.mcsp.McSpParser;
-import net.raphimc.noteblocklib.format.midi.MidiParser;
-import net.raphimc.noteblocklib.format.nbs.NbsParser;
-import net.raphimc.noteblocklib.format.nbs.NbsSong;
-import net.raphimc.noteblocklib.format.nbs.model.NbsData;
-import net.raphimc.noteblocklib.format.nbs.model.NbsHeader;
-import net.raphimc.noteblocklib.format.txt.TxtParser;
-import net.raphimc.noteblocklib.format.txt.TxtSong;
+import net.raphimc.noteblocklib.format.futureclient.FutureClientIo;
+import net.raphimc.noteblocklib.format.mcsp.McSpIo;
+import net.raphimc.noteblocklib.format.mcsp2.McSp2Io;
+import net.raphimc.noteblocklib.format.midi.MidiIo;
+import net.raphimc.noteblocklib.format.nbs.NbsConverter;
+import net.raphimc.noteblocklib.format.nbs.NbsIo;
+import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
+import net.raphimc.noteblocklib.format.txt.TxtIo;
 import net.raphimc.noteblocklib.model.Song;
-import net.raphimc.noteblocklib.model.SongView;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,86 +39,80 @@ import static com.google.common.io.Files.getFileExtension;
 
 public class NoteBlockLib {
 
-    public static Song<?, ?, ?> readSong(final File file) throws Exception {
+    public static Song readSong(final File file) throws Exception {
         return readSong(file.toPath());
     }
 
-    public static Song<?, ?, ?> readSong(final Path path) throws Exception {
+    public static Song readSong(final Path path) throws Exception {
         return readSong(path, getFormat(path));
     }
 
-    public static Song<?, ?, ?> readSong(final Path path, final SongFormat format) throws Exception {
-        return readSong(Files.readAllBytes(path), format, path.getFileName().toString());
+    public static Song readSong(final Path path, final SongFormat format) throws Exception {
+        return readSong(Files.newInputStream(path), format, path.getFileName().toString());
     }
 
-    public static Song<?, ?, ?> readSong(final InputStream is, final SongFormat format) throws Exception {
-        return readSong(ByteStreams.toByteArray(is), format, null);
+    public static Song readSong(final byte[] bytes, final SongFormat format) throws Exception {
+        return readSong(new ByteArrayInputStream(bytes), format);
     }
 
-    public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format) throws Exception {
-        return readSong(bytes, format, null);
+    public static Song readSong(final InputStream is, final SongFormat format) throws Exception {
+        return readSong(is, format, null);
     }
 
-    public static Song<?, ?, ?> readSong(final byte[] bytes, final SongFormat format, final String fileName) throws Exception {
+    public static Song readSong(final InputStream is, final SongFormat format, final String fileName) throws Exception {
         try {
-            if (format == null) throw new IllegalArgumentException("Unknown format");
-
             switch (format) {
                 case NBS:
-                    return NbsParser.read(bytes, fileName);
+                    return NbsIo.readSong(is, fileName);
                 case MCSP:
-                    return McSpParser.read(bytes, fileName);
+                    return McSpIo.readSong(is, fileName);
+                case MCSP2:
+                    return McSp2Io.readSong(is, fileName);
                 case TXT:
-                    return TxtParser.read(bytes, fileName);
-                case FUTURE:
-                    return FutureParser.read(bytes, fileName);
+                    return TxtIo.readSong(is, fileName);
+                case FUTURE_CLIENT:
+                    return FutureClientIo.readSong(is, fileName);
                 case MIDI:
-                    return MidiParser.read(bytes, fileName);
+                    return MidiIo.readSong(is, fileName);
                 default:
                     throw new IllegalStateException("Unknown format");
             }
         } catch (Throwable e) {
             throw new Exception("Failed to read song", e);
+        } finally {
+            is.close();
         }
     }
 
-    public static void writeSong(final Song<?, ?, ?> song, final File file) throws Exception {
+    public static void writeSong(final Song song, final File file) throws Exception {
         writeSong(song, file.toPath());
     }
 
-    public static void writeSong(final Song<?, ?, ?> song, final Path path) throws Exception {
-        Files.write(path, writeSong(song));
+    public static void writeSong(final Song song, final Path path) throws Exception {
+        writeSong(song, Files.newOutputStream(path));
     }
 
-    public static void writeSong(final Song<?, ?, ?> song, final OutputStream os) throws Exception {
-        os.write(writeSong(song));
-    }
-
-    public static byte[] writeSong(final Song<?, ?, ?> song) throws Exception {
-        byte[] bytes = null;
+    public static void writeSong(final Song song, final OutputStream os) throws Exception {
         try {
             if (song instanceof NbsSong) {
-                bytes = NbsParser.write((NbsSong) song);
-            } else if (song instanceof TxtSong) {
-                bytes = TxtParser.write((TxtSong) song);
+                NbsIo.writeSong((NbsSong) song, os);
+            } else {
+                throw new Exception("Unsupported song format for writing: " + song.getClass().getSimpleName());
             }
         } catch (Throwable e) {
             throw new Exception("Failed to write song", e);
+        } finally {
+            os.close();
         }
-
-        if (bytes == null) {
-            throw new Exception("Unsupported song type for writing: " + song.getClass().getSimpleName());
-        }
-
-        return bytes;
     }
 
-    public static Song<?, ?, ?> createSongFromView(final SongView<?> songView, final SongFormat format) {
-        if (format != SongFormat.NBS) {
-            throw new IllegalArgumentException("Only NBS is supported for creating songs from views");
+    public static Song convertSong(final Song song, final SongFormat targetFormat) {
+        switch (targetFormat) {
+            case NBS:
+                return NbsConverter.createSong(song);
+            default:
+                throw new IllegalStateException("Unsupported target format: " + targetFormat);
         }
-
-        return new NbsSong(null, new NbsHeader(songView), new NbsData(songView));
     }
 
     public static SongFormat getFormat(final Path path) {
