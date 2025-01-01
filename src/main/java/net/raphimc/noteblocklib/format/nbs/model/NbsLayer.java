@@ -17,90 +17,49 @@
  */
 package net.raphimc.noteblocklib.format.nbs.model;
 
-import com.google.common.io.LittleEndianDataInputStream;
-import com.google.common.io.LittleEndianDataOutputStream;
+import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
-
-import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
-import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
 
 public class NbsLayer {
 
     /**
      * @since v0
      */
-    private Map<Integer, NbsNote> notesAtTick = new TreeMap<>();
+    private final Map<Integer, NbsNote> notes = new HashMap<>();
 
     /**
      * @since v0
      */
-    private String name = "";
+    private String name;
 
     /**
      * @since v0
      */
-    private byte volume = 100;
+    private byte volume;
 
     /**
      * @since v2
      */
-    private short panning = 100;
+    private short panning;
 
     /**
      * @since v4
      */
-    private boolean locked = false;
-
-    public NbsLayer(final NbsHeader header, final LittleEndianDataInputStream dis) throws IOException {
-        this.name = readString(dis);
-        if (header.getVersion() >= 4) {
-            this.locked = dis.readBoolean();
-        }
-        this.volume = dis.readByte();
-        if (header.getVersion() >= 2) {
-            this.panning = (short) dis.readUnsignedByte();
-        }
-    }
-
-    public NbsLayer(final Map<Integer, NbsNote> notesAtTick, final String name, final byte volume, final short panning, final boolean locked) {
-        this.notesAtTick = notesAtTick;
-        this.name = name;
-        this.volume = volume;
-        this.panning = panning;
-        this.locked = locked;
-    }
+    private boolean locked;
 
     public NbsLayer() {
-    }
-
-    public void write(final NbsHeader header, final LittleEndianDataOutputStream dos) throws IOException {
-        writeString(dos, this.name);
-        if (header.getVersion() >= 4) {
-            dos.writeBoolean(this.locked);
-        }
-        dos.writeByte(this.volume);
-        if (header.getVersion() >= 2) {
-            dos.writeByte(this.panning);
-        }
+        this.volume = 100;
+        this.panning = NbsDefinitions.CENTER_PANNING;
     }
 
     /**
      * @return A map of all notes in this layer, with the tick as the key.
      * @since v0
      */
-    public Map<Integer, NbsNote> getNotesAtTick() {
-        return this.notesAtTick;
-    }
-
-    /**
-     * @param notesAtTick A map of all notes in this layer, with the tick as the key.
-     * @since v0
-     */
-    public void setNotesAtTick(final Map<Integer, NbsNote> notesAtTick) {
-        this.notesAtTick = notesAtTick;
+    public Map<Integer, NbsNote> getNotes() {
+        return this.notes;
     }
 
     /**
@@ -112,11 +71,26 @@ public class NbsLayer {
     }
 
     /**
-     * @param name The name of the layer.
+     * @return The name of the layer.
+     * @param fallback The fallback value if the layer name is not set.
      * @since v0
      */
-    public void setName(final String name) {
-        this.name = name;
+    public String getNameOr(final String fallback) {
+        return this.name == null ? fallback : this.name;
+    }
+
+    /**
+     * @param name The name of the layer.
+     * @return this
+     * @since v0
+     */
+    public NbsLayer setName(final String name) {
+        if (name != null && !name.isEmpty()) {
+            this.name = name;
+        } else {
+            this.name = null;
+        }
+        return this;
     }
 
     /**
@@ -129,10 +103,12 @@ public class NbsLayer {
 
     /**
      * @param volume The volume of the layer (percentage). Ranges from 0-100.
+     * @return this
      * @since v0
      */
-    public void setVolume(final byte volume) {
+    public NbsLayer setVolume(final byte volume) {
         this.volume = volume;
+        return this;
     }
 
     /**
@@ -145,10 +121,12 @@ public class NbsLayer {
 
     /**
      * @param panning How much this layer should be panned to the left/right. 0 is 2 blocks right, 100 is center, 200 is 2 blocks left.
+     * @return this
      * @since v2
      */
-    public void setPanning(final short panning) {
+    public NbsLayer setPanning(final short panning) {
         this.panning = panning;
+        return this;
     }
 
     /**
@@ -161,10 +139,26 @@ public class NbsLayer {
 
     /**
      * @param locked Whether this layer should be marked as locked.
+     * @return this
      * @since v4
      */
-    public void setLocked(final boolean locked) {
+    public NbsLayer setLocked(final boolean locked) {
         this.locked = locked;
+        return this;
+    }
+
+    public NbsLayer copy() {
+        final NbsLayer copyLayer = new NbsLayer();
+        copyLayer.setName(this.name);
+        copyLayer.setVolume(this.volume);
+        copyLayer.setPanning(this.panning);
+        copyLayer.setLocked(this.locked);
+        final Map<Integer, NbsNote> notes = this.getNotes();
+        final Map<Integer, NbsNote> copyNotes = copyLayer.getNotes();
+        for (final Map.Entry<Integer, NbsNote> entry : notes.entrySet()) {
+            copyNotes.put(entry.getKey(), entry.getValue().copy());
+        }
+        return copyLayer;
     }
 
 }

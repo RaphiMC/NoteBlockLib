@@ -15,26 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi.mapping;
+package net.raphimc.noteblocklib.format.mcsp2.model;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
+import java.util.HashMap;
+import java.util.Map;
 
-public class PercussionMapping {
+public class McSp2Layer {
 
-    private final MinecraftInstrument instrument;
-    private final byte nbsKey;
+    private final Map<Integer, McSp2Note> notes = new HashMap<>();
 
-    public PercussionMapping(final MinecraftInstrument instrument, final byte nbsKey) {
-        this.instrument = instrument;
-        this.nbsKey = nbsKey;
+    /**
+     * @return A map of all notes in this layer, with the tick as the key.
+     */
+    public Map<Integer, McSp2Note> getNotes() {
+        return this.notes;
     }
 
-    public MinecraftInstrument getInstrument() {
-        return this.instrument;
-    }
-
-    public byte getNbsKey() {
-        return this.nbsKey;
+    public McSp2Layer copy() {
+        final McSp2Layer copyLayer = new McSp2Layer();
+        final Map<Integer, McSp2Note> notes = this.getNotes();
+        final Map<Integer, McSp2Note> copyNotes = copyLayer.getNotes();
+        for (final Map.Entry<Integer, McSp2Note> entry : notes.entrySet()) {
+            copyNotes.put(entry.getKey(), entry.getValue().copy());
+        }
+        return copyLayer;
     }
 
 }

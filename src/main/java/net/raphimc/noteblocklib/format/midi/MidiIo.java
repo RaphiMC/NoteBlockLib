@@ -1,0 +1,139 @@
+/*
+ * This file is part of NoteBlockLib - https://github.com/RaphiMC/NoteBlockLib
+ * Copyright (C) 2022-2025 RK_01/RaphiMC and contributors
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package net.raphimc.noteblocklib.format.midi;
+
+import net.raphimc.noteblocklib.data.Constants;
+import net.raphimc.noteblocklib.format.midi.mapping.InstrumentMapping;
+import net.raphimc.noteblocklib.format.midi.mapping.MidiMappings;
+import net.raphimc.noteblocklib.format.midi.mapping.PercussionMapping;
+import net.raphimc.noteblocklib.format.midi.model.MidiSong;
+import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.SongResampler;
+
+import javax.sound.midi.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import static javax.sound.midi.ShortMessage.*;
+import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
+
+public class MidiIo {
+
+    public static MidiSong readSong(final InputStream is, final String fileName) throws IOException, InvalidMidiDataException {
+        final Sequence sequence = MidiSystem.getSequence(is);
+        final MidiSong song = new MidiSong(fileName);
+
+        if (sequence.getDivisionType() != Sequence.PPQ) {
+            throw new IllegalArgumentException("Unsupported MIDI division type: " + sequence.getDivisionType());
+        }
+        if (sequence.getTickLength() > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("MIDI sequence has too many ticks");
+        }
+
+        song.getTempoEvents().setTempo(0, (float) (1_000_000D / ((double) MidiDefinitions.DEFAULT_TEMPO_MPQ / sequence.getResolution())));
+        final byte[] channelInstruments = new byte[MidiDefinitions.CHANNEL_COUNT];
+        final byte[] channelVolumes = new byte[MidiDefinitions.CHANNEL_COUNT];
+        final byte[] channelPans = new byte[MidiDefinitions.CHANNEL_COUNT];
+        Arrays.fill(channelVolumes, MidiDefinitions.MAX_VELOCITY);
+        Arrays.fill(channelPans, MidiDefinitions.CENTER_PAN);
+
+        for (int trackIdx = 0; trackIdx < sequence.getTracks().length; trackIdx++) {
+            final Track track = sequence.getTracks()[trackIdx];
+            for (int eventIdx = 0; eventIdx < track.size(); eventIdx++) {
+                final MidiEvent event = track.get(eventIdx);
+                final MidiMessage message = event.getMessage();
+
+                if (message instanceof ShortMessage) {
+                    final ShortMessage shortMessage = (ShortMessage) message;
+                    switch (shortMessage.getCommand()) {
+                        case NOTE_ON:
+                            final byte instrument = channelInstruments[shortMessage.getChannel()];
+                            final byte key = (byte) shortMessage.getData1();
+                            final byte velocity = (byte) shortMessage.getData2();
+                            final byte pan = channelPans[shortMessage.getChannel()];
+
+                            final Note note = new Note();
+                            if (shortMessage.getChannel() == PERCUSSION_CHANNEL) {
+                                final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS.get(key);
+                                if (mapping == null) continue;
+
+                                note.setInstrument(mapping.getInstrument());
+                                note.setNbsKey(mapping.getNbsKey());
+                            } else {
+                                final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS.get(instrument);
+                                if (mapping == null) continue;
+
+                                note.setInstrument(mapping.getInstrument());
+                                note.setMidiKey(Math.max(NbsDefinitions.NBS_LOWEST_MIDI_KEY, Math.min(NbsDefinitions.NBS_HIGHEST_MIDI_KEY, key + Constants.KEYS_PER_OCTAVE * mapping.getOctaveModifier())));
+                            }
+                            note.setVolume(((float) velocity / MAX_VELOCITY) * (float) channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
+                            note.setPanning((float) (pan - CENTER_PAN) / CENTER_PAN);
+
+                            song.getNotes().add((int) event.getTick(), note);
+                            break;
+                        case NOTE_OFF:
+                            // Ignore note off events
+                            break;
+                        case PROGRAM_CHANGE:
+                            channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
+                            break;
+                        case CONTROL_CHANGE:
+                            switch (shortMessage.getData1()) {
+                                case VOLUME_CONTROL_MSB:
+                                    channelVolumes[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                                    break;
+                                case PAN_CONTROL_MSB:
+                                    channelPans[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                                    break;
+                                case RESET_CONTROLS:
+                                    channelVolumes[shortMessage.getChannel()] = MAX_VELOCITY;
+                                    channelPans[shortMessage.getChannel()] = CENTER_PAN;
+                                    break;
+                            }
+                            break;
+                        case PITCH_BEND:
+                            // Ignore pitch bend events
+                            break;
+                        case SYSTEM_RESET:
+                            Arrays.fill(channelInstruments, (byte) 0);
+                            Arrays.fill(channelVolumes, MAX_VELOCITY);
+                            Arrays.fill(channelPans, CENTER_PAN);
+                            break;
+                    }
+                } else if (message instanceof MetaMessage) {
+                    final MetaMessage metaMessage = (MetaMessage) message;
+                    if (metaMessage.getType() == SET_TEMPO && metaMessage.getData().length == 3) {
+                        final int newMpq = ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
+                        final double microsPerTick = (double) newMpq / sequence.getResolution();
+                        song.getTempoEvents().setTempo((int) event.getTick(), (float) (1_000_000D / microsPerTick));
+                    }
+                }
+            }
+        }
+
+        final float maxTempo = song.getTempoEvents().getTempoRange()[1];
+        if (maxTempo > SONG_TARGET_TEMPO) {
+            SongResampler.changeTickSpeed(song, SONG_TARGET_TEMPO);
+        }
+
+        return song;
+    }
+
+}

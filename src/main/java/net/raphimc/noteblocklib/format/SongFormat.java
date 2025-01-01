@@ -34,7 +34,13 @@ public enum SongFormat {
      *
      * @see <a href="https://web.archive.org/web/20110923175931/http://www.minecraftforum.net/topic/136749-minecraft-song-planner-25-a-tool-for-note-block-musicians/">Minecraft Forum</a>
      */
-    MCSP("mcsp2", "mcsp"),
+    MCSP("mcsp"),
+    /**
+     * Minecraft Song Planner v2 (Ancestor of Minecraft Note Block Studio)
+     *
+     * @see <a href="https://web.archive.org/web/20110923175931/http://www.minecraftforum.net/topic/136749-minecraft-song-planner-25-a-tool-for-note-block-musicians/">Minecraft Forum</a>
+     */
+    MCSP2("mcsp2"),
     /**
      * BleachHack NoteBot
      *
@@ -46,7 +52,7 @@ public enum SongFormat {
      *
      * @see <a href="https://futureclient.net/">Future Client</a>
      */
-    FUTURE("notebot"),
+    FUTURE_CLIENT("notebot"),
     /**
      * Standard MIDI
      *

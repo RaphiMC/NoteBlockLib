@@ -15,26 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi.mapping;
+package net.raphimc.noteblocklib.util;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
+public class TimerHack {
 
-public class PercussionMapping {
+    private static Thread THREAD;
 
-    private final MinecraftInstrument instrument;
-    private final byte nbsKey;
-
-    public PercussionMapping(final MinecraftInstrument instrument, final byte nbsKey) {
-        this.instrument = instrument;
-        this.nbsKey = nbsKey;
-    }
-
-    public MinecraftInstrument getInstrument() {
-        return this.instrument;
-    }
-
-    public byte getNbsKey() {
-        return this.nbsKey;
+    /**
+     * Starts a thread which indefinitely sleeps to force the JVM to enable high resolution timers on Windows.
+     */
+    public static synchronized void ensureRunning() {
+        if (THREAD == null) {
+            THREAD = new Thread(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(Integer.MAX_VALUE);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }, "NoteBlockLib-TimerHack");
+            THREAD.setDaemon(true);
+            THREAD.start();
+        }
     }
 
 }

@@ -17,19 +17,19 @@
  */
 package net.raphimc.noteblocklib.format.midi.mapping;
 
-import net.raphimc.noteblocklib.util.Instrument;
+import net.raphimc.noteblocklib.data.MinecraftInstrument;
 
 public class InstrumentMapping {
 
-    private final Instrument instrument;
+    private final MinecraftInstrument instrument;
     private final int octaveModifier;
 
-    public InstrumentMapping(final Instrument instrument, final int octaveModifier) {
+    public InstrumentMapping(final MinecraftInstrument instrument, final int octaveModifier) {
         this.instrument = instrument;
         this.octaveModifier = octaveModifier;
     }
 
-    public Instrument getInstrument() {
+    public MinecraftInstrument getInstrument() {
         return this.instrument;
     }
 

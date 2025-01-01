@@ -17,150 +17,58 @@
  */
 package net.raphimc.noteblocklib.util;
 
+import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
-import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.NoteWithVolume;
-import net.raphimc.noteblocklib.model.SongView;
+import net.raphimc.noteblocklib.model.Song;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.text.DecimalFormat;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SongUtil {
 
-    /**
-     * Applies the given consumer to all notes in the song view.<br>
-     * This method will also modify the notes of the original song as the view references the original song notes.<br>
-     * Use cases for this method can be for example to transpose all notes in a song to be within the minecraft octave range.
-     *
-     * @param songView     The song view
-     * @param noteConsumer The note consumer
-     * @param <N>          The note type
-     */
-    public static <N extends Note> void applyToAllNotes(final SongView<N> songView, final Consumer<N> noteConsumer) {
-        songView.getNotes().values().stream().flatMap(Collection::stream).forEach(noteConsumer);
-    }
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     /**
-     * Applies the given predicate to all notes in the song view.<br>
-     * The predicate can return true to break the iteration.
-     *
-     * @param songView      The song view
-     * @param notePredicate The note predicate
-     * @param <N>           The note type
+     * @param song The song
+     * @return True if the song contains notes which are outside the vanilla Minecraft octave range.
      */
-    public static <N extends Note> void iterateAllNotes(final SongView<N> songView, final Predicate<N> notePredicate) {
-        for (N note : songView.getNotes().values().stream().flatMap(Collection::stream).collect(Collectors.toList())) {
-            if (notePredicate.test(note)) {
-                break;
-            }
-        }
-    }
-
-    /**
-     * Removes all notes which match the given predicate.
-     *
-     * @param songView      The song view
-     * @param notePredicate The predicate
-     * @param <N>           The note type
-     */
-    public static <N extends Note> void removeNotesIf(final SongView<N> songView, final Predicate<N> notePredicate) {
-        for (List<N> list : songView.getNotes().values()) {
-            list.removeIf(notePredicate);
-        }
-    }
-
-    /**
-     * Removes duplicate notes which are on the same tick.<br>
-     * Useful when handling large MIDI files with a lot of duplicate notes.
-     *
-     * @param songView The song view
-     * @param <N>      The note type
-     */
-    public static <N extends Note> void removeDoubleNotes(final SongView<N> songView) {
-        for (List<N> list : songView.getNotes().values()) {
-            final Set<N> set = new HashSet<>(list);
-            list.clear();
-            list.addAll(set);
-        }
-    }
-
-    /**
-     * Removes all notes which have a volume of 0.
-     *
-     * @param songView The song view
-     * @param <N>      The note type
-     */
-    public static <N extends Note> void removeSilentNotes(final SongView<N> songView) {
-        removeSilentNotes(songView, 0F);
-    }
-
-    /**
-     * Removes all notes which have a volume lower than or equal the given threshold.
-     *
-     * @param songView  The song view
-     * @param threshold The threshold
-     * @param <N>       The note type
-     */
-    public static <N extends Note> void removeSilentNotes(final SongView<N> songView, final float threshold) {
-        removeNotesIf(songView, note -> {
-            if (note instanceof NoteWithVolume) {
-                return ((NoteWithVolume) note).getVolume() <= threshold;
-            } else {
-                return false;
-            }
-        });
+    public static boolean hasOutsideMinecraftOctaveRangeNotes(final Song song) {
+        return song.getNotes().testEach(Note::isOutsideMinecraftOctaveRange);
     }
 
     /**
      * Returns a list of all used vanilla instruments in a song.
      *
-     * @param songView The song view
-     * @param <N>      The note type
+     * @param song The song
      * @return The used instruments
      */
-    public static <N extends Note> Set<Instrument> getUsedVanillaInstruments(final SongView<N> songView) {
-        final Set<Instrument> usedInstruments = EnumSet.noneOf(Instrument.class);
-        iterateAllNotes(songView, note -> {
-            if (note.getInstrument() != null) {
-                usedInstruments.add(note.getInstrument());
+    public static Set<MinecraftInstrument> getUsedVanillaInstruments(final Song song) {
+        final Set<MinecraftInstrument> usedInstruments = EnumSet.noneOf(MinecraftInstrument.class);
+        song.getNotes().forEach(note -> {
+            if (note.getInstrument() instanceof MinecraftInstrument) {
+                usedInstruments.add((MinecraftInstrument) note.getInstrument());
             }
-            return false;
         });
-
         return usedInstruments;
     }
 
     /**
-     * Returns a list of all used custom instruments in a song.
+     * Returns a list of all used NBS custom instruments in a song.
      *
-     * @param songView The song view
-     * @param <N>      The note type
+     * @param song The song
      * @return The used custom instruments
      */
-    public static <N extends Note> Set<NbsCustomInstrument> getUsedCustomInstruments(final SongView<N> songView) {
+    public static Set<NbsCustomInstrument> getUsedNbsCustomInstruments(final Song song) {
         final Set<NbsCustomInstrument> usedInstruments = new HashSet<>();
-        iterateAllNotes(songView, note -> {
-            if (note instanceof NbsNote && ((NbsNote) note).getCustomInstrument() != null) {
-                usedInstruments.add(((NbsNote) note).getCustomInstrument());
+        song.getNotes().forEach(note -> {
+            if (note.getInstrument() instanceof NbsCustomInstrument) {
+                usedInstruments.add((NbsCustomInstrument) note.getInstrument());
             }
-            return false;
         });
-
         return usedInstruments;
-    }
-
-    /**
-     * Returns the total amount of notes in a song.
-     *
-     * @param songView The song view
-     * @param <N>      The note type
-     * @return The note count
-     */
-    public static <N extends Note> long getNoteCount(final SongView<N> songView) {
-        return songView.getNotes().values().stream().mapToLong(List::size).sum();
     }
 
 }

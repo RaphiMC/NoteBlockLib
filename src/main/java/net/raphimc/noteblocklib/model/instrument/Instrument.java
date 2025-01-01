@@ -15,26 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi.mapping;
+package net.raphimc.noteblocklib.model.instrument;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
+public interface Instrument {
 
-public class PercussionMapping {
-
-    private final MinecraftInstrument instrument;
-    private final byte nbsKey;
-
-    public PercussionMapping(final MinecraftInstrument instrument, final byte nbsKey) {
-        this.instrument = instrument;
-        this.nbsKey = nbsKey;
-    }
-
-    public MinecraftInstrument getInstrument() {
-        return this.instrument;
-    }
-
-    public byte getNbsKey() {
-        return this.nbsKey;
-    }
+    Instrument copy();
 
 }
