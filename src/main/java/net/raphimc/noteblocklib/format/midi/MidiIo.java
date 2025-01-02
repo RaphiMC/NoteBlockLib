@@ -29,6 +29,7 @@ import net.raphimc.noteblocklib.util.SongResampler;
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static javax.sound.midi.ShortMessage.*;
@@ -119,10 +120,14 @@ public class MidiIo {
                     }
                 } else if (message instanceof MetaMessage) {
                     final MetaMessage metaMessage = (MetaMessage) message;
-                    if (metaMessage.getType() == SET_TEMPO && metaMessage.getData().length == 3) {
+                    if (metaMessage.getType() == META_SET_TEMPO && metaMessage.getData().length == 3) {
                         final int newMpq = ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
                         final double microsPerTick = (double) newMpq / sequence.getResolution();
                         song.getTempoEvents().setTempo((int) event.getTick(), (float) (1_000_000D / microsPerTick));
+                    } else if (metaMessage.getType() == META_COPYRIGHT_NOTICE) {
+                        song.setAuthor(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
+                    } else if (metaMessage.getType() == META_TRACK_NAME) {
+                        song.setTitle(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
                     }
                 }
             }
