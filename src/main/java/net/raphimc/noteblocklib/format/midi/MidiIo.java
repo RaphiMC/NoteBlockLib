@@ -125,7 +125,7 @@ public class MidiIo {
                         final double microsPerTick = (double) newMpq / sequence.getResolution();
                         song.getTempoEvents().setTempo((int) event.getTick(), (float) (1_000_000D / microsPerTick));
                     } else if (metaMessage.getType() == META_COPYRIGHT_NOTICE) {
-                        song.setAuthor(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
+                        song.setOriginalAuthor(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
                     } else if (metaMessage.getType() == META_TRACK_NAME) {
                         song.setTitle(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
                     }
