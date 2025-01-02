@@ -119,7 +119,9 @@ public abstract class SongPlayer {
 
     protected void tick() {
         try {
-            this.preTick();
+            if (!this.preTick()) {
+                return;
+            }
             try {
                 if (this.paused) {
                     return;
@@ -148,7 +150,8 @@ public abstract class SongPlayer {
         }
     }
 
-    protected void preTick() {
+    protected boolean preTick() {
+        return true;
     }
 
     protected abstract void playNotes(final List<Note> notes);
