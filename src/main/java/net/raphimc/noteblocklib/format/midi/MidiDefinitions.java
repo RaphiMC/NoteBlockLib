@@ -19,7 +19,10 @@ package net.raphimc.noteblocklib.format.midi;
 
 public class MidiDefinitions {
 
-    public static final int SET_TEMPO = 0x51;
+    public static final int META_COPYRIGHT_NOTICE = 0x02;
+    public static final int META_TRACK_NAME = 0x03;
+    public static final int META_SET_TEMPO = 0x51;
+
     public static final int PERCUSSION_CHANNEL = 9;
     public static final int VOLUME_CONTROL_MSB = 0x07;
     public static final int PAN_CONTROL_MSB = 0x0A;
