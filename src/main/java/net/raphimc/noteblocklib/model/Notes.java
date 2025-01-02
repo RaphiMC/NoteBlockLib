@@ -174,8 +174,8 @@ public class Notes {
     /**
      * @return The total amount of notes in a song.
      */
-    public long getNoteCount() {
-        return this.notes.values().stream().mapToLong(List::size).sum();
+    public int getNoteCount() {
+        return this.notes.values().stream().mapToInt(List::size).sum();
     }
 
     public Notes copy() {
