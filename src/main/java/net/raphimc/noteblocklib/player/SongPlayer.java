@@ -40,7 +40,18 @@ public abstract class SongPlayer {
         this.song = song;
     }
 
+    /**
+     * Starts playing the song from the beginning.
+     */
     public void start() {
+        this.start(0);
+    }
+
+    /**
+     * Starts playing the song from the beginning.
+     * @param delay The delay in milliseconds before starting the song.
+     */
+    public void start(final int delay) {
         if (this.isRunning()) this.stop();
 
         this.ticksPerSecond = this.song.getTempoEvents().getTempo(0);
@@ -53,9 +64,12 @@ public abstract class SongPlayer {
             thread.setDaemon(true);
             return thread;
         });
-        this.createTickTask();
+        this.createTickTask(TimeUnit.MILLISECONDS.toNanos(delay));
     }
 
+    /**
+     * Stops playing the song.
+     */
     public void stop() {
         if (!this.isRunning()) return;
 
@@ -69,54 +83,95 @@ public abstract class SongPlayer {
         this.paused = false;
     }
 
+    /**
+     * @return Whether the player is in the running state (playing or paused).
+     */
     public boolean isRunning() {
         return this.scheduler != null && !this.scheduler.isTerminated();
     }
 
+    /**
+     * @return The song that is being played.
+     */
     public Song getSong() {
         return this.song;
     }
 
+    /**
+     * Sets the song that should be played.<br>
+     * Can be called in {@link #onFinished()}.
+     * @param song The song to play.
+     */
     protected void setSong(final Song song) {
         this.song = song;
     }
 
+    /**
+     * @return The current tempo in ticks per second.
+     */
     public float getCurrentTicksPerSecond() {
         return this.ticksPerSecond;
     }
 
+    /**
+     * @return The current tick.
+     */
     public int getTick() {
         return this.tick;
     }
 
+    /**
+     * Sets the current tick.
+     * @param tick The tick to set.
+     */
     public void setTick(final int tick) {
         this.tick = tick;
     }
 
+    /**
+     * @return The current playback position in milliseconds.
+     */
     public int getMillisecondPosition() {
         return this.song.tickToMilliseconds(this.tick);
     }
 
+    /**
+     * Sets the current playback position in milliseconds.
+     * @param milliseconds The time to set the playback position to.
+     */
     public void setMillisecondPosition(final int milliseconds) {
         this.tick = this.song.millisecondsToTick(milliseconds);
     }
 
+    /**
+     * @return Whether the player is paused.
+     */
     public boolean isPaused() {
         return this.paused;
     }
 
+    /**
+     * Pauses or resumes the player.
+     * @param paused Whether the player should be paused.
+     */
     public void setPaused(final boolean paused) {
         this.paused = paused;
     }
 
-    protected void createTickTask() {
+    /**
+     * Create the internal tick task.
+     * @param initialDelay The initial delay in nanoseconds.
+     */
+    protected void createTickTask(final long initialDelay) {
         if (this.tickTask != null) {
             this.tickTask.cancel(false);
         }
-        final long period = (long) (1_000_000_000D / this.ticksPerSecond);
-        this.tickTask = this.scheduler.scheduleAtFixedRate(this::tick, this.tickTask != null ? period : 0L, period, TimeUnit.NANOSECONDS);
+        this.tickTask = this.scheduler.scheduleAtFixedRate(this::tick, initialDelay, (long) (1_000_000_000D / this.ticksPerSecond), TimeUnit.NANOSECONDS);
     }
 
+    /**
+     * Called every tick to play the notes.
+     */
     protected void tick() {
         try {
             if (!this.preTick()) {
@@ -137,7 +192,7 @@ public abstract class SongPlayer {
                 }
                 if (this.ticksPerSecond != this.song.getTempoEvents().getEffectiveTempo(this.tick)) {
                     this.ticksPerSecond = this.song.getTempoEvents().getEffectiveTempo(this.tick);
-                    this.createTickTask();
+                    this.createTickTask((long) (1_000_000_000D / this.ticksPerSecond));
                 }
             } finally {
                 this.postTick();
@@ -150,15 +205,29 @@ public abstract class SongPlayer {
         }
     }
 
+    /**
+     * Called before each tick (Even when paused).
+     * @return Whether the tick should be executed.
+     */
     protected boolean preTick() {
         return true;
     }
 
+    /**
+     * Plays the notes.
+     * @param notes The notes to play.
+     */
     protected abstract void playNotes(final List<Note> notes);
 
+    /**
+     * Called when the song has finished playing.
+     */
     protected void onFinished() {
     }
 
+    /**
+     * Called after each tick.
+     */
     protected void postTick() {
     }
 
