@@ -20,7 +20,12 @@ package net.raphimc.noteblocklib.format.midi.model;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.model.Song;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MidiSong extends Song {
+
+    private final Map<Integer, String> trackNames = new HashMap<>();
 
     public MidiSong() {
         this(null);
@@ -30,11 +35,15 @@ public class MidiSong extends Song {
         super(SongFormat.MIDI, fileName);
     }
 
+    public Map<Integer, String> getTrackNames() {
+        return this.trackNames;
+    }
+
     @Override
     public MidiSong copy() {
         final MidiSong copySong = new MidiSong(this.getFileName());
         copySong.copyGeneralData(this);
-
+        copySong.getTrackNames().putAll(this.getTrackNames());
         return copySong;
     }
 

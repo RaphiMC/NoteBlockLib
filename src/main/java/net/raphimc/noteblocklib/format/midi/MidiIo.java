@@ -127,7 +127,7 @@ public class MidiIo {
                     } else if (metaMessage.getType() == META_COPYRIGHT_NOTICE) {
                         song.setOriginalAuthor(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
                     } else if (metaMessage.getType() == META_TRACK_NAME) {
-                        song.setTitle(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
+                        song.getTrackNames().put(trackIdx, new String(metaMessage.getData(), StandardCharsets.US_ASCII));
                     }
                 }
             }
