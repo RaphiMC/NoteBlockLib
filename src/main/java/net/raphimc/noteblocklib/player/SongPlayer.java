@@ -54,7 +54,7 @@ public abstract class SongPlayer {
     public void start(final int delay) {
         if (this.isRunning()) this.stop();
 
-        this.ticksPerSecond = this.song.getTempoEvents().getTempo(0);
+        this.ticksPerSecond = this.song.getTempoEvents().get(0);
         this.tick = 0;
 
         TimerHack.ensureRunning();

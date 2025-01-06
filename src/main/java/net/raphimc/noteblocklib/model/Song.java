@@ -59,7 +59,7 @@ public abstract class Song {
         int lastTick = 0;
         float totalMilliseconds = 0;
         for (int tempoTick : tempoEventTicks) {
-            final float tps = this.tempoEvents.getTempo(lastTick);
+            final float tps = this.tempoEvents.get(lastTick);
             final int ticksInSegment = tempoTick - lastTick;
             final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
             totalMilliseconds += segmentMilliseconds;
@@ -76,7 +76,7 @@ public abstract class Song {
         int lastTick = 0;
         float totalMilliseconds = 0;
         for (int tempoTick : tempoEventTicks) {
-            final float tps = this.tempoEvents.getTempo(lastTick);
+            final float tps = this.tempoEvents.get(lastTick);
             final int ticksInSegment = tempoTick - lastTick;
             final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
 

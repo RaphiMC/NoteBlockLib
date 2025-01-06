@@ -140,7 +140,7 @@ public class NbsIo {
                 customInstrumentMap.put(customInstrument, customInstrument.copy().setPitch((byte) NbsDefinitions.F_SHARP_4_NBS_KEY));
             }
 
-            song.getTempoEvents().setTempo(0, song.getTempo() / 100F);
+            song.getTempoEvents().set(0, song.getTempo() / 100F);
             for (NbsLayer layer : layers.values()) {
                 for (Map.Entry<Integer, NbsNote> noteEntry : layer.getNotes().entrySet()) {
                     final NbsNote nbsNote = noteEntry.getValue();
@@ -159,7 +159,7 @@ public class NbsIo {
                     } else {
                         final NbsCustomInstrument nbsCustomInstrument = customInstruments.get(nbsNote.getInstrument() - song.getVanillaInstrumentCount());
                         if (song.getVersion() >= 4 && NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
-                            song.getTempoEvents().setTempo(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
+                            song.getTempoEvents().set(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
                             continue;
                         }
 

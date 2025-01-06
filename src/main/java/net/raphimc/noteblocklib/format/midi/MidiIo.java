@@ -48,7 +48,7 @@ public class MidiIo {
             throw new IllegalArgumentException("MIDI sequence has too many ticks");
         }
 
-        song.getTempoEvents().setTempo(0, (float) (1_000_000D / ((double) MidiDefinitions.DEFAULT_TEMPO_MPQ / sequence.getResolution())));
+        song.getTempoEvents().set(0, (float) (1_000_000D / ((double) MidiDefinitions.DEFAULT_TEMPO_MPQ / sequence.getResolution())));
         final byte[] channelInstruments = new byte[MidiDefinitions.CHANNEL_COUNT];
         final byte[] channelVolumes = new byte[MidiDefinitions.CHANNEL_COUNT];
         final byte[] channelPans = new byte[MidiDefinitions.CHANNEL_COUNT];
@@ -123,7 +123,7 @@ public class MidiIo {
                     if (metaMessage.getType() == META_SET_TEMPO && metaMessage.getData().length == 3) {
                         final int newMpq = ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
                         final double microsPerTick = (double) newMpq / sequence.getResolution();
-                        song.getTempoEvents().setTempo((int) event.getTick(), (float) (1_000_000D / microsPerTick));
+                        song.getTempoEvents().set((int) event.getTick(), (float) (1_000_000D / microsPerTick));
                     } else if (metaMessage.getType() == META_COPYRIGHT_NOTICE) {
                         song.setOriginalAuthor(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
                     } else if (metaMessage.getType() == META_TRACK_NAME) {
