@@ -62,7 +62,7 @@ public class McSpIo {
         }
 
         { // Fill generalized song structure with data
-            song.getTempoEvents().setTempo(0, 10);
+            song.getTempoEvents().set(0, 10);
             for (Map.Entry<Integer, McSpNote[]> entry : notes.entrySet()) {
                 for (McSpNote mcSpNote : entry.getValue()) {
                     if (mcSpNote == null) continue;

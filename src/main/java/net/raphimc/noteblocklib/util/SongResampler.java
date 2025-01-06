@@ -37,7 +37,7 @@ public class SongResampler {
     public static void changeTickSpeed(final Song song, final float newTempo) {
         precomputeTempoEvents(song); // Ensure song has static tempo
 
-        final float divider = song.getTempoEvents().getTempo(0) / newTempo;
+        final float divider = song.getTempoEvents().get(0) / newTempo;
         if (divider == 1F) return;
 
         final Map<Integer, List<Note>> newNotes = new HashMap<>();
@@ -49,7 +49,7 @@ public class SongResampler {
         for (Map.Entry<Integer, List<Note>> entry : newNotes.entrySet()) {
             song.getNotes().set(entry.getKey(), entry.getValue());
         }
-        song.getTempoEvents().setTempo(0, newTempo);
+        song.getTempoEvents().set(0, newTempo);
     }
 
     /**
@@ -75,7 +75,7 @@ public class SongResampler {
             song.getNotes().set(entry.getKey(), entry.getValue());
         }
         song.getTempoEvents().clear();
-        song.getTempoEvents().setTempo(0, newTempo);
+        song.getTempoEvents().set(0, newTempo);
     }
 
 }

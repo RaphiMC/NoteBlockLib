@@ -31,7 +31,7 @@ public class TempoEvents {
         this.tempoEvents.put(0, DEFAULT_TEMPO);
     }
 
-    public float getTempo(final int tick) {
+    public float get(final int tick) {
         return this.tempoEvents.getOrDefault(tick, 0F);
     }
 
@@ -39,7 +39,7 @@ public class TempoEvents {
         return this.tempoEvents.floorEntry(tick).getValue();
     }
 
-    public void setTempo(final int tick, final float tempo) {
+    public void set(final int tick, final float tempo) {
         this.tempoEvents.put(tick, tempo);
     }
 

@@ -40,7 +40,7 @@ public class NbsConverter {
         final NbsSong newSong = new NbsSong();
         newSong.copyGeneralData(song);
         newSong.setLength((short) song.getNotes().getLengthInTicks());
-        newSong.setTempo((short) Math.round(song.getTempoEvents().getTempo(0) * 100F));
+        newSong.setTempo((short) Math.round(song.getTempoEvents().get(0) * 100F));
 
         for (int tick : song.getNotes().getTicks()) {
             final List<Note> notes = song.getNotes().get(tick);
@@ -80,7 +80,7 @@ public class NbsConverter {
             newSong.getLayers().put(newSong.getLayers().size(), tempoChangerLayer);
 
             for (int tempoEventTick : song.getTempoEvents().getTicks()) {
-                final float tps = song.getTempoEvents().getTempo(tempoEventTick);
+                final float tps = song.getTempoEvents().get(tempoEventTick);
                 final NbsNote tempoChangerNote = new NbsNote();
                 tempoChangerNote.setInstrument(instrumentId);
                 tempoChangerNote.setKey((byte) NbsDefinitions.F_SHARP_4_NBS_KEY);

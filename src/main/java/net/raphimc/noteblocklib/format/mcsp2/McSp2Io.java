@@ -81,7 +81,7 @@ public class McSp2Io {
         }
 
         { // Fill generalized song structure with data
-            song.getTempoEvents().setTempo(0, song.getTempo());
+            song.getTempoEvents().set(0, song.getTempo());
             for (McSp2Layer layer : song.getLayers().values()) {
                 for (Map.Entry<Integer, McSp2Note> noteEntry : layer.getNotes().entrySet()) {
                     final McSp2Note mcSp2Note = noteEntry.getValue();

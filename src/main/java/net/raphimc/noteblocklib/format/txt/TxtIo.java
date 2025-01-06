@@ -63,7 +63,7 @@ public class TxtIo {
         }
 
         { // Fill generalized song structure with data
-            song.getTempoEvents().setTempo(0, 20);
+            song.getTempoEvents().set(0, 20);
             for (Map.Entry<Integer, List<TxtNote>> entry : notes.entrySet()) {
                 for (TxtNote txtNote : entry.getValue()) {
                     final Note note = new Note();

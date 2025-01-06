@@ -113,7 +113,7 @@ NoteBlockLib.writeSong(newSong, new File("output.nbs"));
 ```java
 Song mySong = new GenericSong();
 mySong.setTitle("My song");
-mySong.getTempoEvents().setTempo(0, 10F); // set the tempo to 10 ticks per second
+mySong.getTempoEvents().set(0, 10F); // set the tempo to 10 ticks per second
 mySong.getNotes().add(0, new Note().setInstrument(MinecraftInstrument.HARP).setNbsKey((byte) 46));
 mySong.getNotes().add(5, new Note().setInstrument(MinecraftInstrument.BASS).setNbsKey((byte) 60));
 mySong.getNotes().add(8, new Note().setInstrument(MinecraftInstrument.BIT).setNbsKey((byte) 84));
