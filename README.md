@@ -5,8 +5,9 @@ To use NoteBlockLib in your application, check out the [Usage](#usage) section.
 For a reference implementation of NoteBlockLib, check out [NoteBlockTool](https://github.com/RaphiMC/NoteBlockTool).
 
 ## Features
-- Reads .nbs, .mid, .txt, .mcsp, .mcsp2 and .notebot files
-- Can convert all of the above to .nbs
+- Supports reading .nbs, .mid, .txt, .mcsp, .mcsp2 and .notebot files
+- Supports writing .nbs, .txt and .mcsp2 files
+- Can convert all formats to .nbs
 - Offers an easy way to play note block songs in your application
 - Good MIDI importer
   - Supports most MIDI files

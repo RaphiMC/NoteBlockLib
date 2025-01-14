@@ -22,10 +22,7 @@ import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.format.txt.model.TxtSong;
 import net.raphimc.noteblocklib.model.Note;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +60,7 @@ public class TxtIo {
         }
 
         { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, 20);
+            song.getTempoEvents().set(0, TxtDefinitions.TEMPO);
             for (Map.Entry<Integer, List<TxtNote>> entry : notes.entrySet()) {
                 for (TxtNote txtNote : entry.getValue()) {
                     final Note note = new Note();
@@ -75,6 +72,24 @@ public class TxtIo {
         }
 
         return song;
+    }
+
+    public static void writeSong(final TxtSong song, final OutputStream os) throws IOException {
+        final OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os, BUFFER_SIZE), StandardCharsets.UTF_8);
+        if (song.getTitle() != null) {
+            writer.write("// Name: " + song.getTitle() + "\n");
+        }
+        if (song.getAuthor() != null) {
+            writer.write("// Author: " + song.getAuthor() + "\n");
+        }
+
+        for (Map.Entry<Integer, List<TxtNote>> entry : song.getTxtNotes().entrySet()) {
+            for (TxtNote txtNote : entry.getValue()) {
+                writer.write(entry.getKey() + ":" + txtNote.getKey() + ":" + txtNote.getInstrument() + "\n");
+            }
+        }
+
+        writer.flush();
     }
 
 }

@@ -15,16 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.mcsp2;
+package net.raphimc.noteblocklib.format.txt;
 
-import java.util.regex.Pattern;
+public class TxtDefinitions {
 
-public class McSp2Definitions {
-
-    public static final int MIN_TEMPO = 1;
-    public static final int MAX_TEMPO = 20;
-
-    public static final Pattern NOTE_DATA_PATTERN = Pattern.compile("(\\d+)?>(.)");
-    public static final String NOTE_DATA_MAPPING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§½#£¤$%&/{[(])=}?\\+´`^~¨*'.;,:-_<µ€ÌìíÍïÏîÎóÓòÒöÖåÅäÄñÑõÕúÚùÙüûÜÛéÉèÈêÊë";
+    public static final int TEMPO = 20;
 
 }

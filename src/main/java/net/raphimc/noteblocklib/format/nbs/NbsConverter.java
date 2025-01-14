@@ -46,8 +46,6 @@ public class NbsConverter {
             final List<Note> notes = song.getNotes().get(tick);
             for (int i = 0; i < notes.size(); i++) {
                 final Note note = notes.get(i);
-                final NbsLayer nbsLayer = newSong.getLayers().computeIfAbsent(i, k -> new NbsLayer());
-
                 final NbsNote nbsNote = new NbsNote();
                 if (note.getInstrument() instanceof MinecraftInstrument) {
                     nbsNote.setInstrument(((MinecraftInstrument) note.getInstrument()).nbsId());
@@ -57,12 +55,15 @@ public class NbsConverter {
                         newSong.getCustomInstruments().add(customInstrument);
                     }
                     nbsNote.setInstrument((short) (newSong.getVanillaInstrumentCount() + newSong.getCustomInstruments().indexOf(customInstrument)));
+                } else {
+                    continue;
                 }
                 nbsNote.setKey((byte) Math.max(NbsDefinitions.NBS_LOWEST_KEY, Math.min(NbsDefinitions.NBS_HIGHEST_KEY, note.getNbsKey())));
                 nbsNote.setVelocity((byte) Math.round(note.getVolume() * 100F));
                 nbsNote.setPanning((short) (Math.round(note.getPanning() * 100F) + NbsDefinitions.CENTER_PANNING));
                 nbsNote.setPitch((short) Math.round(note.getFractionalKeyPart() * 100F));
 
+                final NbsLayer nbsLayer = newSong.getLayers().computeIfAbsent(i, k -> new NbsLayer());
                 nbsLayer.getNotes().put(tick, nbsNote);
             }
         }

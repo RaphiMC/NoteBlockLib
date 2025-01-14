@@ -23,12 +23,12 @@ import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Note;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
 import net.raphimc.noteblocklib.model.Note;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 
 public class McSp2Io {
@@ -95,6 +95,60 @@ public class McSp2Io {
         }
 
         return song;
+    }
+
+    public static void writeSong(final McSp2Song song, final OutputStream os) throws IOException {
+        final OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os, BUFFER_SIZE), StandardCharsets.ISO_8859_1);
+        writer.write("2");
+        writer.write("|");
+        writer.write(String.valueOf(song.getAutoSaveInterval()));
+        writer.write("|");
+        writer.write(song.getTitleOr("").replace("|", "_"));
+        writer.write("|");
+        writer.write(song.getAuthorOr("").replace("|", "_"));
+        writer.write("|");
+        writer.write(song.getOriginalAuthorOr("").replace("|", "_"));
+        writer.write("|");
+
+        final Map<Integer, Map<Integer, McSp2Note>> notes = new TreeMap<>();
+        for (Map.Entry<Integer, McSp2Layer> layerEntry : song.getLayers().entrySet()) {
+            for (Map.Entry<Integer, McSp2Note> noteEntry : layerEntry.getValue().getNotes().entrySet()) {
+                notes.computeIfAbsent(noteEntry.getKey(), k -> new TreeMap<>()).put(layerEntry.getKey(), noteEntry.getValue());
+            }
+        }
+
+        int lastTick = 0;
+        for (Map.Entry<Integer, Map<Integer, McSp2Note>> tickEntry : notes.entrySet()) {
+            writer.write("|");
+            writer.write(String.valueOf(tickEntry.getKey() - lastTick));
+            lastTick = tickEntry.getKey();
+
+            int lastLayer = 0;
+            final StringBuilder noteData = new StringBuilder();
+            for (Map.Entry<Integer, McSp2Note> layerEntry : tickEntry.getValue().entrySet()) {
+                noteData.append(layerEntry.getKey() - lastLayer);
+                noteData.append('>');
+                noteData.append(layerEntry.getValue().getInstrumentAndKey());
+                lastLayer = layerEntry.getKey();
+            }
+            writer.write("|");
+            writer.write(noteData.toString());
+        }
+        writer.write("\n");
+
+        writer.write(String.valueOf(song.getTempo()));
+        writer.write("|");
+        writer.write(String.valueOf(song.getLeftClicks()));
+        writer.write("|");
+        writer.write(String.valueOf(song.getRightClicks()));
+        writer.write("|");
+        writer.write(String.valueOf(song.getNoteBlocksAdded()));
+        writer.write("|");
+        writer.write(String.valueOf(song.getNoteBlocksRemoved()));
+        writer.write("|");
+        writer.write(String.valueOf(song.getMinutesSpent()));
+
+        writer.flush();
     }
 
 }
