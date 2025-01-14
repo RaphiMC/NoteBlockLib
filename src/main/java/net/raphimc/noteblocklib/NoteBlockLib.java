@@ -20,12 +20,16 @@ package net.raphimc.noteblocklib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.futureclient.FutureClientIo;
 import net.raphimc.noteblocklib.format.mcsp.McSpIo;
+import net.raphimc.noteblocklib.format.mcsp2.McSp2Converter;
 import net.raphimc.noteblocklib.format.mcsp2.McSp2Io;
+import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
 import net.raphimc.noteblocklib.format.midi.MidiIo;
 import net.raphimc.noteblocklib.format.nbs.NbsConverter;
 import net.raphimc.noteblocklib.format.nbs.NbsIo;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
+import net.raphimc.noteblocklib.format.txt.TxtConverter;
 import net.raphimc.noteblocklib.format.txt.TxtIo;
+import net.raphimc.noteblocklib.format.txt.model.TxtSong;
 import net.raphimc.noteblocklib.model.Song;
 
 import java.io.ByteArrayInputStream;
@@ -96,6 +100,10 @@ public class NoteBlockLib {
         try {
             if (song instanceof NbsSong) {
                 NbsIo.writeSong((NbsSong) song, os);
+            } else if (song instanceof McSp2Song) {
+                McSp2Io.writeSong((McSp2Song) song, os);
+            } else if (song instanceof TxtSong) {
+                TxtIo.writeSong((TxtSong) song, os);
             } else {
                 throw new Exception("Unsupported song format for writing: " + song.getClass().getSimpleName());
             }
@@ -110,6 +118,10 @@ public class NoteBlockLib {
         switch (targetFormat) {
             case NBS:
                 return NbsConverter.createSong(song);
+            case MCSP2:
+                return McSp2Converter.createSong(song);
+            case TXT:
+                return TxtConverter.createSong(song);
             default:
                 throw new IllegalStateException("Unsupported target format: " + targetFormat);
         }

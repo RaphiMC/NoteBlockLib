@@ -29,6 +29,8 @@ public class MinecraftDefinitions {
 
     public static final int MC_LOWEST_MIDI_KEY = 54;
     public static final int MC_HIGHEST_MIDI_KEY = 78;
+    public static final int MC_LOWEST_KEY = 0;
+    public static final int MC_HIGHEST_KEY = 24;
     public static final int MC_KEYS = Constants.KEYS_PER_OCTAVE * 2;
 
     // Instrument -> [lower shifts, upper shifts]
