@@ -54,12 +54,15 @@ public abstract class Song {
     public int tickToMilliseconds(final int tick) {
         final Set<Integer> tempoEventTicks = new TreeSet<>(this.tempoEvents.getTicks());
         tempoEventTicks.add(tick);
-        tempoEventTicks.removeIf(t -> t > tick);
 
         int lastTick = 0;
         float totalMilliseconds = 0;
         for (int tempoTick : tempoEventTicks) {
-            final float tps = this.tempoEvents.get(lastTick);
+            if (tempoTick > tick) {
+                break;
+            }
+
+            final float tps = this.tempoEvents.getEffectiveTempo(lastTick);
             final int ticksInSegment = tempoTick - lastTick;
             final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
             totalMilliseconds += segmentMilliseconds;
@@ -76,13 +79,13 @@ public abstract class Song {
         int lastTick = 0;
         float totalMilliseconds = 0;
         for (int tempoTick : tempoEventTicks) {
-            final float tps = this.tempoEvents.get(lastTick);
+            final float tps = this.tempoEvents.getEffectiveTempo(lastTick);
             final int ticksInSegment = tempoTick - lastTick;
             final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
 
             if (totalMilliseconds + segmentMilliseconds >= milliseconds) {
-                float remainingMilliseconds = milliseconds - totalMilliseconds;
-                int ticksToAdd = Math.round((remainingMilliseconds / 1000F) * tps);
+                final float remainingMilliseconds = milliseconds - totalMilliseconds;
+                final int ticksToAdd = Math.round((remainingMilliseconds / 1000F) * tps);
                 return lastTick + ticksToAdd;
             }
 
