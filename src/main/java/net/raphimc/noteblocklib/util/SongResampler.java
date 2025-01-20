@@ -20,10 +20,7 @@ package net.raphimc.noteblocklib.util;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SongResampler {
 
@@ -62,12 +59,24 @@ public class SongResampler {
         }
 
         final float newTempo = song.getTempoEvents().getTempoRange()[1]; // Highest tempo in song
-
         final Map<Integer, List<Note>> newNotes = new HashMap<>();
-        for (int tick : song.getNotes().getTicks()) {
-            final int millis = song.tickToMilliseconds(tick);
-            final int newTick = Math.round(newTempo * millis / 1000);
-            newNotes.computeIfAbsent(newTick, k -> new ArrayList<>()).addAll(song.getNotes().get(tick));
+        final Set<Integer> ticks = new TreeSet<>(song.getNotes().getTicks());
+        ticks.addAll(song.getTempoEvents().getTicks());
+
+        int lastTick = 0;
+        float totalMilliseconds = 0;
+        for (int tick : ticks) {
+            final float tps = song.getTempoEvents().getEffectiveTempo(lastTick);
+            final int ticksInSegment = tick - lastTick;
+            final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
+            totalMilliseconds += segmentMilliseconds;
+            lastTick = tick;
+
+            final List<Note> notes = song.getNotes().get(tick);
+            if (notes != null) {
+                final int newTick = Math.round(newTempo * totalMilliseconds / 1000F);
+                newNotes.computeIfAbsent(newTick, k -> new ArrayList<>()).addAll(notes);
+            }
         }
 
         song.getNotes().clear();

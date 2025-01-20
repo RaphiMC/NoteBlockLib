@@ -36,7 +36,12 @@ public class TempoEvents {
     }
 
     public float getEffectiveTempo(final int tick) {
-        return this.tempoEvents.floorEntry(tick).getValue();
+        final Float tempo = this.tempoEvents.get(tick);
+        if (tempo != null) {
+            return tempo;
+        } else {
+            return this.tempoEvents.floorEntry(tick).getValue();
+        }
     }
 
     public void set(final int tick, final float tempo) {
