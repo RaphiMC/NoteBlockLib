@@ -21,32 +21,30 @@ import net.raphimc.noteblocklib.model.instrument.Instrument;
 
 public enum MinecraftInstrument implements Instrument {
 
-    HARP(0, 0, 0, "block.note_block.harp"),
-    BASS(1, 4, 4, "block.note_block.bass"),
-    BASS_DRUM(2, 1, 1, "block.note_block.basedrum"),
-    SNARE(3, 2, 2, "block.note_block.snare"),
-    HAT(4, 3, 3, "block.note_block.hat"),
-    GUITAR(5, 7, 8, "block.note_block.guitar"),
-    FLUTE(6, 5, 6, "block.note_block.flute"),
-    BELL(7, 6, 5, "block.note_block.bell"),
-    CHIME(8, 8, 7, "block.note_block.chime"),
-    XYLOPHONE(9, 9, 9, "block.note_block.xylophone"),
-    IRON_XYLOPHONE(10, 10, 10, "block.note_block.iron_xylophone"),
-    COW_BELL(11, 11, 11, "block.note_block.cow_bell"),
-    DIDGERIDOO(12, 12, 12, "block.note_block.didgeridoo"),
-    BIT(13, 13, 13, "block.note_block.bit"),
-    BANJO(14, 14, 14, "block.note_block.banjo"),
-    PLING(15, 15, 15, "block.note_block.pling");
+    HARP(0, 0, "block.note_block.harp"),
+    BASS(1, 4, "block.note_block.bass"),
+    BASS_DRUM(2, 1, "block.note_block.basedrum"),
+    SNARE(3, 2, "block.note_block.snare"),
+    HAT(4, 3, "block.note_block.hat"),
+    GUITAR(5, 7, "block.note_block.guitar"),
+    FLUTE(6, 5, "block.note_block.flute"),
+    BELL(7, 6, "block.note_block.bell"),
+    CHIME(8, 8, "block.note_block.chime"),
+    XYLOPHONE(9, 9, "block.note_block.xylophone"),
+    IRON_XYLOPHONE(10, 10, "block.note_block.iron_xylophone"),
+    COW_BELL(11, 11, "block.note_block.cow_bell"),
+    DIDGERIDOO(12, 12, "block.note_block.didgeridoo"),
+    BIT(13, 13, "block.note_block.bit"),
+    BANJO(14, 14, "block.note_block.banjo"),
+    PLING(15, 15, "block.note_block.pling");
 
     private final byte nbsId;
     private final byte mcId;
-    private final byte mcbeId;
     private final String mcSoundName;
 
-    MinecraftInstrument(final int nbsId, final int mcId, final int mcbeId, final String mcSoundName) {
+    MinecraftInstrument(final int nbsId, final int mcId, final String mcSoundName) {
         this.nbsId = (byte) nbsId;
         this.mcId = (byte) mcId;
-        this.mcbeId = (byte) mcbeId;
         this.mcSoundName = mcSoundName;
     }
 
@@ -68,15 +66,6 @@ public enum MinecraftInstrument implements Instrument {
         return null;
     }
 
-    public static MinecraftInstrument fromMcbeId(final byte mcbeId) {
-        for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
-            if (instrument.mcbeId == mcbeId) {
-                return instrument;
-            }
-        }
-        return null;
-    }
-
     public static MinecraftInstrument fromMcSoundName(final String mcSoundName) {
         for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
             if (instrument.mcSoundName.equals(mcSoundName)) {
@@ -92,10 +81,6 @@ public enum MinecraftInstrument implements Instrument {
 
     public byte mcId() {
         return this.mcId;
-    }
-
-    public byte mcbeId() {
-        return this.mcbeId;
     }
 
     public String mcSoundName() {
