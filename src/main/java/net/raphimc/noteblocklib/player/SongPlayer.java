@@ -17,59 +17,59 @@
  */
 package net.raphimc.noteblocklib.player;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.raphimc.noteblocklib.model.SongView;
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.util.TimerHack;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class SongPlayer {
+public abstract class SongPlayer {
 
-    private final SongView<?> songView;
-    protected final SongPlayerCallback callback;
-
+    private Song song;
     private ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> tickTask;
+    private float ticksPerSecond;
     private int tick;
     private boolean paused;
 
-    public SongPlayer(final SongView<?> songView, final SongPlayerCallback callback) {
-        this.songView = songView;
-        this.callback = callback;
+    public SongPlayer(final Song song) {
+        this.song = song;
     }
 
-    public SongView<?> getSongView() {
-        return this.songView;
+    /**
+     * Starts playing the song from the beginning.
+     */
+    public void start() {
+        this.start(0);
     }
 
-    public boolean isRunning() {
-        return this.scheduler != null && !this.scheduler.isTerminated();
-    }
-
-    public int getTick() {
-        return this.tick;
-    }
-
-    public void setTick(final int tick) {
-        this.tick = tick;
-    }
-
-    public void play() {
-        this.paused = false;
+    /**
+     * Starts playing the song from the beginning.
+     * @param delay The delay in milliseconds before starting the song.
+     */
+    public void start(final int delay) {
         if (this.isRunning()) this.stop();
 
-        this.scheduler = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("Song Player - " + this.songView.getTitle()).setDaemon(true).build());
-        this.scheduler.scheduleAtFixedRate(this::tick, 0, (long) (1_000_000_000D / this.songView.getSpeed()), TimeUnit.NANOSECONDS);
+        this.ticksPerSecond = this.song.getTempoEvents().get(0);
+        this.tick = 0;
+
+        TimerHack.ensureRunning();
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            final Thread thread = new Thread(r, "NoteBlockLib Song Player - " + this.song.getTitleOrFileNameOr("No Title"));
+            thread.setPriority(Thread.NORM_PRIORITY + 1);
+            thread.setDaemon(true);
+            return thread;
+        });
+        this.createTickTask(TimeUnit.MILLISECONDS.toNanos(delay));
     }
 
-    public void setPaused(final boolean paused) {
-        this.paused = paused;
-    }
-
-    public boolean isPaused() {
-        return this.paused;
-    }
-
+    /**
+     * Stops playing the song.
+     */
     public void stop() {
         if (!this.isRunning()) return;
 
@@ -79,35 +79,156 @@ public class SongPlayer {
         } catch (InterruptedException ignored) {
         }
         this.scheduler = null;
-        this.tick = 0;
+        this.tickTask = null;
         this.paused = false;
     }
 
+    /**
+     * @return Whether the player is in the running state (playing or paused).
+     */
+    public boolean isRunning() {
+        return this.scheduler != null && !this.scheduler.isTerminated();
+    }
+
+    /**
+     * @return The song that is being played.
+     */
+    public Song getSong() {
+        return this.song;
+    }
+
+    /**
+     * Sets the song that should be played.<br>
+     * Can be called in {@link #onFinished()}.
+     * @param song The song to play.
+     */
+    protected void setSong(final Song song) {
+        this.song = song;
+    }
+
+    /**
+     * @return The current tempo in ticks per second.
+     */
+    public float getCurrentTicksPerSecond() {
+        return this.ticksPerSecond;
+    }
+
+    /**
+     * @return The current tick.
+     */
+    public int getTick() {
+        return this.tick;
+    }
+
+    /**
+     * Sets the current tick.
+     * @param tick The tick to set.
+     */
+    public void setTick(final int tick) {
+        this.tick = tick;
+    }
+
+    /**
+     * @return The current playback position in milliseconds.
+     */
+    public int getMillisecondPosition() {
+        return this.song.tickToMilliseconds(this.tick);
+    }
+
+    /**
+     * Sets the current playback position in milliseconds.
+     * @param milliseconds The time to set the playback position to.
+     */
+    public void setMillisecondPosition(final int milliseconds) {
+        this.tick = this.song.millisecondsToTick(milliseconds);
+    }
+
+    /**
+     * @return Whether the player is paused.
+     */
+    public boolean isPaused() {
+        return this.paused;
+    }
+
+    /**
+     * Pauses or resumes the player.
+     * @param paused Whether the player should be paused.
+     */
+    public void setPaused(final boolean paused) {
+        this.paused = paused;
+    }
+
+    /**
+     * Create the internal tick task.
+     * @param initialDelay The initial delay in nanoseconds.
+     */
+    protected void createTickTask(final long initialDelay) {
+        if (this.tickTask != null) {
+            this.tickTask.cancel(false);
+        }
+        this.tickTask = this.scheduler.scheduleAtFixedRate(this::tick, initialDelay, (long) (1_000_000_000D / this.ticksPerSecond), TimeUnit.NANOSECONDS);
+    }
+
+    /**
+     * Called every tick to play the notes.
+     */
     protected void tick() {
         try {
-            if (this.paused || !this.callback.shouldTick()) {
+            if (!this.preTick()) {
                 return;
             }
-
-            if (this.tick >= this.songView.getLength()) {
-                if (this.callback.shouldLoop()) {
-                    this.tick = -this.callback.getLoopDelay();
-                } else {
-                    this.callback.onFinished();
-                    this.stop();
+            try {
+                if (this.paused) {
                     return;
                 }
+
+                this.playNotes(this.song.getNotes().getOrEmpty(this.tick));
+
+                this.tick++;
+                if (this.tick >= this.song.getNotes().getLengthInTicks()) {
+                    this.stop();
+                    this.onFinished();
+                    return;
+                }
+                if (this.ticksPerSecond != this.song.getTempoEvents().getEffectiveTempo(this.tick)) {
+                    this.ticksPerSecond = this.song.getTempoEvents().getEffectiveTempo(this.tick);
+                    this.createTickTask((long) (1_000_000_000D / this.ticksPerSecond));
+                }
+            } finally {
+                this.postTick();
             }
-
-            this.callback.playNotes(this.songView.getNotesAtTick(this.tick));
-
-            this.tick++;
         } catch (Throwable e) {
             if (e.getCause() instanceof InterruptedException) return;
 
             e.printStackTrace();
             this.stop();
         }
+    }
+
+    /**
+     * Called before each tick (Even when paused).
+     * @return Whether the tick should be executed.
+     */
+    protected boolean preTick() {
+        return true;
+    }
+
+    /**
+     * Plays the notes.
+     * @param notes The notes to play.
+     */
+    protected abstract void playNotes(final List<Note> notes);
+
+    /**
+     * Called when the song has finished playing.
+     */
+    protected void onFinished() {
+    }
+
+    /**
+     * Called after each tick.
+     */
+    protected void postTick() {
     }
 
 }

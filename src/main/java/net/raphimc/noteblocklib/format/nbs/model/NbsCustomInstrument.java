@@ -17,16 +17,12 @@
  */
 package net.raphimc.noteblocklib.format.nbs.model;
 
-import com.google.common.io.LittleEndianDataInputStream;
-import com.google.common.io.LittleEndianDataOutputStream;
+import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
+import net.raphimc.noteblocklib.model.instrument.Instrument;
 
-import java.io.IOException;
 import java.util.Objects;
 
-import static net.raphimc.noteblocklib.format.nbs.NbsParser.readString;
-import static net.raphimc.noteblocklib.format.nbs.NbsParser.writeString;
-
-public class NbsCustomInstrument {
+public class NbsCustomInstrument implements Instrument {
 
     /**
      * @since v0
@@ -36,7 +32,7 @@ public class NbsCustomInstrument {
     /**
      * @since v0
      */
-    private String soundFileName;
+    private String soundFilePath;
 
     /**
      * @since v0
@@ -48,25 +44,8 @@ public class NbsCustomInstrument {
      */
     private boolean pressKey;
 
-    public NbsCustomInstrument(final LittleEndianDataInputStream dis) throws IOException {
-        this.name = readString(dis);
-        this.soundFileName = readString(dis);
-        this.pitch = dis.readByte();
-        this.pressKey = dis.readBoolean();
-    }
-
-    public NbsCustomInstrument(final String name, final String soundFileName, final byte pitch, final boolean pressKey) {
-        this.name = name;
-        this.soundFileName = soundFileName;
-        this.pitch = pitch;
-        this.pressKey = pressKey;
-    }
-
-    public void write(final LittleEndianDataOutputStream dos) throws IOException {
-        writeString(dos, this.name);
-        writeString(dos, this.soundFileName);
-        dos.writeByte(this.pitch);
-        dos.writeBoolean(this.pressKey);
+    public NbsCustomInstrument() {
+        this.pitch = NbsDefinitions.F_SHARP_4_NBS_KEY;
     }
 
     /**
@@ -78,27 +57,57 @@ public class NbsCustomInstrument {
     }
 
     /**
+     * @return The name of the instrument.
+     * @param fallback The fallback value if the name is not set.
+     * @since v0
+     */
+    public String getNameOr(final String fallback) {
+        return this.name == null ? fallback : this.name;
+    }
+
+    /**
      * @param name The name of the instrument.
+     * @return this
      * @since v0
      */
-    public void setName(final String name) {
-        this.name = name;
+    public NbsCustomInstrument setName(final String name) {
+        if (name != null && !name.isEmpty()) {
+            this.name = name;
+        } else {
+            this.name = null;
+        }
+        return this;
     }
 
     /**
-     * @return The sound file of the instrument (just the file name, not the path).
+     * @return The sound file of the instrument.
      * @since v0
      */
-    public String getSoundFileName() {
-        return this.soundFileName;
+    public String getSoundFilePath() {
+        return this.soundFilePath;
     }
 
     /**
-     * @param soundFileName The sound file of the instrument (just the file name, not the path).
+     * @return The sound file of the instrument.
+     * @param fallback The fallback value if the sound file path is not set.
      * @since v0
      */
-    public void setSoundFileName(final String soundFileName) {
-        this.soundFileName = soundFileName;
+    public String getSoundFilePathOr(final String fallback) {
+        return this.soundFilePath == null ? fallback : this.soundFilePath;
+    }
+
+    /**
+     * @param soundFilePath The sound file of the instrument.
+     * @return this
+     * @since v0
+     */
+    public NbsCustomInstrument setSoundFilePath(final String soundFilePath) {
+        if (soundFilePath != null && !soundFilePath.isEmpty()) {
+            this.soundFilePath = soundFilePath;
+        } else {
+            this.soundFilePath = null;
+        }
+        return this;
     }
 
     /**
@@ -111,10 +120,12 @@ public class NbsCustomInstrument {
 
     /**
      * @param pitch The pitch of the sound file. Just like the note blocks, this ranges from 0-87. Default is 45 (F#4).
+     * @return this
      * @since v0
      */
-    public void setPitch(final byte pitch) {
+    public NbsCustomInstrument setPitch(final byte pitch) {
         this.pitch = pitch;
+        return this;
     }
 
     /**
@@ -127,23 +138,33 @@ public class NbsCustomInstrument {
 
     /**
      * @param pressKey Whether the piano should automatically press keys with this instrument when the marker passes them.
+     * @return this
      * @since v0
      */
-    public void setPressKey(final boolean pressKey) {
+    public NbsCustomInstrument setPressKey(final boolean pressKey) {
         this.pressKey = pressKey;
+        return this;
+    }
+
+    public NbsCustomInstrument copy() {
+        final NbsCustomInstrument copyCustomInstrument = new NbsCustomInstrument();
+        copyCustomInstrument.setName(this.name);
+        copyCustomInstrument.setSoundFilePath(this.soundFilePath);
+        copyCustomInstrument.setPitch(this.pitch);
+        copyCustomInstrument.setPressKey(this.pressKey);
+        return copyCustomInstrument;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NbsCustomInstrument that = (NbsCustomInstrument) o;
-        return pitch == that.pitch && pressKey == that.pressKey && Objects.equals(name, that.name) && Objects.equals(soundFileName, that.soundFileName);
+        return pitch == that.pitch && pressKey == that.pressKey && Objects.equals(name, that.name) && Objects.equals(soundFilePath, that.soundFilePath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, soundFileName, pitch, pressKey);
+        return Objects.hash(name, soundFilePath, pitch, pressKey);
     }
 
 }

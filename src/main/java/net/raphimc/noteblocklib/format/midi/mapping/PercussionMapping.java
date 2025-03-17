@@ -17,24 +17,24 @@
  */
 package net.raphimc.noteblocklib.format.midi.mapping;
 
-import net.raphimc.noteblocklib.util.Instrument;
+import net.raphimc.noteblocklib.data.MinecraftInstrument;
 
 public class PercussionMapping {
 
-    private final Instrument instrument;
-    private final byte key;
+    private final MinecraftInstrument instrument;
+    private final byte nbsKey;
 
-    public PercussionMapping(final Instrument instrument, final byte key) {
+    public PercussionMapping(final MinecraftInstrument instrument, final byte nbsKey) {
         this.instrument = instrument;
-        this.key = key;
+        this.nbsKey = nbsKey;
     }
 
-    public Instrument getInstrument() {
+    public MinecraftInstrument getInstrument() {
         return this.instrument;
     }
 
-    public byte getKey() {
-        return this.key;
+    public byte getNbsKey() {
+        return this.nbsKey;
     }
 
 }

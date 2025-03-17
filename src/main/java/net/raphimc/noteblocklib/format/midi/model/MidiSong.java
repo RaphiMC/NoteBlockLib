@@ -15,24 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi;
+package net.raphimc.noteblocklib.format.midi.model;
 
-public class MidiDefinitions {
+import net.raphimc.noteblocklib.format.SongFormat;
+import net.raphimc.noteblocklib.model.Song;
 
-    public static final int META_COPYRIGHT_NOTICE = 0x02;
-    public static final int META_TRACK_NAME = 0x03;
-    public static final int META_SET_TEMPO = 0x51;
+import java.util.HashMap;
+import java.util.Map;
 
-    public static final int PERCUSSION_CHANNEL = 9;
-    public static final int VOLUME_CONTROL_MSB = 0x07;
-    public static final int PAN_CONTROL_MSB = 0x0A;
-    public static final int RESET_CONTROLS = 0x79;
+public class MidiSong extends Song {
 
-    public static final int CHANNEL_COUNT = 16;
-    public static final int DEFAULT_TEMPO_MPQ = 500_000;
-    public static final byte MAX_VELOCITY = 127;
-    public static final byte CENTER_PAN = 64;
+    private final Map<Integer, String> trackNames = new HashMap<>();
 
-    public static final float SONG_TARGET_TEMPO = 100F;
+    public MidiSong() {
+        this(null);
+    }
+
+    public MidiSong(final String fileName) {
+        super(SongFormat.MIDI, fileName);
+    }
+
+    public Map<Integer, String> getTrackNames() {
+        return this.trackNames;
+    }
+
+    @Override
+    public MidiSong copy() {
+        final MidiSong copySong = new MidiSong(this.getFileName());
+        copySong.copyGeneralData(this);
+        copySong.getTrackNames().putAll(this.getTrackNames());
+        return copySong;
+    }
 
 }

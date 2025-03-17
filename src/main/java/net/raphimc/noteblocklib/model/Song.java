@@ -19,51 +19,188 @@ package net.raphimc.noteblocklib.model;
 
 import net.raphimc.noteblocklib.format.SongFormat;
 
-public abstract class Song<H extends Header, D extends Data<N>, N extends Note> {
+import java.util.Set;
+import java.util.TreeSet;
+
+public abstract class Song {
 
     private final SongFormat format;
-    protected final String fileName;
-    private final H header;
-    private final D data;
+    private Notes notes = new Notes();
+    private TempoEvents tempoEvents = new TempoEvents();
+    private final String fileName;
+    private String title;
+    private String author;
+    private String originalAuthor;
+    private String description;
 
-    private SongView<N> view;
-
-    public Song(final SongFormat format, final String fileName, final H header, final D data) {
+    protected Song(final SongFormat format, final String fileName) {
         this.format = format;
         this.fileName = fileName;
-        this.header = header;
-        this.data = data;
-
-        this.view = this.createView();
     }
 
-    protected abstract SongView<N> createView();
+    public int getLengthInMilliseconds() {
+        return this.tickToMilliseconds(this.notes.getLengthInTicks());
+    }
 
-    public void refreshView() {
-        this.view = this.createView();
+    public int getLengthInSeconds() {
+        return (int) Math.ceil(this.getLengthInMilliseconds() / 1000F);
+    }
+
+    public String getHumanReadableLength() {
+        final int length = this.getLengthInSeconds();
+        return String.format("%02d:%02d:%02d", length / 3600, (length / 60) % 60, length % 60);
+    }
+
+    public int tickToMilliseconds(final int tick) {
+        final Set<Integer> tempoEventTicks = new TreeSet<>(this.tempoEvents.getTicks());
+        tempoEventTicks.add(tick);
+
+        int lastTick = 0;
+        float totalMilliseconds = 0;
+        for (int tempoTick : tempoEventTicks) {
+            if (tempoTick > tick) {
+                break;
+            }
+
+            final float tps = this.tempoEvents.getEffectiveTempo(lastTick);
+            final int ticksInSegment = tempoTick - lastTick;
+            final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
+            totalMilliseconds += segmentMilliseconds;
+            lastTick = tempoTick;
+        }
+
+        return (int) Math.ceil(totalMilliseconds);
+    }
+
+    public int millisecondsToTick(final int milliseconds) {
+        final Set<Integer> tempoEventTicks = new TreeSet<>(this.tempoEvents.getTicks());
+        tempoEventTicks.add(this.notes.getLengthInTicks());
+
+        int lastTick = 0;
+        float totalMilliseconds = 0;
+        for (int tempoTick : tempoEventTicks) {
+            final float tps = this.tempoEvents.getEffectiveTempo(lastTick);
+            final int ticksInSegment = tempoTick - lastTick;
+            final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
+
+            if (totalMilliseconds + segmentMilliseconds >= milliseconds) {
+                final float remainingMilliseconds = milliseconds - totalMilliseconds;
+                final int ticksToAdd = Math.round((remainingMilliseconds / 1000F) * tps);
+                return lastTick + ticksToAdd;
+            }
+
+            totalMilliseconds += segmentMilliseconds;
+            lastTick = tempoTick;
+        }
+
+        return this.notes.getLengthInTicks();
     }
 
     public SongFormat getFormat() {
         return this.format;
     }
 
-    public H getHeader() {
-        return this.header;
+    public Notes getNotes() {
+        return this.notes;
     }
 
-    public D getData() {
-        return this.data;
+    public TempoEvents getTempoEvents() {
+        return this.tempoEvents;
     }
 
-    /**
-     * Returns an abstracted, generalized and unified view of this song.<br>
-     * Any changes made to this view will not be reflected in the original song data.<br>
-     * The view may be recreated by using {@link #refreshView()}.
-     *
-     * @return The song view
-     */
-    public SongView<N> getView() {
-        return this.view;
+    public String getFileName() {
+        return this.fileName;
     }
+
+    public String getFileNameOr(final String fallback) {
+        return this.fileName == null ? fallback : this.fileName;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getTitleOr(final String fallback) {
+        return this.title == null ? fallback : this.title;
+    }
+
+    public Song setTitle(final String title) {
+        if (title != null && !title.isEmpty()) {
+            this.title = title;
+        } else {
+            this.title = null;
+        }
+        return this;
+    }
+
+    public String getAuthor() {
+        return this.author;
+    }
+
+    public String getAuthorOr(final String fallback) {
+        return this.author == null ? fallback : this.author;
+    }
+
+    public Song setAuthor(final String author) {
+        if (author != null && !author.isEmpty()) {
+            this.author = author;
+        } else {
+            this.author = null;
+        }
+        return this;
+    }
+
+    public String getOriginalAuthor() {
+        return this.originalAuthor;
+    }
+
+    public String getOriginalAuthorOr(final String fallback) {
+        return this.originalAuthor == null ? fallback : this.originalAuthor;
+    }
+
+    public Song setOriginalAuthor(final String originalAuthor) {
+        if (originalAuthor != null && !originalAuthor.isEmpty()) {
+            this.originalAuthor = originalAuthor;
+        } else {
+            this.originalAuthor = null;
+        }
+        return this;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getDescriptionOr(final String fallback) {
+        return this.description == null ? fallback : this.description;
+    }
+
+    public Song setDescription(final String description) {
+        if (description != null && !description.isEmpty()) {
+            this.description = description;
+        } else {
+            this.description = null;
+        }
+        return this;
+    }
+
+    public String getTitleOrFileName() {
+        return this.title == null ? this.fileName : this.title;
+    }
+
+    public String getTitleOrFileNameOr(final String fallback) {
+        return this.getTitleOrFileName() == null ? fallback : this.getTitleOrFileName();
+    }
+
+    public void copyGeneralData(final Song song) {
+        this.notes = song.getNotes().copy();
+        this.tempoEvents = song.getTempoEvents().copy();
+        this.setTitle(song.getTitle());
+        this.setAuthor(song.getAuthor());
+        this.setOriginalAuthor(song.getOriginalAuthor());
+        this.setDescription(song.getDescription());
+    }
+
+    public abstract Song copy();
 
 }

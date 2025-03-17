@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.mcsp.model;
+package net.raphimc.noteblocklib.format.mcsp2.model;
+
+import net.raphimc.noteblocklib.format.mcsp2.McSp2Definitions;
 
 import java.util.Objects;
 
-public class McSpNote {
+public class McSp2Note {
 
     private byte instrument;
     private byte key;
@@ -28,7 +30,7 @@ public class McSpNote {
         return this.instrument;
     }
 
-    public McSpNote setInstrument(final byte instrument) {
+    public McSp2Note setInstrument(final byte instrument) {
         this.instrument = instrument;
         return this;
     }
@@ -37,13 +39,28 @@ public class McSpNote {
         return this.key;
     }
 
-    public McSpNote setKey(final byte key) {
+    public McSp2Note setKey(final byte key) {
         this.key = key;
         return this;
     }
 
-    public McSpNote copy() {
-        final McSpNote copyNote = new McSpNote();
+    public McSp2Note setInstrumentAndKey(final char data) {
+        final int index = McSp2Definitions.NOTE_DATA_MAPPING.indexOf(data);
+        if (index == -1) {
+            throw new IllegalArgumentException("Invalid note data: " + data);
+        }
+
+        this.instrument = (byte) (index / 25);
+        this.key = (byte) (index % 25);
+        return this;
+    }
+
+    public char getInstrumentAndKey() {
+        return McSp2Definitions.NOTE_DATA_MAPPING.charAt(this.instrument * 25 + this.key);
+    }
+
+    public McSp2Note copy() {
+        final McSp2Note copyNote = new McSp2Note();
         copyNote.setInstrument(this.getInstrument());
         copyNote.setKey(this.getKey());
         return copyNote;
@@ -52,8 +69,8 @@ public class McSpNote {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        McSpNote mcSpNote = (McSpNote) o;
-        return instrument == mcSpNote.instrument && key == mcSpNote.key;
+        McSp2Note mcSp2Note = (McSp2Note) o;
+        return instrument == mcSp2Note.instrument && key == mcSp2Note.key;
     }
 
     @Override

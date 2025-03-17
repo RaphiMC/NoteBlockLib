@@ -15,24 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.midi;
+package net.raphimc.noteblocklib.format.mcsp2.model;
 
-public class MidiDefinitions {
+import java.util.HashMap;
+import java.util.Map;
 
-    public static final int META_COPYRIGHT_NOTICE = 0x02;
-    public static final int META_TRACK_NAME = 0x03;
-    public static final int META_SET_TEMPO = 0x51;
+public class McSp2Layer {
 
-    public static final int PERCUSSION_CHANNEL = 9;
-    public static final int VOLUME_CONTROL_MSB = 0x07;
-    public static final int PAN_CONTROL_MSB = 0x0A;
-    public static final int RESET_CONTROLS = 0x79;
+    private final Map<Integer, McSp2Note> notes = new HashMap<>();
 
-    public static final int CHANNEL_COUNT = 16;
-    public static final int DEFAULT_TEMPO_MPQ = 500_000;
-    public static final byte MAX_VELOCITY = 127;
-    public static final byte CENTER_PAN = 64;
+    /**
+     * @return A map of all notes in this layer, with the tick as the key.
+     */
+    public Map<Integer, McSp2Note> getNotes() {
+        return this.notes;
+    }
 
-    public static final float SONG_TARGET_TEMPO = 100F;
+    public McSp2Layer copy() {
+        final McSp2Layer copyLayer = new McSp2Layer();
+        final Map<Integer, McSp2Note> notes = this.getNotes();
+        final Map<Integer, McSp2Note> copyNotes = copyLayer.getNotes();
+        for (final Map.Entry<Integer, McSp2Note> entry : notes.entrySet()) {
+            copyNotes.put(entry.getKey(), entry.getValue().copy());
+        }
+        return copyLayer;
+    }
 
 }

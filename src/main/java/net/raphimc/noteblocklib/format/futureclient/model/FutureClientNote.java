@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.mcsp.model;
+package net.raphimc.noteblocklib.format.futureclient.model;
 
 import java.util.Objects;
 
-public class McSpNote {
+public class FutureClientNote {
 
     private byte instrument;
     private byte key;
@@ -28,7 +28,7 @@ public class McSpNote {
         return this.instrument;
     }
 
-    public McSpNote setInstrument(final byte instrument) {
+    public FutureClientNote setInstrument(final byte instrument) {
         this.instrument = instrument;
         return this;
     }
@@ -37,13 +37,13 @@ public class McSpNote {
         return this.key;
     }
 
-    public McSpNote setKey(final byte key) {
+    public FutureClientNote setKey(final byte key) {
         this.key = key;
         return this;
     }
 
-    public McSpNote copy() {
-        final McSpNote copyNote = new McSpNote();
+    public FutureClientNote copy() {
+        final FutureClientNote copyNote = new FutureClientNote();
         copyNote.setInstrument(this.getInstrument());
         copyNote.setKey(this.getKey());
         return copyNote;
@@ -52,8 +52,8 @@ public class McSpNote {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        McSpNote mcSpNote = (McSpNote) o;
-        return instrument == mcSpNote.instrument && key == mcSpNote.key;
+        FutureClientNote futureClientNote = (FutureClientNote) o;
+        return instrument == futureClientNote.instrument && key == futureClientNote.key;
     }
 
     @Override

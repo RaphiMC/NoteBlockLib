@@ -17,10 +17,8 @@
  */
 package net.raphimc.noteblocklib.util;
 
-import net.raphimc.noteblocklib.format.nbs.NbsSong;
-import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.SongView;
+import net.raphimc.noteblocklib.model.Song;
 
 import java.util.*;
 
@@ -30,108 +28,63 @@ public class SongResampler {
      * Changes the tick speed (sample rate) of a song, without changing the musical speed or length.<br>
      * Changing the speed to a lower one than original will result in a loss of timing precision.
      *
-     * @param songView The song view
-     * @param newSpeed The new tick speed (Ticks per second)
-     * @param <N>      The note type
+     * @param song The song
+     * @param newTempo The new tick speed (Ticks per second)
      */
-    public static <N extends Note> void changeTickSpeed(final SongView<N> songView, final float newSpeed) {
-        final float divider = songView.getSpeed() / newSpeed;
+    public static void changeTickSpeed(final Song song, final float newTempo) {
+        precomputeTempoEvents(song); // Ensure song has static tempo
+
+        final float divider = song.getTempoEvents().get(0) / newTempo;
         if (divider == 1F) return;
 
-        final Map<Integer, List<N>> newNotes = new TreeMap<>();
-        for (Map.Entry<Integer, List<N>> entry : songView.getNotes().entrySet()) {
-            newNotes.computeIfAbsent(Math.round(entry.getKey() / divider), k -> new ArrayList<>()).addAll(entry.getValue());
+        final Map<Integer, List<Note>> newNotes = new HashMap<>();
+        for (int tick : song.getNotes().getTicks()) {
+            newNotes.computeIfAbsent(Math.round(tick / divider), k -> new ArrayList<>()).addAll(song.getNotes().get(tick));
         }
 
-        songView.setNotes(newNotes);
-        songView.setSpeed(newSpeed);
-        songView.recalculateLength();
+        song.getNotes().clear();
+        for (Map.Entry<Integer, List<Note>> entry : newNotes.entrySet()) {
+            song.getNotes().set(entry.getKey(), entry.getValue());
+        }
+        song.getTempoEvents().set(0, newTempo);
     }
 
     /**
-     * Applies the undocumented tempo changers from Note Block Studio.<br>
-     * Only updates the song view.
-     *
+     * Converts a song with dynamic tempo changes into one with a static tempo. This allows the song to be played in players which don't support dynamic tempo changes.
      * @param song The song
      */
-    public static void applyNbsTempoChangers(final NbsSong song) {
-        applyNbsTempoChangers(song, song.getView());
-    }
-
-    /**
-     * Applies the undocumented tempo changers from Note Block Studio.
-     *
-     * @param song The song
-     * @param view The song view to modify
-     */
-    public static void applyNbsTempoChangers(final NbsSong song, final SongView<NbsNote> view) {
-        if (song.getHeader().getVersion() < 4) return;
-
-        final boolean hasTempoChanger = song.getData().getCustomInstruments().stream().anyMatch(ci -> ci.getName().equals("Tempo Changer"));
-        if (!hasTempoChanger) return;
-
-        final List<TempoEvent> tempoEvents = new ArrayList<>();
-        for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {
-            for (NbsNote note : entry.getValue()) {
-                if (note.getCustomInstrument() != null && note.getCustomInstrument().getName().equals("Tempo Changer")) {
-                    tempoEvents.add(new TempoEvent(entry.getKey(), Math.abs(note.getPitch()) / 15F));
-                    entry.getValue().remove(note);
-                    break;
-                }
-            }
+    public static void precomputeTempoEvents(final Song song) {
+        if (song.getTempoEvents().getTicks().size() <= 1) {
+            return; // Already static tempo
         }
-        if (tempoEvents.isEmpty()) return;
 
-        if (tempoEvents.get(0).getTick() != 0) {
-            tempoEvents.add(0, new TempoEvent(0, view.getSpeed()));
-        }
-        tempoEvents.sort(Comparator.comparingInt(TempoEvent::getTick));
+        final float newTempo = song.getTempoEvents().getTempoRange()[1]; // Highest tempo in song
+        final Map<Integer, List<Note>> newNotes = new HashMap<>();
+        final Set<Integer> ticks = new TreeSet<>(song.getNotes().getTicks());
+        ticks.addAll(song.getTempoEvents().getTicks());
 
-        final Map<Integer, List<NbsNote>> newNotes = new TreeMap<>();
-        final float newSpeed = tempoEvents.stream().map(TempoEvent::getTicksPerSecond).max(Float::compareTo).orElse(view.getSpeed());
-
-        double milliTime = 0;
         int lastTick = 0;
-        float millisPerTick = tempoEvents.get(0).getMillisPerTick();
-        int tempoEventIdx = 1;
-        for (Map.Entry<Integer, List<NbsNote>> entry : view.getNotes().entrySet()) {
-            while (tempoEventIdx < tempoEvents.size() && entry.getKey() > tempoEvents.get(tempoEventIdx).getTick()) {
-                final TempoEvent tempoEvent = tempoEvents.get(tempoEventIdx++);
-                milliTime += (tempoEvent.getTick() - lastTick) * millisPerTick;
-                lastTick = tempoEvent.getTick();
-                millisPerTick = tempoEvent.getMillisPerTick();
+        float totalMilliseconds = 0;
+        for (int tick : ticks) {
+            final float tps = song.getTempoEvents().getEffectiveTempo(lastTick);
+            final int ticksInSegment = tick - lastTick;
+            final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
+            totalMilliseconds += segmentMilliseconds;
+            lastTick = tick;
+
+            final List<Note> notes = song.getNotes().get(tick);
+            if (notes != null) {
+                final int newTick = Math.round(newTempo * totalMilliseconds / 1000F);
+                newNotes.computeIfAbsent(newTick, k -> new ArrayList<>()).addAll(notes);
             }
-            milliTime += (entry.getKey() - lastTick) * millisPerTick;
-            lastTick = entry.getKey();
-
-            newNotes.computeIfAbsent((int) Math.round(milliTime * newSpeed / 1000D), k -> new ArrayList<>()).addAll(entry.getValue());
         }
 
-        view.setNotes(newNotes);
-        view.setSpeed(newSpeed);
-        view.recalculateLength();
-    }
-
-    private static class TempoEvent {
-        private final int tick;
-        private final float ticksPerSecond;
-
-        public TempoEvent(final int tick, final float ticksPerSecond) {
-            this.tick = tick;
-            this.ticksPerSecond = ticksPerSecond;
+        song.getNotes().clear();
+        for (Map.Entry<Integer, List<Note>> entry : newNotes.entrySet()) {
+            song.getNotes().set(entry.getKey(), entry.getValue());
         }
-
-        public int getTick() {
-            return this.tick;
-        }
-
-        public float getTicksPerSecond() {
-            return this.ticksPerSecond;
-        }
-
-        public float getMillisPerTick() {
-            return 1000F / this.ticksPerSecond;
-        }
+        song.getTempoEvents().clear();
+        song.getTempoEvents().set(0, newTempo);
     }
 
 }
