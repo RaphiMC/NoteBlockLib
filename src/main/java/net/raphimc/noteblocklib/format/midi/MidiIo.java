@@ -38,7 +38,10 @@ import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
 public class MidiIo {
 
     public static MidiSong readSong(final InputStream is, final String fileName) throws IOException, InvalidMidiDataException {
-        final Sequence sequence = MidiSystem.getSequence(is);
+        return parseSong(MidiSystem.getSequence(is), fileName);
+    }
+
+    public static MidiSong parseSong(final Sequence sequence, final String fileName) {
         final MidiSong song = new MidiSong(fileName);
 
         if (sequence.getTickLength() > Integer.MAX_VALUE) {
