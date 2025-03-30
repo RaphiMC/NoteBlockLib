@@ -41,14 +41,16 @@ public class MidiIo {
         final Sequence sequence = MidiSystem.getSequence(is);
         final MidiSong song = new MidiSong(fileName);
 
-        if (sequence.getDivisionType() != Sequence.PPQ) {
-            throw new IllegalArgumentException("Unsupported MIDI division type: " + sequence.getDivisionType());
-        }
         if (sequence.getTickLength() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("MIDI sequence has too many ticks");
         }
 
-        song.getTempoEvents().set(0, (float) (1_000_000D / ((double) MidiDefinitions.DEFAULT_TEMPO_MPQ / sequence.getResolution())));
+        if (sequence.getDivisionType() == Sequence.PPQ) {
+            song.getTempoEvents().set(0, (float) (1_000_000D / ((double) MidiDefinitions.DEFAULT_TEMPO_MPQ / sequence.getResolution())));
+        } else {
+            song.getTempoEvents().set(0, sequence.getResolution() * sequence.getDivisionType());
+        }
+
         final byte[] channelInstruments = new byte[MidiDefinitions.CHANNEL_COUNT];
         final byte[] channelVolumes = new byte[MidiDefinitions.CHANNEL_COUNT];
         final byte[] channelPans = new byte[MidiDefinitions.CHANNEL_COUNT];
@@ -120,7 +122,7 @@ public class MidiIo {
                     }
                 } else if (message instanceof MetaMessage) {
                     final MetaMessage metaMessage = (MetaMessage) message;
-                    if (metaMessage.getType() == META_SET_TEMPO && metaMessage.getData().length == 3) {
+                    if (metaMessage.getType() == META_SET_TEMPO && metaMessage.getData().length == 3 && sequence.getDivisionType() == Sequence.PPQ) {
                         final int newMpq = ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
                         final double microsPerTick = (double) newMpq / sequence.getResolution();
                         song.getTempoEvents().set((int) event.getTick(), (float) (1_000_000D / microsPerTick));
