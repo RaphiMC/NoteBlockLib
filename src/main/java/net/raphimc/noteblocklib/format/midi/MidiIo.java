@@ -122,14 +122,15 @@ public class MidiIo {
                     }
                 } else if (message instanceof MetaMessage) {
                     final MetaMessage metaMessage = (MetaMessage) message;
-                    if (metaMessage.getType() == META_SET_TEMPO && metaMessage.getData().length == 3 && sequence.getDivisionType() == Sequence.PPQ) {
-                        final int newMpq = ((metaMessage.getData()[0] & 0xFF) << 16) | ((metaMessage.getData()[1] & 0xFF) << 8) | (metaMessage.getData()[2] & 0xFF);
+                    final byte[] data = metaMessage.getData();
+                    if (metaMessage.getType() == META_SET_TEMPO && sequence.getDivisionType() == Sequence.PPQ && data.length == 3) {
+                        final int newMpq = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
                         final double microsPerTick = (double) newMpq / sequence.getResolution();
                         song.getTempoEvents().set((int) event.getTick(), (float) (1_000_000D / microsPerTick));
                     } else if (metaMessage.getType() == META_COPYRIGHT_NOTICE) {
-                        song.setOriginalAuthor(new String(metaMessage.getData(), StandardCharsets.US_ASCII));
+                        song.setOriginalAuthor(new String(data, StandardCharsets.US_ASCII));
                     } else if (metaMessage.getType() == META_TRACK_NAME) {
-                        song.getTrackNames().put(trackIdx, new String(metaMessage.getData(), StandardCharsets.US_ASCII));
+                        song.getTrackNames().put(trackIdx, new String(data, StandardCharsets.US_ASCII));
                     }
                 }
             }
