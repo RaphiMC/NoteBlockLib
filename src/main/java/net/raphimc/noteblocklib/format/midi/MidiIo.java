@@ -123,7 +123,7 @@ public class MidiIo {
                 } else if (message instanceof MetaMessage) {
                     final MetaMessage metaMessage = (MetaMessage) message;
                     final byte[] data = metaMessage.getData();
-                    if (metaMessage.getType() == META_SET_TEMPO && sequence.getDivisionType() == Sequence.PPQ && data.length == 3) {
+                    if (metaMessage.getType() == META_SET_TEMPO && data.length == 3 && sequence.getDivisionType() == Sequence.PPQ) {
                         final int newMpq = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
                         final double microsPerTick = (double) newMpq / sequence.getResolution();
                         song.getTempoEvents().set((int) event.getTick(), (float) (1_000_000D / microsPerTick));
