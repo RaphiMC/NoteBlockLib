@@ -19,13 +19,17 @@ package net.raphimc.noteblocklib.util;
 
 public class TimerHack {
 
+    /**
+     * Set this to false (Before using the NoteBlockLib API) to disable the timer hack (Useful if you have your own way of enabling high resolution timers)
+     */
+    public static boolean ENABLED = true;
     private static Thread THREAD;
 
     /**
      * Starts a thread which indefinitely sleeps to force the JVM to enable high resolution timers on Windows.
      */
     public static synchronized void ensureRunning() {
-        if (THREAD == null) {
+        if (ENABLED && THREAD == null) {
             THREAD = new Thread(() -> {
                 while (true) {
                     try {
