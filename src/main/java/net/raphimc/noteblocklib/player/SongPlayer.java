@@ -54,10 +54,19 @@ public abstract class SongPlayer {
      * @param delay The delay in milliseconds before starting the song.
      */
     public void start(final int delay) {
+        this.start(delay, 0);
+    }
+
+    /**
+     * Starts playing the song from the given tick.
+     * @param delay The delay in milliseconds before starting the song.
+     * @param tick The tick to start playing from.
+     */
+    public void start(final int delay, final int tick) {
         if (this.isRunning()) this.stop();
 
         this.ticksPerSecond = this.song.getTempoEvents().get(0);
-        this.tick = 0;
+        this.tick = tick;
 
         TimerHack.ensureRunning();
         if (!this.useCustomScheduler) {
