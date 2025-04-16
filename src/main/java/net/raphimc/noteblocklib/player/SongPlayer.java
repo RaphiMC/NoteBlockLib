@@ -36,6 +36,8 @@ public abstract class SongPlayer {
     private int tick;
     private boolean paused;
 
+    private boolean useCustomScheduler;
+
     public SongPlayer(final Song song) {
         this.song = song;
     }
@@ -58,12 +60,14 @@ public abstract class SongPlayer {
         this.tick = 0;
 
         TimerHack.ensureRunning();
-        this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-            final Thread thread = new Thread(r, "NoteBlockLib Song Player - " + this.song.getTitleOrFileNameOr("No Title"));
-            thread.setPriority(Thread.NORM_PRIORITY + 1);
-            thread.setDaemon(true);
-            return thread;
-        });
+        if (!this.useCustomScheduler) {
+            this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+                final Thread thread = new Thread(r, "NoteBlockLib Song Player - " + this.song.getTitleOrFileNameOr("No Title"));
+                thread.setPriority(Thread.NORM_PRIORITY + 1);
+                thread.setDaemon(true);
+                return thread;
+            });
+        }
         this.createTickTask(TimeUnit.MILLISECONDS.toNanos(delay));
     }
 
@@ -73,13 +77,16 @@ public abstract class SongPlayer {
     public void stop() {
         if (!this.isRunning()) return;
 
-        this.scheduler.shutdownNow();
-        try {
-            this.scheduler.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException ignored) {
-        }
-        this.scheduler = null;
+        this.tickTask.cancel(false);
         this.tickTask = null;
+        if (!this.useCustomScheduler) {
+            this.scheduler.shutdownNow();
+            try {
+                this.scheduler.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {
+            }
+            this.scheduler = null;
+        }
         this.paused = false;
     }
 
@@ -87,7 +94,7 @@ public abstract class SongPlayer {
      * @return Whether the player is in the running state (playing or paused).
      */
     public boolean isRunning() {
-        return this.scheduler != null && !this.scheduler.isTerminated();
+        return this.scheduler != null && !this.scheduler.isTerminated() && this.tickTask != null && !this.tickTask.isCancelled();
     }
 
     /**
@@ -159,14 +166,30 @@ public abstract class SongPlayer {
     }
 
     /**
+     * Disables the internal scheduler and uses the provided one instead.<br>
+     * The provided scheduler won't be shut down when the player is stopped.<br>
+     * Set to null to disable builtin scheduling (The tick method has to be called manually then).
+     * @param scheduler The scheduler to use for playing the song or null to disable builtin scheduling
+     */
+    protected void setCustomScheduler(final ScheduledExecutorService scheduler) {
+        if (this.isRunning()) {
+            throw new IllegalStateException("Cannot set custom scheduler while the player is running");
+        }
+        this.scheduler = scheduler;
+        this.useCustomScheduler = true;
+    }
+
+    /**
      * Create the internal tick task.
      * @param initialDelay The initial delay in nanoseconds.
      */
     protected void createTickTask(final long initialDelay) {
-        if (this.tickTask != null) {
-            this.tickTask.cancel(false);
+        if (this.scheduler != null) {
+            if (this.tickTask != null) {
+                this.tickTask.cancel(false);
+            }
+            this.tickTask = this.scheduler.scheduleAtFixedRate(this::tick, initialDelay, (long) (1_000_000_000D / this.ticksPerSecond), TimeUnit.NANOSECONDS);
         }
-        this.tickTask = this.scheduler.scheduleAtFixedRate(this::tick, initialDelay, (long) (1_000_000_000D / this.ticksPerSecond), TimeUnit.NANOSECONDS);
     }
 
     /**
