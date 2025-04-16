@@ -52,18 +52,27 @@ public abstract class SongPlayer {
      * @param delay The delay in milliseconds before starting the song.
      */
     public void start(final int delay) {
+        this.start(Executors.newSingleThreadScheduledExecutor(r -> {
+            final Thread thread = new Thread(r, "NoteBlockLib Song Player - " + this.song.getTitleOrFileNameOr("No Title"));
+            thread.setPriority(Thread.NORM_PRIORITY + 1);
+            thread.setDaemon(true);
+            return thread;
+        }), delay);
+    }
+
+    /**
+     * Starts playing the song from the beginning.
+     * @param scheduler The executor used to schedule the tick task.
+     * @param delay The delay in milliseconds before starting the song.
+     */
+    public void start(final ScheduledExecutorService scheduler, final int delay) {
         if (this.isRunning()) this.stop();
 
         this.ticksPerSecond = this.song.getTempoEvents().get(0);
         this.tick = 0;
 
         TimerHack.ensureRunning();
-        this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-            final Thread thread = new Thread(r, "NoteBlockLib Song Player - " + this.song.getTitleOrFileNameOr("No Title"));
-            thread.setPriority(Thread.NORM_PRIORITY + 1);
-            thread.setDaemon(true);
-            return thread;
-        });
+        this.scheduler = scheduler;
         this.createTickTask(TimeUnit.MILLISECONDS.toNanos(delay));
     }
 
