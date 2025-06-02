@@ -172,6 +172,10 @@ public class NbsIo {
                         }
                     }
 
+                    if (layer.isLocked()) { // Locked layers are muted
+                        note.setVolume(0F);
+                    }
+
                     song.getNotes().add(noteEntry.getKey(), note);
                 }
             }
