@@ -47,11 +47,12 @@ public class NbsLayer {
     /**
      * @since v4
      */
-    private boolean locked;
+    private Status status;
 
     public NbsLayer() {
         this.volume = 100;
         this.panning = NbsDefinitions.CENTER_PANNING;
+        this.status = Status.NONE;
     }
 
     /**
@@ -71,8 +72,8 @@ public class NbsLayer {
     }
 
     /**
-     * @return The name of the layer.
      * @param fallback The fallback value if the layer name is not set.
+     * @return The name of the layer.
      * @since v0
      */
     public String getNameOr(final String fallback) {
@@ -130,20 +131,20 @@ public class NbsLayer {
     }
 
     /**
-     * @return Whether this layer has been marked as locked.
+     * @return The status of this layer (none, locked or solo).
      * @since v4
      */
-    public boolean isLocked() {
-        return this.locked;
+    public Status getStatus() {
+        return this.status;
     }
 
     /**
-     * @param locked Whether this layer should be marked as locked.
+     * @param status The status of this layer (none, locked or solo).
      * @return this
      * @since v4
      */
-    public NbsLayer setLocked(final boolean locked) {
-        this.locked = locked;
+    public NbsLayer setStatus(final Status status) {
+        this.status = status;
         return this;
     }
 
@@ -152,7 +153,7 @@ public class NbsLayer {
         copyLayer.setName(this.name);
         copyLayer.setVolume(this.volume);
         copyLayer.setPanning(this.panning);
-        copyLayer.setLocked(this.locked);
+        copyLayer.setStatus(this.status);
         final Map<Integer, NbsNote> notes = this.getNotes();
         final Map<Integer, NbsNote> copyNotes = copyLayer.getNotes();
         for (final Map.Entry<Integer, NbsNote> entry : notes.entrySet()) {
@@ -160,5 +161,14 @@ public class NbsLayer {
         }
         return copyLayer;
     }
+
+    public enum Status {
+
+        NONE,
+        LOCKED,
+        SOLO,
+
+    }
+
 
 }

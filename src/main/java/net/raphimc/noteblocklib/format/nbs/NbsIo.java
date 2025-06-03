@@ -113,7 +113,18 @@ public class NbsIo {
                 final NbsLayer layer = layers.computeIfAbsent(i, k -> new NbsLayer());
                 layer.setName(readString(dis));
                 if (song.getVersion() >= 4) {
-                    layer.setLocked(dis.readBoolean());
+                    final byte lockedByte = dis.readByte();
+                    switch (lockedByte) {
+                        case 0:
+                            layer.setStatus(NbsLayer.Status.NONE);
+                            break;
+                        case 1:
+                            layer.setStatus(NbsLayer.Status.LOCKED);
+                            break;
+                        case 2:
+                            layer.setStatus(NbsLayer.Status.SOLO);
+                            break;
+                    }
                 }
                 layer.setVolume(dis.readByte());
                 if (song.getVersion() >= 2) {
@@ -141,6 +152,7 @@ public class NbsIo {
             }
 
             song.getTempoEvents().set(0, song.getTempo() / 100F);
+            final boolean hasSoloLayers = layers.values().stream().anyMatch(layer -> layer.getStatus() == NbsLayer.Status.SOLO);
             for (NbsLayer layer : layers.values()) {
                 for (Map.Entry<Integer, NbsNote> noteEntry : layer.getNotes().entrySet()) {
                     final NbsNote nbsNote = noteEntry.getValue();
@@ -172,7 +184,9 @@ public class NbsIo {
                         }
                     }
 
-                    if (layer.isLocked()) { // Locked layers are muted
+                    if (layer.getStatus() == NbsLayer.Status.LOCKED) { // Locked layers are muted
+                        note.setVolume(0F);
+                    } else if (hasSoloLayers && layer.getStatus() != NbsLayer.Status.SOLO) { // Non-solo layers are muted if there are solo layers
                         note.setVolume(0F);
                     }
 
@@ -261,7 +275,17 @@ public class NbsIo {
             final NbsLayer layer = song.getLayers().get(i);
             writeString(dos, layer.getNameOr(""));
             if (song.getVersion() >= 4) {
-                dos.writeBoolean(layer.isLocked());
+                switch (layer.getStatus()) {
+                    case NONE:
+                        dos.writeByte(0);
+                        break;
+                    case LOCKED:
+                        dos.writeByte(1);
+                        break;
+                    case SOLO:
+                        dos.writeByte(2);
+                        break;
+                }
             }
             dos.writeByte(layer.getVolume());
             if (song.getVersion() >= 2) {
