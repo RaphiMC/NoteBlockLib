@@ -261,7 +261,7 @@ public abstract class SongPlayer {
     protected abstract void playNotes(final List<Note> notes);
 
     /**
-     * Called when the song has finished playing.
+     * Called when the song has finished playing. Stops the song player by default.
      */
     protected void onSongFinished() {
         this.stop();
