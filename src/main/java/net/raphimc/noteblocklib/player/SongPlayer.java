@@ -292,4 +292,5 @@ public abstract class SongPlayer {
     protected boolean preTick() {
         return true;
     }
+
 }
