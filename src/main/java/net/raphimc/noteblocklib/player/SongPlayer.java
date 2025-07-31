@@ -239,7 +239,7 @@ public abstract class SongPlayer {
             }
         } catch (Throwable e) {
             if (e.getCause() instanceof InterruptedException) return;
-            this.onTickError(e);
+            this.onTickException(e);
         }
     }
 
@@ -272,12 +272,12 @@ public abstract class SongPlayer {
     }
 
     /**
-     * Called when an error occurs during playback. Stops the song player by default.
-     * Override this method to handle errors differently.
+     * Called when an exception occurs during playback. Stops the song player by default.
+     * Override this method to handle exceptions differently.
      *
-     * @param e The error that occurred.
+     * @param e The exception that occurred.
      */
-    protected void onTickError(final Throwable e) {
+    protected void onTickException(final Throwable e) {
         e.printStackTrace();
         this.stop();
     }
