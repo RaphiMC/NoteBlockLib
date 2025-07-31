@@ -291,4 +291,5 @@ public abstract class SongPlayer {
     @Deprecated
     protected void onFinished() {
     }
+
 }
