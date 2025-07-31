@@ -227,7 +227,9 @@ public abstract class SongPlayer {
                 this.tick++;
                 if (this.tick >= this.song.getNotes().getLengthInTicks()) {
                     this.onSongFinished();
-                    return;
+                    if (!this.isRunning()) {
+                        return; // Return if the song got stopped in the onSongFinished method
+                    }
                 }
                 if (this.ticksPerSecond != this.song.getTempoEvents().getEffectiveTempo(this.tick)) {
                     this.ticksPerSecond = this.song.getTempoEvents().getEffectiveTempo(this.tick);
