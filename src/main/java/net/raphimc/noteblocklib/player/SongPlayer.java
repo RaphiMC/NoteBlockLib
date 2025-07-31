@@ -51,6 +51,7 @@ public abstract class SongPlayer {
 
     /**
      * Starts playing the song from the beginning.
+     *
      * @param delay The delay in milliseconds before starting the song.
      */
     public void start(final int delay) {
@@ -59,8 +60,9 @@ public abstract class SongPlayer {
 
     /**
      * Starts playing the song from the given tick.
+     *
      * @param delay The delay in milliseconds before starting the song.
-     * @param tick The tick to start playing from.
+     * @param tick  The tick to start playing from.
      */
     public void start(final int delay, final int tick) {
         if (this.isRunning()) this.stop();
@@ -116,6 +118,7 @@ public abstract class SongPlayer {
     /**
      * Sets the song that should be played.<br>
      * Can be called in {@link #onFinished()}.
+     *
      * @param song The song to play.
      */
     protected void setSong(final Song song) {
@@ -138,6 +141,7 @@ public abstract class SongPlayer {
 
     /**
      * Sets the current tick.
+     *
      * @param tick The tick to set.
      */
     public void setTick(final int tick) {
@@ -153,6 +157,7 @@ public abstract class SongPlayer {
 
     /**
      * Sets the current playback position in milliseconds.
+     *
      * @param milliseconds The time to set the playback position to.
      */
     public void setMillisecondPosition(final int milliseconds) {
@@ -168,6 +173,7 @@ public abstract class SongPlayer {
 
     /**
      * Pauses or resumes the player.
+     *
      * @param paused Whether the player should be paused.
      */
     public void setPaused(final boolean paused) {
@@ -178,6 +184,7 @@ public abstract class SongPlayer {
      * Disables the internal scheduler and uses the provided one instead.<br>
      * The provided scheduler won't be shut down when the player is stopped.<br>
      * Set to null to disable builtin scheduling (The tick method has to be called manually then).
+     *
      * @param scheduler The scheduler to use for playing the song or null to disable builtin scheduling
      */
     protected void setCustomScheduler(final ScheduledExecutorService scheduler) {
@@ -190,6 +197,7 @@ public abstract class SongPlayer {
 
     /**
      * Create the internal tick task.
+     *
      * @param initialDelay The initial delay in nanoseconds.
      */
     protected void createTickTask(final long initialDelay) {
@@ -231,14 +239,13 @@ public abstract class SongPlayer {
             }
         } catch (Throwable e) {
             if (e.getCause() instanceof InterruptedException) return;
-
-            e.printStackTrace();
-            this.stop();
+            this.onTickError(e);
         }
     }
 
     /**
      * Called before each tick (Even when paused).
+     *
      * @return Whether the tick should be executed.
      */
     protected boolean preTick() {
@@ -247,6 +254,7 @@ public abstract class SongPlayer {
 
     /**
      * Plays the notes.
+     *
      * @param notes The notes to play.
      */
     protected abstract void playNotes(final List<Note> notes);
@@ -261,6 +269,17 @@ public abstract class SongPlayer {
      * Called after each tick.
      */
     protected void postTick() {
+    }
+
+    /**
+     * Called when an error occurs during playback. Stops the song player by default.
+     * Override this method to handle errors differently.
+     *
+     * @param e The error that occurred.
+     */
+    protected void onTickError(final Throwable e) {
+        e.printStackTrace();
+        this.stop();
     }
 
 }
