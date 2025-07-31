@@ -214,7 +214,7 @@ public abstract class SongPlayer {
      */
     protected void tick() {
         try {
-            if (!this.preTick()) {
+            if (!this.shouldTick()) {
                 return;
             }
             try {
@@ -248,8 +248,8 @@ public abstract class SongPlayer {
      *
      * @return Whether the tick should be executed.
      */
-    protected boolean preTick() {
-        return true;
+    protected boolean shouldTick() {
+        return this.preTick();
     }
 
     /**
@@ -280,6 +280,17 @@ public abstract class SongPlayer {
     protected void onTickException(final Throwable e) {
         e.printStackTrace();
         this.stop();
+    }
+
+    /**
+     * Called before each tick (Even when paused).
+     *
+     * @return Whether the tick should be executed.
+     * @see #shouldTick()
+     */
+    @Deprecated
+    protected boolean preTick() {
+        return true;
     }
 
 }
