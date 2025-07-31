@@ -253,7 +253,7 @@ public abstract class SongPlayer {
     }
 
     /**
-     * Plays the notes.
+     * Called each tick to play the notes for the current tick.
      *
      * @param notes The notes to play.
      */
@@ -266,7 +266,7 @@ public abstract class SongPlayer {
     }
 
     /**
-     * Called after each tick.
+     * Called after each tick (Even when paused).
      */
     protected void postTick() {
     }
