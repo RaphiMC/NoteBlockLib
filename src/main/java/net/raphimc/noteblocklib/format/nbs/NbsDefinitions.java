@@ -32,7 +32,12 @@ public class NbsDefinitions {
 
     public static final int CENTER_PANNING = 100;
 
+    public static final String TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME = "Toggle Rainbow";
     public static final String TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME = "Tempo Changer";
+    public static final String SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME = "Sound Stopper";
+    public static final String SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME = "Show Save Popup";
+    public static final String CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME = "Change Color to #";
+    public static final String TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME = "Toggle Background Accent";
 
     /**
      * Calculates the effective pitch of a note. (100 = 1 key, 1200 = 1 octave)

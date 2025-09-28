@@ -27,10 +27,7 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Note;
 
 import java.io.*;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class NbsIo {
 
@@ -170,9 +167,28 @@ public class NbsIo {
                         note.setInstrument(MinecraftInstrument.fromNbsId((byte) nbsNote.getInstrument()));
                     } else {
                         final NbsCustomInstrument nbsCustomInstrument = customInstruments.get(nbsNote.getInstrument() - song.getVanillaInstrumentCount());
-                        if (song.getVersion() >= 4 && NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
-                            song.getTempoEvents().set(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
-                            continue;
+                        if (song.getVersion() >= 4) {
+                            if (NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                song.getTempoEvents().set(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
+                                continue;
+                            }
+                            if (NbsDefinitions.TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                continue;
+                            }
+                        }
+                        if (song.getVersion() >= 5) {
+                            if (NbsDefinitions.SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                continue; // TODO: Implement sound stopper support
+                            }
+                            if (NbsDefinitions.SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                continue;
+                            }
+                            if (nbsCustomInstrument.getNameOr("").toLowerCase(Locale.ROOT).contains(NbsDefinitions.CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME.toLowerCase(Locale.ROOT))) {
+                                continue;
+                            }
+                            if (NbsDefinitions.TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                continue;
+                            }
                         }
 
                         final int pitchModifier = nbsCustomInstrument.getPitch() - NbsDefinitions.F_SHARP_4_NBS_KEY;
