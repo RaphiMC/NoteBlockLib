@@ -47,15 +47,14 @@ public class TxtIo {
             } else if (line.startsWith("// Author: ")) {
                 song.setAuthor(line.substring(11));
             } else {
-                final String[] split = line.split(":");
-                final int tick = Integer.parseInt(split[0]);
-                final byte key = Byte.parseByte(split[1]);
-                final byte instrument = Byte.parseByte(split[2]);
-
-                final TxtNote note = new TxtNote();
-                note.setInstrument(instrument);
-                note.setKey(key);
-                notes.computeIfAbsent(tick, k -> new ArrayList<>()).add(note);
+                try {
+                    final String[] split = line.split(":");
+                    final TxtNote note = new TxtNote();
+                    note.setInstrument(Integer.parseInt(split[2]));
+                    note.setKey(Integer.parseInt(split[1]));
+                    notes.computeIfAbsent(Integer.parseInt(split[0]), k -> new ArrayList<>()).add(note);
+                } catch (NumberFormatException | IndexOutOfBoundsException ignored) {
+                }
             }
         }
 

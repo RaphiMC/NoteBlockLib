@@ -38,10 +38,9 @@ public class McSp2Io {
     public static McSp2Song readSong(final InputStream is, final String fileName) {
         final Scanner scanner = new Scanner(new BufferedInputStream(is, BUFFER_SIZE), StandardCharsets.ISO_8859_1.name()).useDelimiter("[|\\n]");
         final McSp2Song song = new McSp2Song(fileName);
+        final Map<Integer, McSp2Layer> layers = song.getLayers();
 
         scanner.nextInt(); // version? Is ignored by Minecraft Song Planner v2.5
-
-        final Map<Integer, McSp2Layer> layers = song.getLayers();
 
         song.setAutoSaveInterval(scanner.nextInt());
         song.setTitle(scanner.next());

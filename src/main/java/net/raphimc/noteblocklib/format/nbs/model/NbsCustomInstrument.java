@@ -45,7 +45,7 @@ public class NbsCustomInstrument implements Instrument {
     private boolean pressKey;
 
     public NbsCustomInstrument() {
-        this.pitch = NbsDefinitions.F_SHARP_4_NBS_KEY;
+        this.pitch = NbsDefinitions.F_SHARP_4_KEY;
     }
 
     /**
@@ -114,8 +114,8 @@ public class NbsCustomInstrument implements Instrument {
      * @return The pitch of the sound file. Just like the note blocks, this ranges from 0-87. Default is 45 (F#4).
      * @since v0
      */
-    public byte getPitch() {
-        return this.pitch;
+    public int getPitch() {
+        return this.pitch & 0xFF;
     }
 
     /**
@@ -123,8 +123,11 @@ public class NbsCustomInstrument implements Instrument {
      * @return this
      * @since v0
      */
-    public NbsCustomInstrument setPitch(final byte pitch) {
-        this.pitch = pitch;
+    public NbsCustomInstrument setPitch(final int pitch) {
+        if (pitch < 0 || pitch > 255) {
+            throw new IllegalArgumentException("Pitch must be between 0 and 255");
+        }
+        this.pitch = (byte) pitch;
         return this;
     }
 
@@ -148,10 +151,10 @@ public class NbsCustomInstrument implements Instrument {
 
     public NbsCustomInstrument copy() {
         final NbsCustomInstrument copyCustomInstrument = new NbsCustomInstrument();
-        copyCustomInstrument.setName(this.name);
-        copyCustomInstrument.setSoundFilePath(this.soundFilePath);
-        copyCustomInstrument.setPitch(this.pitch);
-        copyCustomInstrument.setPressKey(this.pressKey);
+        copyCustomInstrument.setName(this.getName());
+        copyCustomInstrument.setSoundFilePath(this.getSoundFilePath());
+        copyCustomInstrument.setPitch(this.getPitch());
+        copyCustomInstrument.setPressKey(this.isPressKey());
         return copyCustomInstrument;
     }
 

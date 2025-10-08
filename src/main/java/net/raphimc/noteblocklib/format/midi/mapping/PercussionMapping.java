@@ -22,9 +22,9 @@ import net.raphimc.noteblocklib.data.MinecraftInstrument;
 public class PercussionMapping {
 
     private final MinecraftInstrument instrument;
-    private final byte nbsKey;
+    private final int nbsKey;
 
-    public PercussionMapping(final MinecraftInstrument instrument, final byte nbsKey) {
+    public PercussionMapping(final MinecraftInstrument instrument, final int nbsKey) {
         this.instrument = instrument;
         this.nbsKey = nbsKey;
     }
@@ -33,7 +33,7 @@ public class PercussionMapping {
         return this.instrument;
     }
 
-    public byte getNbsKey() {
+    public int getNbsKey() {
         return this.nbsKey;
     }
 

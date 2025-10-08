@@ -33,6 +33,13 @@ public class FutureClientNote {
         return this;
     }
 
+    public FutureClientNote setInstrument(final int instrument) {
+        if (instrument < Byte.MIN_VALUE || instrument > Byte.MAX_VALUE) {
+            throw new IllegalArgumentException("Instrument must be between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE);
+        }
+        return this.setInstrument((byte) instrument);
+    }
+
     public byte getKey() {
         return this.key;
     }
@@ -40,6 +47,13 @@ public class FutureClientNote {
     public FutureClientNote setKey(final byte key) {
         this.key = key;
         return this;
+    }
+
+    public FutureClientNote setKey(final int key) {
+        if (key < Byte.MIN_VALUE || key > Byte.MAX_VALUE) {
+            throw new IllegalArgumentException("Key must be between " + Byte.MIN_VALUE + " and " + Byte.MAX_VALUE);
+        }
+        return this.setKey((byte) key);
     }
 
     public FutureClientNote copy() {

@@ -54,14 +54,26 @@ public class NbsConverter {
                     if (!newSong.getCustomInstruments().contains(customInstrument)) {
                         newSong.getCustomInstruments().add(customInstrument);
                     }
-                    nbsNote.setInstrument((short) (newSong.getVanillaInstrumentCount() + newSong.getCustomInstruments().indexOf(customInstrument)));
+                    nbsNote.setInstrument(newSong.getVanillaInstrumentCount() + newSong.getCustomInstruments().indexOf(customInstrument));
                 } else {
                     continue;
                 }
-                nbsNote.setKey((byte) Math.max(NbsDefinitions.NBS_LOWEST_KEY, Math.min(NbsDefinitions.NBS_HIGHEST_KEY, note.getNbsKey())));
-                nbsNote.setVelocity((byte) Math.round(note.getVolume() * 100F));
-                nbsNote.setPanning((short) (Math.round(note.getPanning() * 100F) + NbsDefinitions.CENTER_PANNING));
+                nbsNote.setKey(note.getNbsKey());
+                nbsNote.setVelocity(Math.round(note.getVolume() * 100F));
+                nbsNote.setPanning(Math.round(note.getPanning() * 100F) + NbsDefinitions.CENTER_PANNING);
                 nbsNote.setPitch((short) Math.round(note.getFractionalKeyPart() * 100F));
+
+                // NBS limits the key range, but the pitch can be adjusted to reach the desired key anyway
+                if (nbsNote.getKey() < NbsDefinitions.LOWEST_KEY) {
+                    final int keyDiff = NbsDefinitions.LOWEST_KEY - nbsNote.getKey();
+                    nbsNote.setKey(NbsDefinitions.LOWEST_KEY);
+                    nbsNote.setPitch((short) (nbsNote.getPitch() - keyDiff * 100));
+                }
+                if (nbsNote.getKey() > NbsDefinitions.HIGHEST_KEY) {
+                    final int keyDiff = nbsNote.getKey() - NbsDefinitions.HIGHEST_KEY;
+                    nbsNote.setKey(NbsDefinitions.HIGHEST_KEY);
+                    nbsNote.setPitch((short) (nbsNote.getPitch() + keyDiff * 100));
+                }
 
                 final NbsLayer nbsLayer = newSong.getLayers().computeIfAbsent(i, k -> new NbsLayer());
                 nbsLayer.getNotes().put(tick, nbsNote);
@@ -72,19 +84,19 @@ public class NbsConverter {
         if (song.getTempoEvents().getTicks().size() > 1) {
             final NbsCustomInstrument tempoChangerInstrument = new NbsCustomInstrument();
             tempoChangerInstrument.setName(NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME);
-            final short instrumentId = (short) (newSong.getVanillaInstrumentCount() + newSong.getCustomInstruments().size());
+            final int instrumentId = newSong.getVanillaInstrumentCount() + newSong.getCustomInstruments().size();
             newSong.getCustomInstruments().add(tempoChangerInstrument);
 
             final NbsLayer tempoChangerLayer = new NbsLayer();
             tempoChangerLayer.setName(NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME);
-            tempoChangerLayer.setVolume((byte) 0);
+            tempoChangerLayer.setVolume(0);
             newSong.getLayers().put(newSong.getLayers().size(), tempoChangerLayer);
 
             for (int tempoEventTick : song.getTempoEvents().getTicks()) {
                 final float tps = song.getTempoEvents().get(tempoEventTick);
                 final NbsNote tempoChangerNote = new NbsNote();
                 tempoChangerNote.setInstrument(instrumentId);
-                tempoChangerNote.setKey((byte) NbsDefinitions.F_SHARP_4_NBS_KEY);
+                tempoChangerNote.setKey(NbsDefinitions.F_SHARP_4_KEY);
                 tempoChangerNote.setPitch((short) Math.round(tps * 15F));
                 tempoChangerLayer.getNotes().put(tempoEventTick, tempoChangerNote);
             }
@@ -110,7 +122,7 @@ public class NbsConverter {
         } else if (song instanceof McSp2Song) {
             final McSp2Song mcSp2Song = (McSp2Song) song;
             newSong.setAutoSave(mcSp2Song.getAutoSaveInterval() != 0);
-            newSong.setAutoSaveInterval((byte) mcSp2Song.getAutoSaveInterval());
+            newSong.setAutoSaveInterval(mcSp2Song.getAutoSaveInterval());
             newSong.setMinutesSpent(mcSp2Song.getMinutesSpent());
             newSong.setLeftClicks(mcSp2Song.getLeftClicks());
             newSong.setRightClicks(mcSp2Song.getRightClicks());

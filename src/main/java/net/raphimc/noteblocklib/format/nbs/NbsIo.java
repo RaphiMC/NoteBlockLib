@@ -20,14 +20,18 @@ package net.raphimc.noteblocklib.format.nbs;
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.data.MinecraftInstrument;
+import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.io.*;
 import java.util.*;
+
+import static net.raphimc.noteblocklib.format.nbs.NbsDefinitions.*;
 
 public class NbsIo {
 
@@ -39,7 +43,7 @@ public class NbsIo {
 
         final short length = dis.readShort();
         if (length == 0) {
-            song.setVersion(dis.readByte());
+            song.setVersion(dis.readUnsignedByte());
             song.setVanillaInstrumentCount(dis.readUnsignedByte());
             if (song.getVersion() >= 3) {
                 song.setLength(dis.readShort());
@@ -48,7 +52,7 @@ public class NbsIo {
             }
         } else {
             song.setLength(length);
-            song.setVersion((byte) 0);
+            song.setVersion(0);
             song.setVanillaInstrumentCount(10);
         }
 
@@ -63,8 +67,8 @@ public class NbsIo {
         song.setDescription(readString(dis));
         song.setTempo(dis.readShort());
         song.setAutoSave(dis.readBoolean());
-        song.setAutoSaveInterval(dis.readByte());
-        song.setTimeSignature(dis.readByte());
+        song.setAutoSaveInterval(dis.readUnsignedByte());
+        song.setTimeSignature(dis.readUnsignedByte());
         song.setMinutesSpent(dis.readInt());
         song.setLeftClicks(dis.readInt());
         song.setRightClicks(dis.readInt());
@@ -74,7 +78,7 @@ public class NbsIo {
 
         if (song.getVersion() >= 4) {
             song.setLoop(dis.readBoolean());
-            song.setMaxLoopCount(dis.readByte());
+            song.setMaxLoopCount(dis.readUnsignedByte());
             song.setLoopStartTick(dis.readShort());
         }
 
@@ -94,11 +98,11 @@ public class NbsIo {
                 layer += jumpLayers;
 
                 final NbsNote note = new NbsNote();
-                note.setInstrument((short) dis.readUnsignedByte());
-                note.setKey(dis.readByte());
+                note.setInstrument(dis.readUnsignedByte());
+                note.setKey(dis.readUnsignedByte());
                 if (song.getVersion() >= 4) {
-                    note.setVelocity(dis.readByte());
-                    note.setPanning((short) dis.readUnsignedByte());
+                    note.setVelocity(dis.readUnsignedByte());
+                    note.setPanning(dis.readUnsignedByte());
                     note.setPitch(dis.readShort());
                 }
                 layers.computeIfAbsent(layer, k -> new NbsLayer()).getNotes().put(tick, note);
@@ -110,7 +114,7 @@ public class NbsIo {
                 final NbsLayer layer = layers.computeIfAbsent(i, k -> new NbsLayer());
                 layer.setName(readString(dis));
                 if (song.getVersion() >= 4) {
-                    final byte lockedByte = dis.readByte();
+                    final int lockedByte = dis.readUnsignedByte();
                     switch (lockedByte) {
                         case 0:
                             layer.setStatus(NbsLayer.Status.NONE);
@@ -123,20 +127,20 @@ public class NbsIo {
                             break;
                     }
                 }
-                layer.setVolume(dis.readByte());
+                layer.setVolume(dis.readUnsignedByte());
                 if (song.getVersion() >= 2) {
-                    layer.setPanning((short) dis.readUnsignedByte());
+                    layer.setPanning(dis.readUnsignedByte());
                 }
             }
         }
 
         if (dis.available() > 0) {
-            final int customInstrumentsAmount = dis.readUnsignedByte();
-            for (int i = 0; i < customInstrumentsAmount; i++) {
+            final int customInstrumentCount = dis.readUnsignedByte();
+            for (int i = 0; i < customInstrumentCount; i++) {
                 final NbsCustomInstrument customInstrument = new NbsCustomInstrument();
                 customInstrument.setName(readString(dis));
                 customInstrument.setSoundFilePath(readString(dis));
-                customInstrument.setPitch(dis.readByte());
+                customInstrument.setPitch(dis.readUnsignedByte());
                 customInstrument.setPressKey(dis.readBoolean());
                 customInstruments.add(customInstrument);
             }
@@ -145,7 +149,7 @@ public class NbsIo {
         { // Fill generalized song structure with data
             final Map<NbsCustomInstrument, NbsCustomInstrument> customInstrumentMap = new IdentityHashMap<>(customInstruments.size()); // Cache map to avoid creating new instances for each note
             for (NbsCustomInstrument customInstrument : customInstruments) {
-                customInstrumentMap.put(customInstrument, customInstrument.copy().setPitch((byte) NbsDefinitions.F_SHARP_4_NBS_KEY));
+                customInstrumentMap.put(customInstrument, customInstrument.copy().setPitch(F_SHARP_4_KEY));
             }
 
             song.getTempoEvents().set(0, song.getTempo() / 100F);
@@ -155,43 +159,44 @@ public class NbsIo {
                     final NbsNote nbsNote = noteEntry.getValue();
 
                     final Note note = new Note();
-                    note.setNbsKey((float) NbsDefinitions.getEffectivePitch(nbsNote) / NbsDefinitions.PITCHES_PER_KEY);
-                    note.setVolume((layer.getVolume() / 100F) * (nbsNote.getVelocity() / 100F));
-                    if (layer.getPanning() == NbsDefinitions.CENTER_PANNING) { // Special case
-                        note.setPanning((nbsNote.getPanning() - NbsDefinitions.CENTER_PANNING) / 100F);
+                    final float effectiveKey = (float) (MathUtil.clamp(nbsNote.getKey(), LOWEST_KEY, HIGHEST_KEY) * PITCHES_PER_KEY + nbsNote.getPitch()) / PITCHES_PER_KEY;
+                    note.setMidiKey(MathUtil.clamp(LOWEST_MIDI_KEY + effectiveKey, MidiDefinitions.LOWEST_KEY, MidiDefinitions.HIGHEST_KEY));
+                    note.setVolume(MathUtil.clamp(Math.min(layer.getVolume() / 100F, 1F) * (nbsNote.getVelocity() / 100F), 0F, 1F));
+                    if (layer.getPanning() == CENTER_PANNING) { // Special case
+                        note.setPanning((nbsNote.getPanning() - CENTER_PANNING) / 100F);
                     } else {
-                        note.setPanning(((layer.getPanning() - NbsDefinitions.CENTER_PANNING) + (nbsNote.getPanning() - NbsDefinitions.CENTER_PANNING)) / 200F);
+                        note.setPanning(((layer.getPanning() - CENTER_PANNING) + (nbsNote.getPanning() - CENTER_PANNING)) / 200F);
                     }
 
                     if (nbsNote.getInstrument() < song.getVanillaInstrumentCount()) {
-                        note.setInstrument(MinecraftInstrument.fromNbsId((byte) nbsNote.getInstrument()));
+                        note.setInstrument(MinecraftInstrument.fromNbsId(nbsNote.getInstrument()));
                     } else {
                         final NbsCustomInstrument nbsCustomInstrument = customInstruments.get(nbsNote.getInstrument() - song.getVanillaInstrumentCount());
                         if (song.getVersion() >= 4) {
-                            if (NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            if (TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 song.getTempoEvents().set(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
                                 continue;
                             }
-                            if (NbsDefinitions.TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            if (TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 continue;
                             }
                         }
                         if (song.getVersion() >= 5) {
-                            if (NbsDefinitions.SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            if (SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 continue; // TODO: Implement sound stopper support
                             }
-                            if (NbsDefinitions.SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            if (SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 continue;
                             }
-                            if (nbsCustomInstrument.getNameOr("").toLowerCase(Locale.ROOT).contains(NbsDefinitions.CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME.toLowerCase(Locale.ROOT))) {
+                            if (nbsCustomInstrument.getNameOr("").toLowerCase(Locale.ROOT).contains(CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME.toLowerCase(Locale.ROOT))) {
                                 continue;
                             }
-                            if (NbsDefinitions.TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            if (TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 continue;
                             }
                         }
 
-                        final int pitchModifier = nbsCustomInstrument.getPitch() - NbsDefinitions.F_SHARP_4_NBS_KEY;
+                        final int pitchModifier = nbsCustomInstrument.getPitch() - F_SHARP_4_KEY;
                         if (pitchModifier != 0) { // Pre-apply pitch modifier to note to make it easier for player implementations
                             note.setNbsKey(note.getNbsKey() + pitchModifier);
                             note.setInstrument(customInstrumentMap.get(nbsCustomInstrument)); // Use custom instrument with no pitch modifier, because the pitch modifier is already applied to the note
@@ -301,6 +306,8 @@ public class NbsIo {
                     case SOLO:
                         dos.writeByte(2);
                         break;
+                    default:
+                        throw new IllegalStateException("Unsupported layer status: " + layer.getStatus());
                 }
             }
             dos.writeByte(layer.getVolume());

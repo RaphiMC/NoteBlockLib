@@ -21,23 +21,23 @@ import java.util.Objects;
 
 public class McSpNote {
 
-    private byte instrument;
-    private byte key;
+    private int instrument;
+    private int key;
 
-    public byte getInstrument() {
+    public int getInstrument() {
         return this.instrument;
     }
 
-    public McSpNote setInstrument(final byte instrument) {
+    public McSpNote setInstrument(final int instrument) {
         this.instrument = instrument;
         return this;
     }
 
-    public byte getKey() {
+    public int getKey() {
         return this.key;
     }
 
-    public McSpNote setKey(final byte key) {
+    public McSpNote setKey(final int key) {
         this.key = key;
         return this;
     }

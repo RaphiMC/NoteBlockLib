@@ -28,6 +28,12 @@ public class MidiDefinitions {
     public static final int PAN_CONTROL_MSB = 0x0A;
     public static final int RESET_CONTROLS = 0x79;
 
+    public static final int LOWEST_KEY = 0;
+    public static final int HIGHEST_KEY = 127;
+    public static final int KEY_COUNT = 128;
+    public static final int KEYS_PER_OCTAVE = 12;
+    public static final int F_SHARP_4_KEY = 66;
+
     public static final int CHANNEL_COUNT = 16;
     public static final int DEFAULT_TEMPO_MPQ = 500_000;
     public static final byte MAX_VELOCITY = 127;

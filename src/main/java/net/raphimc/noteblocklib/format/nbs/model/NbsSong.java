@@ -41,7 +41,7 @@ public class NbsSong extends Song {
     /**
      * @since v0
      */
-    private int vanillaInstrumentCount;
+    private byte vanillaInstrumentCount;
 
     /**
      * @since v0
@@ -130,7 +130,7 @@ public class NbsSong extends Song {
     public NbsSong(final String fileName) {
         super(SongFormat.NBS, fileName);
         this.version = 5;
-        this.vanillaInstrumentCount = MinecraftInstrument.values().length;
+        this.vanillaInstrumentCount = (byte) MinecraftInstrument.values().length;
     }
 
     /**
@@ -155,8 +155,8 @@ public class NbsSong extends Song {
      * @return The version of the NBS format.
      * @since v0
      */
-    public byte getVersion() {
-        return this.version;
+    public int getVersion() {
+        return this.version & 0xFF;
     }
 
     /**
@@ -164,8 +164,11 @@ public class NbsSong extends Song {
      * @return this
      * @since v0
      */
-    public NbsSong setVersion(final byte version) {
-        this.version = version;
+    public NbsSong setVersion(final int version) {
+        if (version < 0 || version > 255) {
+            throw new IllegalArgumentException("NBS version must be between 0 and 255");
+        }
+        this.version = (byte) version;
         return this;
     }
 
@@ -174,7 +177,7 @@ public class NbsSong extends Song {
      * @since v0
      */
     public int getVanillaInstrumentCount() {
-        return this.vanillaInstrumentCount;
+        return this.vanillaInstrumentCount & 0xFF;
     }
 
     /**
@@ -183,7 +186,10 @@ public class NbsSong extends Song {
      * @since v0
      */
     public NbsSong setVanillaInstrumentCount(final int vanillaInstrumentCount) {
-        this.vanillaInstrumentCount = vanillaInstrumentCount;
+        if (vanillaInstrumentCount < 0 || vanillaInstrumentCount > 255) {
+            throw new IllegalArgumentException("Vanilla instrument count must be between 0 and 255");
+        }
+        this.vanillaInstrumentCount = (byte) vanillaInstrumentCount;
         return this;
     }
 
@@ -245,8 +251,8 @@ public class NbsSong extends Song {
      * @return The amount of minutes between each auto-save (if it has been enabled) (1-60). As of NBS version 4 this value is still saved to the file, but no longer used in the program.
      * @since v0
      */
-    public byte getAutoSaveInterval() {
-        return this.autoSaveInterval;
+    public int getAutoSaveInterval() {
+        return this.autoSaveInterval & 0xFF;
     }
 
     /**
@@ -254,8 +260,11 @@ public class NbsSong extends Song {
      * @return this
      * @since v0
      */
-    public NbsSong setAutoSaveInterval(final byte autoSaveInterval) {
-        this.autoSaveInterval = autoSaveInterval;
+    public NbsSong setAutoSaveInterval(final int autoSaveInterval) {
+        if (autoSaveInterval < 0 || autoSaveInterval > 255) {
+            throw new IllegalArgumentException("Auto-save interval must be between 0 and 255");
+        }
+        this.autoSaveInterval = (byte) autoSaveInterval;
         return this;
     }
 
@@ -263,8 +272,8 @@ public class NbsSong extends Song {
      * @return The time signature of the song. If this is 3, then the signature is 3/4. Default is 4. This value ranges from 2-8.
      * @since v0
      */
-    public byte getTimeSignature() {
-        return this.timeSignature;
+    public int getTimeSignature() {
+        return this.timeSignature & 0xFF;
     }
 
     /**
@@ -272,8 +281,11 @@ public class NbsSong extends Song {
      * @return this
      * @since v0
      */
-    public NbsSong setTimeSignature(final byte timeSignature) {
-        this.timeSignature = timeSignature;
+    public NbsSong setTimeSignature(final int timeSignature) {
+        if (timeSignature < 0 || timeSignature > 255) {
+            throw new IllegalArgumentException("Time signature must be between 0 and 255");
+        }
+        this.timeSignature = (byte) timeSignature;
         return this;
     }
 
@@ -376,8 +388,8 @@ public class NbsSong extends Song {
     }
 
     /**
-     * @return If the song has been imported from a .mid or .schematic file, that file name is stored here (only the name of the file, not the path).
      * @param fallback The fallback value if the source file name is not set.
+     * @return If the song has been imported from a .mid or .schematic file, that file name is stored here (only the name of the file, not the path).
      * @since v0
      */
     public String getSourceFileNameOr(final String fallback) {
@@ -420,8 +432,8 @@ public class NbsSong extends Song {
      * @return 0 = infinite. Other values mean the amount of times the song loops.
      * @since v4
      */
-    public byte getMaxLoopCount() {
-        return this.maxLoopCount;
+    public int getMaxLoopCount() {
+        return this.maxLoopCount & 0xFF;
     }
 
     /**
@@ -429,8 +441,11 @@ public class NbsSong extends Song {
      * @return this
      * @since v4
      */
-    public NbsSong setMaxLoopCount(final byte maxLoopCount) {
-        this.maxLoopCount = maxLoopCount;
+    public NbsSong setMaxLoopCount(final int maxLoopCount) {
+        if (maxLoopCount < 0 || maxLoopCount > 255) {
+            throw new IllegalArgumentException("Max loop count must be between 0 and 255");
+        }
+        this.maxLoopCount = (byte) maxLoopCount;
         return this;
     }
 

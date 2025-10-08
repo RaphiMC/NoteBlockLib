@@ -17,13 +17,12 @@
  */
 package net.raphimc.noteblocklib.format.midi;
 
-import net.raphimc.noteblocklib.data.Constants;
 import net.raphimc.noteblocklib.format.midi.mapping.InstrumentMapping;
 import net.raphimc.noteblocklib.format.midi.mapping.MidiMappings;
 import net.raphimc.noteblocklib.format.midi.mapping.PercussionMapping;
 import net.raphimc.noteblocklib.format.midi.model.MidiSong;
-import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
 
 import javax.sound.midi.*;
@@ -77,17 +76,17 @@ public class MidiIo {
 
                             final Note note = new Note();
                             if (shortMessage.getChannel() == PERCUSSION_CHANNEL) {
-                                final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS.get(key);
+                                final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS[key];
                                 if (mapping == null) continue;
 
                                 note.setInstrument(mapping.getInstrument());
                                 note.setNbsKey(mapping.getNbsKey());
                             } else {
-                                final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS.get(instrument);
+                                final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS[instrument];
                                 if (mapping == null) continue;
 
                                 note.setInstrument(mapping.getInstrument());
-                                note.setMidiKey(Math.max(NbsDefinitions.NBS_LOWEST_MIDI_KEY, Math.min(NbsDefinitions.NBS_HIGHEST_MIDI_KEY, key + Constants.KEYS_PER_OCTAVE * mapping.getOctaveModifier())));
+                                note.setMidiKey(MathUtil.clamp(key + KEYS_PER_OCTAVE * mapping.getOctaveModifier(), LOWEST_KEY, HIGHEST_KEY));
                             }
                             note.setVolume(((float) velocity / MAX_VELOCITY) * (float) channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
                             note.setPanning((float) (pan - CENTER_PAN) / CENTER_PAN);

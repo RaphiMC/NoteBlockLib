@@ -17,8 +17,8 @@
  */
 package net.raphimc.noteblocklib.model;
 
-import net.raphimc.noteblocklib.data.Constants;
 import net.raphimc.noteblocklib.data.MinecraftDefinitions;
+import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
 import net.raphimc.noteblocklib.model.instrument.Instrument;
 
@@ -37,13 +37,6 @@ public class Note {
     }
 
     /**
-     * @return If the note is outside the vanilla Minecraft octave range.
-     */
-    public boolean isOutsideMinecraftOctaveRange() {
-        return this.midiKey < MinecraftDefinitions.MC_LOWEST_MIDI_KEY || this.midiKey > MinecraftDefinitions.MC_HIGHEST_MIDI_KEY;
-    }
-
-    /**
      * @return The instrument of the note. Default Minecraft instruments are stored in {@link net.raphimc.noteblocklib.data.MinecraftInstrument}.
      */
     public Instrument getInstrument() {
@@ -55,6 +48,9 @@ public class Note {
      * @return this
      */
     public Note setInstrument(final Instrument instrument) {
+        if (instrument == null) {
+            throw new IllegalArgumentException("Instrument cannot be null");
+        }
         this.instrument = instrument;
         return this;
     }
@@ -71,6 +67,9 @@ public class Note {
      * @return this
      */
     public Note setMidiKey(final float midiKey) {
+        if (midiKey < MidiDefinitions.LOWEST_KEY || midiKey > MidiDefinitions.HIGHEST_KEY) {
+            throw new IllegalArgumentException("MIDI key must be between " + MidiDefinitions.LOWEST_KEY + " and " + MidiDefinitions.HIGHEST_KEY);
+        }
         this.midiKey = midiKey;
         return this;
     }
@@ -81,7 +80,7 @@ public class Note {
      * @return The key of the note in the Minecraft Note Block range (0-24). The center key (F#4) is 12. May be out of range, if the note has not been transposed.
      */
     public int getMcKey() {
-        return Math.round(this.midiKey - MinecraftDefinitions.MC_LOWEST_MIDI_KEY);
+        return Math.round(this.midiKey - MinecraftDefinitions.LOWEST_MIDI_KEY);
     }
 
     /**
@@ -91,8 +90,7 @@ public class Note {
      * @return this
      */
     public Note setMcKey(final int mcKey) {
-        this.midiKey = mcKey + MinecraftDefinitions.MC_LOWEST_MIDI_KEY;
-        return this;
+        return this.setMidiKey(mcKey + MinecraftDefinitions.LOWEST_MIDI_KEY);
     }
 
     /**
@@ -101,7 +99,7 @@ public class Note {
      * @return The key of the note in the Minecraft Note Block Studio range (0-87). The center key (F#4) is 45. May be out of range, if the note has not been transposed.
      */
     public int getNbsKey() {
-        return Math.round(this.midiKey - NbsDefinitions.NBS_LOWEST_MIDI_KEY);
+        return Math.round(this.midiKey - NbsDefinitions.LOWEST_MIDI_KEY);
     }
 
     /**
@@ -111,8 +109,7 @@ public class Note {
      * @return this
      */
     public Note setNbsKey(final float nbsKey) {
-        this.midiKey = nbsKey + NbsDefinitions.NBS_LOWEST_MIDI_KEY;
-        return this;
+        return this.setMidiKey(nbsKey + NbsDefinitions.LOWEST_MIDI_KEY);
     }
 
     /**
@@ -129,7 +126,7 @@ public class Note {
      * @return The pitch of the note to use when playing the sample. (1.0F = normal speed, 2.0F = double speed, 0.5F = half speed). The center key (F#4) is 1.0F.
      */
     public float getPitch() {
-        return (float) Math.pow(2D, (double) (this.midiKey - Constants.F_SHARP_4_MIDI_KEY) / Constants.KEYS_PER_OCTAVE);
+        return (float) Math.pow(2D, (double) (this.midiKey - MidiDefinitions.F_SHARP_4_KEY) / MidiDefinitions.KEYS_PER_OCTAVE);
     }
 
     /**
@@ -139,8 +136,10 @@ public class Note {
      * @return this
      */
     public Note setPitch(final float pitch) {
-        this.midiKey = (float) (Constants.F_SHARP_4_MIDI_KEY + Constants.KEYS_PER_OCTAVE * Math.log(pitch) / Math.log(2D));
-        return this;
+        if (pitch <= 0) {
+            throw new IllegalArgumentException("Pitch must be greater than 0");
+        }
+        return this.setMidiKey((float) (MidiDefinitions.F_SHARP_4_KEY + MidiDefinitions.KEYS_PER_OCTAVE * Math.log(pitch) / Math.log(2D)));
     }
 
     /**
@@ -155,6 +154,9 @@ public class Note {
      * @return this
      */
     public Note setVolume(final float volume) {
+        if (volume < 0F || volume > 1F) {
+            throw new IllegalArgumentException("Volume must be between 0 and 1");
+        }
         this.volume = volume;
         return this;
     }
@@ -171,8 +173,18 @@ public class Note {
      * @return this
      */
     public Note setPanning(final float panning) {
+        if (panning < -1F || panning > 1F) {
+            throw new IllegalArgumentException("Panning must be between -1 and 1");
+        }
         this.panning = panning;
         return this;
+    }
+
+    /**
+     * @return If the note is outside the vanilla Minecraft octave range.
+     */
+    public boolean isOutsideMinecraftOctaveRange() {
+        return this.midiKey < MinecraftDefinitions.LOWEST_MIDI_KEY || this.midiKey > MinecraftDefinitions.HIGHEST_MIDI_KEY;
     }
 
     public Note copy() {

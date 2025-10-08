@@ -17,6 +17,10 @@
  */
 package net.raphimc.noteblocklib.format.mcsp2;
 
+import com.google.common.collect.Sets;
+import net.raphimc.noteblocklib.data.MinecraftInstrument;
+
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class McSp2Definitions {
@@ -26,5 +30,7 @@ public class McSp2Definitions {
 
     public static final Pattern NOTE_DATA_PATTERN = Pattern.compile("(\\d+)?>(.)");
     public static final String NOTE_DATA_MAPPING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§½#£¤$%&/{[(])=}?\\+´`^~¨*'.;,:-_<µ€ÌìíÍïÏîÎóÓòÒöÖåÅäÄñÑõÕúÚùÙüûÜÛéÉèÈêÊë";
+
+    public static final Set<MinecraftInstrument> SUPPORTED_INSTRUMENTS = Sets.immutableEnumSet(MinecraftInstrument.HARP, MinecraftInstrument.BASS, MinecraftInstrument.BASS_DRUM, MinecraftInstrument.SNARE, MinecraftInstrument.HAT);
 
 }

@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.format.mcsp;
+package net.raphimc.noteblocklib.format.futureclient;
 
-public class McSpDefinitions {
+public class FutureClientDefinitions {
 
-    public static final int TEMPO = 10;
-    public static final int NOTE_COUNT = 7;
+    public static final int TEMPO = 20;
 
 }

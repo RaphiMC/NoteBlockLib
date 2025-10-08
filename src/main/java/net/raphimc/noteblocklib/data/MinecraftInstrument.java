@@ -38,17 +38,17 @@ public enum MinecraftInstrument implements Instrument {
     BANJO(14, 14, "block.note_block.banjo"),
     PLING(15, 15, "block.note_block.pling");
 
-    private final byte nbsId;
-    private final byte mcId;
+    private final int nbsId;
+    private final int mcId;
     private final String mcSoundName;
 
     MinecraftInstrument(final int nbsId, final int mcId, final String mcSoundName) {
-        this.nbsId = (byte) nbsId;
-        this.mcId = (byte) mcId;
+        this.nbsId = nbsId;
+        this.mcId = mcId;
         this.mcSoundName = mcSoundName;
     }
 
-    public static MinecraftInstrument fromNbsId(final byte nbsId) {
+    public static MinecraftInstrument fromNbsId(final int nbsId) {
         for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
             if (instrument.nbsId == nbsId) {
                 return instrument;
@@ -57,7 +57,7 @@ public enum MinecraftInstrument implements Instrument {
         return null;
     }
 
-    public static MinecraftInstrument fromMcId(final byte mcId) {
+    public static MinecraftInstrument fromMcId(final int mcId) {
         for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
             if (instrument.mcId == mcId) {
                 return instrument;
@@ -75,11 +75,11 @@ public enum MinecraftInstrument implements Instrument {
         return null;
     }
 
-    public byte nbsId() {
+    public int nbsId() {
         return this.nbsId;
     }
 
-    public byte mcId() {
+    public int mcId() {
         return this.mcId;
     }
 

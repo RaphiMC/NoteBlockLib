@@ -26,7 +26,7 @@ public class NbsNote {
     /**
      * @since v0
      */
-    private short instrument;
+    private byte instrument;
 
     /**
      * @since v0
@@ -41,7 +41,7 @@ public class NbsNote {
     /**
      * @since v4
      */
-    private short panning;
+    private byte panning;
 
     /**
      * @since v4
@@ -57,8 +57,8 @@ public class NbsNote {
      * @return The instrument of the note block. This is 0-15, or higher if the song uses custom instruments.
      * @since v0
      */
-    public short getInstrument() {
-        return this.instrument;
+    public int getInstrument() {
+        return this.instrument & 0xFF;
     }
 
     /**
@@ -66,8 +66,11 @@ public class NbsNote {
      * @return this
      * @since v0
      */
-    public NbsNote setInstrument(final short instrument) {
-        this.instrument = instrument;
+    public NbsNote setInstrument(final int instrument) {
+        if (instrument < 0 || instrument > 255) {
+            throw new IllegalArgumentException("Instrument must be between 0 and 255");
+        }
+        this.instrument = (byte) instrument;
         return this;
     }
 
@@ -75,8 +78,8 @@ public class NbsNote {
      * @return The key of the note block, from 0-87, where 0 is A0 and 87 is C8. 33-57 is within the 2-octave limit.
      * @since v0
      */
-    public byte getKey() {
-        return this.key;
+    public int getKey() {
+        return this.key & 0xFF;
     }
 
     /**
@@ -84,8 +87,11 @@ public class NbsNote {
      * @return this
      * @since v0
      */
-    public NbsNote setKey(final byte key) {
-        this.key = key;
+    public NbsNote setKey(final int key) {
+        if (key < 0 || key > 255) {
+            throw new IllegalArgumentException("Key must be between 0 and 255");
+        }
+        this.key = (byte) key;
         return this;
     }
 
@@ -93,8 +99,8 @@ public class NbsNote {
      * @return The velocity/volume of the note block, from 0% to 100%.
      * @since v4
      */
-    public byte getVelocity() {
-        return this.velocity;
+    public int getVelocity() {
+        return this.velocity & 0xFF;
     }
 
     /**
@@ -102,8 +108,11 @@ public class NbsNote {
      * @return this
      * @since v4
      */
-    public NbsNote setVelocity(final byte velocity) {
-        this.velocity = velocity;
+    public NbsNote setVelocity(final int velocity) {
+        if (velocity < 0 || velocity > 255) {
+            throw new IllegalArgumentException("Velocity must be between 0 and 255");
+        }
+        this.velocity = (byte) velocity;
         return this;
     }
 
@@ -111,8 +120,8 @@ public class NbsNote {
      * @return The stereo position of the note block, from 0-200. 0 is 2 blocks right, 100 is center, 200 is 2 blocks left.
      * @since v4
      */
-    public short getPanning() {
-        return this.panning;
+    public int getPanning() {
+        return this.panning & 0xFF;
     }
 
     /**
@@ -120,8 +129,11 @@ public class NbsNote {
      * @return this
      * @since v4
      */
-    public NbsNote setPanning(final short panning) {
-        this.panning = panning;
+    public NbsNote setPanning(final int panning) {
+        if (panning < 0 || panning > 255) {
+            throw new IllegalArgumentException("Panning must be between 0 and 255");
+        }
+        this.panning = (byte) panning;
         return this;
     }
 
@@ -151,11 +163,11 @@ public class NbsNote {
 
     public NbsNote copy() {
         final NbsNote copyNote = new NbsNote();
-        copyNote.setInstrument(this.instrument);
-        copyNote.setKey(this.key);
-        copyNote.setVelocity(this.velocity);
-        copyNote.setPanning(this.panning);
-        copyNote.setPitch(this.pitch);
+        copyNote.setInstrument(this.getInstrument());
+        copyNote.setKey(this.getKey());
+        copyNote.setVelocity(this.getVelocity());
+        copyNote.setPanning(this.getPanning());
+        copyNote.setPitch(this.getPitch());
         return copyNote;
     }
 

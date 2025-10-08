@@ -15,12 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.data;
+package net.raphimc.noteblocklib.util;
 
-public class Constants {
+public class MathUtil {
 
-    public static final int F_SHARP_4_MIDI_KEY = 66;
+    public static int clamp(final int value, final int min, final int max) {
+        return Math.max(min, Math.min(value, max));
+    }
 
-    public static final int KEYS_PER_OCTAVE = 12;
+    public static float clamp(final float value, final float min, final float max) {
+        return Math.max(min, Math.min(value, max));
+    }
 
 }

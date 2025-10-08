@@ -38,7 +38,6 @@ public class FutureClientIo {
     public static FutureClientSong readSong(final InputStream is, final String fileName) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(is, BUFFER_SIZE));
         final FutureClientSong song = new FutureClientSong(fileName);
-
         final Map<Integer, List<FutureClientNote>> notes = song.getFutureClientNotes();
 
         boolean use64 = false;
@@ -66,7 +65,7 @@ public class FutureClientIo {
         }
 
         { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, 20);
+            song.getTempoEvents().set(0, FutureClientDefinitions.TEMPO);
             for (Map.Entry<Integer, List<FutureClientNote>> entry : notes.entrySet()) {
                 for (FutureClientNote futureClientNote : entry.getValue()) {
                     final Note note = new Note();

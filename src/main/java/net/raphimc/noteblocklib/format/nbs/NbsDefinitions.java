@@ -17,15 +17,16 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
-import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
+import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.util.MathUtil;
 
 public class NbsDefinitions {
 
-    public static final int NBS_LOWEST_MIDI_KEY = 21;
-    public static final int NBS_HIGHEST_MIDI_KEY = 108;
-    public static final int NBS_LOWEST_KEY = 0;
-    public static final int NBS_HIGHEST_KEY = 87;
-    public static final int F_SHARP_4_NBS_KEY = 45;
+    public static final int LOWEST_MIDI_KEY = 21;
+    public static final int HIGHEST_MIDI_KEY = 108;
+    public static final int LOWEST_KEY = 0;
+    public static final int HIGHEST_KEY = 87;
+    public static final int F_SHARP_4_KEY = 45;
 
     public static final int PITCHES_PER_KEY = 100;
     public static final int PITCHES_PER_OCTAVE = 1200;
@@ -40,25 +41,13 @@ public class NbsDefinitions {
     public static final String TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME = "Toggle Background Accent";
 
     /**
-     * Calculates the effective pitch of a note. (100 = 1 key, 1200 = 1 octave)
+     * Clamps the key of the note to fall within NBS octave range.<br>
+     * Any key below 21 (NBS) will be set to 21 (NBS), and any key above 108 (NBS) will be set to 108 (NBS).
      *
-     * @param note The NBS note
-     * @return The effective pitch of the note
+     * @param note The note to clamp
      */
-    public static int getEffectivePitch(final NbsNote note) {
-        final byte key = note.getKey();
-        final short pitch = note.getPitch();
-        return key * PITCHES_PER_KEY + pitch;
-    }
-
-    /**
-     * Calculates the effective key of a note.
-     *
-     * @param note The NBS note
-     * @return The effective key of the note
-     */
-    public static int getEffectiveKey(final NbsNote note) {
-        return (int) ((float) getEffectivePitch(note) / PITCHES_PER_KEY);
+    public static void clampNoteKey(final Note note) {
+        note.setMidiKey(MathUtil.clamp(note.getMidiKey(), LOWEST_MIDI_KEY, HIGHEST_MIDI_KEY));
     }
 
 }

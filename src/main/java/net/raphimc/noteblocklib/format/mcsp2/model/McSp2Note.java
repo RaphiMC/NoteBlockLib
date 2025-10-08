@@ -26,21 +26,27 @@ public class McSp2Note {
     private byte instrument;
     private byte key;
 
-    public byte getInstrument() {
+    public int getInstrument() {
         return this.instrument;
     }
 
-    public McSp2Note setInstrument(final byte instrument) {
-        this.instrument = instrument;
+    public McSp2Note setInstrument(final int instrument) {
+        if (instrument < 0 || instrument > 4) {
+            throw new IllegalArgumentException("Instrument must be between 0 and 4");
+        }
+        this.instrument = (byte) instrument;
         return this;
     }
 
-    public byte getKey() {
+    public int getKey() {
         return this.key;
     }
 
-    public McSp2Note setKey(final byte key) {
-        this.key = key;
+    public McSp2Note setKey(final int key) {
+        if (key < 0 || key > 24) {
+            throw new IllegalArgumentException("Key must be between 0 and 24");
+        }
+        this.key = (byte) key;
         return this;
     }
 
@@ -49,7 +55,6 @@ public class McSp2Note {
         if (index == -1) {
             throw new IllegalArgumentException("Invalid note data: " + data);
         }
-
         this.instrument = (byte) (index / 25);
         this.key = (byte) (index % 25);
         return this;

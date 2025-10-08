@@ -17,7 +17,6 @@
  */
 package net.raphimc.noteblocklib.format.mcsp2;
 
-import net.raphimc.noteblocklib.data.MinecraftDefinitions;
 import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Layer;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Note;
@@ -25,14 +24,12 @@ import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class McSp2Converter {
-
-    private static final List<MinecraftInstrument> SUPPORTED_INSTRUMENTS = Arrays.asList(MinecraftInstrument.HARP, MinecraftInstrument.BASS, MinecraftInstrument.BASS_DRUM, MinecraftInstrument.SNARE, MinecraftInstrument.HAT);
 
     /**
      * Creates a new MCSP2 song from the general data of the given song (Also copies some format specific fields if applicable).
@@ -42,7 +39,7 @@ public class McSp2Converter {
      */
     public static McSp2Song createSong(Song song) {
         song = song.copy();
-        SongResampler.changeTickSpeed(song, Math.max(McSp2Definitions.MIN_TEMPO, Math.min(McSp2Definitions.MAX_TEMPO, Math.round(song.getTempoEvents().get(0)))));
+        SongResampler.changeTickSpeed(song, MathUtil.clamp(Math.round(song.getTempoEvents().get(0)), McSp2Definitions.MIN_TEMPO, McSp2Definitions.MAX_TEMPO));
 
         final McSp2Song newSong = new McSp2Song();
         newSong.copyGeneralData(song);
@@ -52,10 +49,10 @@ public class McSp2Converter {
             final List<Note> notes = song.getNotes().get(tick);
             for (int i = 0; i < notes.size(); i++) {
                 final Note note = notes.get(i);
-                if (note.getInstrument() instanceof MinecraftInstrument && SUPPORTED_INSTRUMENTS.contains((MinecraftInstrument) note.getInstrument()) && note.getVolume() > 0) {
+                if (note.getInstrument() instanceof MinecraftInstrument && note.getVolume() > 0) {
                     final McSp2Note mcSp2Note = new McSp2Note();
                     mcSp2Note.setInstrument(((MinecraftInstrument) note.getInstrument()).nbsId());
-                    mcSp2Note.setKey((byte) Math.max(MinecraftDefinitions.MC_LOWEST_KEY, Math.min(MinecraftDefinitions.MC_HIGHEST_KEY, note.getMcKey())));
+                    mcSp2Note.setKey(note.getMcKey());
 
                     final McSp2Layer mcSp2Layer = newSong.getLayers().computeIfAbsent(i, k -> new McSp2Layer());
                     mcSp2Layer.getNotes().put(tick, mcSp2Note);
@@ -66,7 +63,6 @@ public class McSp2Converter {
         if (song instanceof McSp2Song) {
             final McSp2Song mcSp2Song = (McSp2Song) song;
             newSong.setAutoSaveInterval(mcSp2Song.getAutoSaveInterval());
-            newSong.setAutoSaveInterval((byte) mcSp2Song.getAutoSaveInterval());
             newSong.setMinutesSpent(mcSp2Song.getMinutesSpent());
             newSong.setLeftClicks(mcSp2Song.getLeftClicks());
             newSong.setRightClicks(mcSp2Song.getRightClicks());
@@ -74,7 +70,7 @@ public class McSp2Converter {
             newSong.setNoteBlocksRemoved(mcSp2Song.getNoteBlocksRemoved());
         } else if (song instanceof NbsSong) {
             final NbsSong nbsSong = (NbsSong) song;
-            newSong.setAutoSaveInterval(nbsSong.isAutoSave() ? nbsSong.getAutoSaveInterval() : (byte) 0);
+            newSong.setAutoSaveInterval(nbsSong.isAutoSave() ? nbsSong.getAutoSaveInterval() : 0);
             newSong.setMinutesSpent(nbsSong.getMinutesSpent());
             newSong.setLeftClicks(nbsSong.getLeftClicks());
             newSong.setRightClicks(nbsSong.getRightClicks());

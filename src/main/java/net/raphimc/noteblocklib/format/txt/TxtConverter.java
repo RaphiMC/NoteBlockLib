@@ -17,7 +17,6 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
-import net.raphimc.noteblocklib.data.MinecraftDefinitions;
 import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.format.txt.model.TxtSong;
@@ -44,10 +43,10 @@ public class TxtConverter {
 
         for (int tick : song.getNotes().getTicks()) {
             for (Note note : song.getNotes().get(tick)) {
-                if (note.getInstrument() instanceof MinecraftInstrument  && note.getVolume() > 0) {
+                if (note.getInstrument() instanceof MinecraftInstrument && note.getVolume() > 0) {
                     final TxtNote txtNote = new TxtNote();
                     txtNote.setInstrument(((MinecraftInstrument) note.getInstrument()).mcId());
-                    txtNote.setKey((byte) Math.max(MinecraftDefinitions.MC_LOWEST_KEY, Math.min(MinecraftDefinitions.MC_HIGHEST_KEY, note.getMcKey())));
+                    txtNote.setKey(note.getMcKey());
                     newSong.getTxtNotes().computeIfAbsent(tick, k -> new ArrayList<>()).add(txtNote);
                 }
             }

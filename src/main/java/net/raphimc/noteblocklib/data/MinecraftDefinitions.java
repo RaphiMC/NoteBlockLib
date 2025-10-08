@@ -17,8 +17,10 @@
  */
 package net.raphimc.noteblocklib.data;
 
+import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.instrument.Instrument;
+import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -27,11 +29,11 @@ import static net.raphimc.noteblocklib.data.MinecraftInstrument.*;
 
 public class MinecraftDefinitions {
 
-    public static final int MC_LOWEST_MIDI_KEY = 54;
-    public static final int MC_HIGHEST_MIDI_KEY = 78;
-    public static final int MC_LOWEST_KEY = 0;
-    public static final int MC_HIGHEST_KEY = 24;
-    public static final int MC_KEYS = Constants.KEYS_PER_OCTAVE * 2;
+    public static final int LOWEST_MIDI_KEY = 54;
+    public static final int HIGHEST_MIDI_KEY = 78;
+    public static final int LOWEST_KEY = 0;
+    public static final int HIGHEST_KEY = 24;
+    public static final int KEY_COUNT = MidiDefinitions.KEYS_PER_OCTAVE * 2;
 
     // Instrument -> [lower shifts, upper shifts]
     private static final Map<MinecraftInstrument, MinecraftInstrument[][]> INSTRUMENT_SHIFTS = new EnumMap<>(MinecraftInstrument.class);
@@ -62,7 +64,7 @@ public class MinecraftDefinitions {
      * @param note The note to clamp
      */
     public static void clampNoteKey(final Note note) {
-        note.setMidiKey(Math.max(MC_LOWEST_MIDI_KEY, Math.min(MC_HIGHEST_MIDI_KEY, note.getMidiKey())));
+        note.setMidiKey(MathUtil.clamp(note.getMidiKey(), LOWEST_MIDI_KEY, HIGHEST_MIDI_KEY));
     }
 
     /**
@@ -72,7 +74,7 @@ public class MinecraftDefinitions {
      * @param note The note to transpose
      */
     public static void transposeNoteKey(final Note note) {
-        transposeNoteKey(note, Constants.KEYS_PER_OCTAVE);
+        transposeNoteKey(note, MidiDefinitions.KEYS_PER_OCTAVE);
     }
 
     /**
@@ -84,10 +86,10 @@ public class MinecraftDefinitions {
      */
     public static void transposeNoteKey(final Note note, final int transposeAmount) {
         float key = note.getMidiKey();
-        while (key < MC_LOWEST_MIDI_KEY) {
+        while (key < LOWEST_MIDI_KEY) {
             key += transposeAmount;
         }
-        while (key > MC_HIGHEST_MIDI_KEY) {
+        while (key > HIGHEST_MIDI_KEY) {
             key -= transposeAmount;
         }
         note.setMidiKey(key);
@@ -113,15 +115,15 @@ public class MinecraftDefinitions {
 
         float key = note.getMidiKey();
         int downShifts = 0;
-        while (key < MC_LOWEST_MIDI_KEY && downShifts < shifts[0].length) {
+        while (key < LOWEST_MIDI_KEY && downShifts < shifts[0].length) {
             instrument = shifts[0][downShifts++];
-            key += MinecraftDefinitions.MC_KEYS;
+            key += KEY_COUNT;
         }
 
         int upShifts = 0;
-        while (key > MC_HIGHEST_MIDI_KEY && upShifts < shifts[1].length) {
+        while (key > HIGHEST_MIDI_KEY && upShifts < shifts[1].length) {
             instrument = shifts[1][upShifts++];
-            key -= MinecraftDefinitions.MC_KEYS;
+            key -= KEY_COUNT;
         }
 
         note.setInstrument(instrument);
@@ -138,12 +140,12 @@ public class MinecraftDefinitions {
      */
     public static int applyExtendedNotesResourcePack(final Note note) {
         int octavesDelta = 0;
-        while (note.getMidiKey() < MC_LOWEST_MIDI_KEY) {
-            note.setMidiKey(note.getMidiKey() + MC_KEYS);
+        while (note.getMidiKey() < LOWEST_MIDI_KEY) {
+            note.setMidiKey(note.getMidiKey() + KEY_COUNT);
             octavesDelta--;
         }
-        while (note.getMidiKey() > MC_HIGHEST_MIDI_KEY) {
-            note.setMidiKey(note.getMidiKey() - MC_KEYS);
+        while (note.getMidiKey() > HIGHEST_MIDI_KEY) {
+            note.setMidiKey(note.getMidiKey() - KEY_COUNT);
             octavesDelta++;
         }
         return octavesDelta;

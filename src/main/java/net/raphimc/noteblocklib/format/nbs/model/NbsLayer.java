@@ -42,7 +42,7 @@ public class NbsLayer {
     /**
      * @since v2
      */
-    private short panning;
+    private byte panning;
 
     /**
      * @since v4
@@ -98,8 +98,8 @@ public class NbsLayer {
      * @return The volume of the layer (percentage). Ranges from 0-100.
      * @since v0
      */
-    public byte getVolume() {
-        return this.volume;
+    public int getVolume() {
+        return this.volume & 0xFF;
     }
 
     /**
@@ -107,8 +107,11 @@ public class NbsLayer {
      * @return this
      * @since v0
      */
-    public NbsLayer setVolume(final byte volume) {
-        this.volume = volume;
+    public NbsLayer setVolume(final int volume) {
+        if (volume < 0 || volume > 255) {
+            throw new IllegalArgumentException("Volume must be between 0 and 255");
+        }
+        this.volume = (byte) volume;
         return this;
     }
 
@@ -116,8 +119,8 @@ public class NbsLayer {
      * @return How much this layer is panned to the left/right. 0 is 2 blocks right, 100 is center, 200 is 2 blocks left.
      * @since v2
      */
-    public short getPanning() {
-        return this.panning;
+    public int getPanning() {
+        return this.panning & 0xFF;
     }
 
     /**
@@ -125,8 +128,11 @@ public class NbsLayer {
      * @return this
      * @since v2
      */
-    public NbsLayer setPanning(final short panning) {
-        this.panning = panning;
+    public NbsLayer setPanning(final int panning) {
+        if (panning < 0 || panning > 255) {
+            throw new IllegalArgumentException("Panning must be between 0 and 255");
+        }
+        this.panning = (byte) panning;
         return this;
     }
 
@@ -150,10 +156,10 @@ public class NbsLayer {
 
     public NbsLayer copy() {
         final NbsLayer copyLayer = new NbsLayer();
-        copyLayer.setName(this.name);
-        copyLayer.setVolume(this.volume);
-        copyLayer.setPanning(this.panning);
-        copyLayer.setStatus(this.status);
+        copyLayer.setName(this.getName());
+        copyLayer.setVolume(this.getVolume());
+        copyLayer.setPanning(this.getPanning());
+        copyLayer.setStatus(this.getStatus());
         final Map<Integer, NbsNote> notes = this.getNotes();
         final Map<Integer, NbsNote> copyNotes = copyLayer.getNotes();
         for (final Map.Entry<Integer, NbsNote> entry : notes.entrySet()) {
@@ -169,6 +175,5 @@ public class NbsLayer {
         SOLO,
 
     }
-
 
 }

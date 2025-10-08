@@ -35,10 +35,9 @@ public class McSpIo {
     public static McSpSong readSong(final InputStream is, final String fileName) {
         final Scanner scanner = new Scanner(new BufferedInputStream(is, BUFFER_SIZE), StandardCharsets.ISO_8859_1.name()).useDelimiter("\\|");
         final McSpSong song = new McSpSong(fileName);
+        final Map<Integer, McSpNote[]> notes = song.getMcSpNotes();
 
         scanner.nextInt(); // version? Is ignored by Minecraft Song Planner v2.5
-
-        final Map<Integer, McSpNote[]> notes = song.getMcSpNotes();
 
         int tick = 0;
         while (scanner.hasNext()) {
@@ -54,18 +53,20 @@ public class McSpIo {
                 if (instrument == 0) continue;
 
                 final McSpNote note = new McSpNote();
-                note.setInstrument((byte) (instrument - 1));
-                note.setKey((byte) key);
+                note.setInstrument(instrument - 1);
+                note.setKey(key);
                 noteArray[i] = note;
             }
             notes.put(tick, noteArray);
         }
 
         { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, 10);
+            song.getTempoEvents().set(0, McSpDefinitions.TEMPO);
             for (Map.Entry<Integer, McSpNote[]> entry : notes.entrySet()) {
                 for (McSpNote mcSpNote : entry.getValue()) {
-                    if (mcSpNote == null) continue;
+                    if (mcSpNote == null) {
+                        continue;
+                    }
 
                     final Note note = new Note();
                     note.setInstrument(MinecraftInstrument.fromNbsId(mcSpNote.getInstrument()));
