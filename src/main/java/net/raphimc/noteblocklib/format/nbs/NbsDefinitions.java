@@ -26,6 +26,7 @@ public class NbsDefinitions {
     public static final int HIGHEST_MIDI_KEY = 108;
     public static final int LOWEST_KEY = 0;
     public static final int HIGHEST_KEY = 87;
+    public static final int KEY_COUNT = 88;
     public static final int F_SHARP_4_KEY = 45;
 
     public static final int PITCHES_PER_KEY = 100;

@@ -21,6 +21,7 @@ import net.raphimc.noteblocklib.format.midi.mapping.InstrumentMapping;
 import net.raphimc.noteblocklib.format.midi.mapping.MidiMappings;
 import net.raphimc.noteblocklib.format.midi.mapping.PercussionMapping;
 import net.raphimc.noteblocklib.format.midi.model.MidiSong;
+import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
@@ -37,10 +38,18 @@ import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
 public class MidiIo {
 
     public static MidiSong readSong(final InputStream is, final String fileName) throws IOException, InvalidMidiDataException {
-        return parseSong(MidiSystem.getSequence(is), fileName);
+        return readSong(is, fileName, true);
+    }
+
+    public static MidiSong readSong(final InputStream is, final String fileName, final boolean skipOutOfRangeNotes) throws IOException, InvalidMidiDataException {
+        return parseSong(MidiSystem.getSequence(is), fileName, skipOutOfRangeNotes);
     }
 
     public static MidiSong parseSong(final Sequence sequence, final String fileName) {
+        return parseSong(sequence, fileName, true);
+    }
+
+    public static MidiSong parseSong(final Sequence sequence, final String fileName, final boolean skipOutOfRangeNotes) {
         final MidiSong song = new MidiSong(fileName);
 
         if (sequence.getTickLength() > Integer.MAX_VALUE) {
@@ -90,6 +99,10 @@ public class MidiIo {
                             }
                             note.setVolume(((float) velocity / MAX_VELOCITY) * (float) channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
                             note.setPanning((float) (pan - CENTER_PAN) / CENTER_PAN);
+
+                            if (skipOutOfRangeNotes && (note.getMidiKey() < NbsDefinitions.LOWEST_MIDI_KEY || note.getMidiKey() > NbsDefinitions.HIGHEST_MIDI_KEY)) {
+                                continue;
+                            }
 
                             song.getNotes().add((int) event.getTick(), note);
                             break;
