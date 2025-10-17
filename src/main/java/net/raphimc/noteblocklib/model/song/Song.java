@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.model.song;
 
 import net.raphimc.noteblocklib.format.SongFormat;
+import net.raphimc.noteblocklib.model.event.Events;
 import net.raphimc.noteblocklib.model.event.TempoEvents;
 import net.raphimc.noteblocklib.model.note.Notes;
 
@@ -28,6 +29,7 @@ public abstract class Song {
 
     private final SongFormat format;
     private Notes notes = new Notes();
+    private Events events = new Events();
     private TempoEvents tempoEvents = new TempoEvents();
     private final String fileName;
     private String title;
@@ -104,6 +106,10 @@ public abstract class Song {
 
     public Notes getNotes() {
         return this.notes;
+    }
+
+    public Events getEvents() {
+        return this.events;
     }
 
     public TempoEvents getTempoEvents() {
@@ -196,6 +202,7 @@ public abstract class Song {
 
     public void copyGeneralData(final Song song) {
         this.notes = song.getNotes().copy();
+        this.events = song.getEvents().copy();
         this.tempoEvents = song.getTempoEvents().copy();
         this.setTitle(song.getTitle());
         this.setAuthor(song.getAuthor());
