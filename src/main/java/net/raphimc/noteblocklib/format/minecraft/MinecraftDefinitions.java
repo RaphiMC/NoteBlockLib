@@ -81,7 +81,7 @@ public class MinecraftDefinitions {
      * Transposes the key of the note to fall within minecraft octave range.<br>
      * Any key below 33 (NBS) will be transposed up by transposeAmount, and any key above 57 (NBS) will be transposed down by transposeAmount.
      *
-     * @param note The note to transpose
+     * @param note            The note to transpose
      * @param transposeAmount The amount of keys to transpose by
      */
     public static void transposeNoteKey(final Note note, final int transposeAmount) {
@@ -104,8 +104,8 @@ public class MinecraftDefinitions {
      */
     public static void instrumentShiftNote(final Note note) {
         Instrument instrument = note.getInstrument();
-        if (!(instrument instanceof MinecraftInstrument)) { // Custom instrument
-            return;
+        if (!(instrument instanceof MinecraftInstrument)) {
+            return; // Custom instrument
         }
 
         final MinecraftInstrument[][] shifts = INSTRUMENT_SHIFTS.get(instrument);
@@ -131,14 +131,43 @@ public class MinecraftDefinitions {
     }
 
     /**
+     * Modifies the note to be compatible with the Extended Octave Range Notes resource pack.<br>
+     * This includes shifting the note key to be within the Minecraft octave range and changing its instrument to a {@link ShiftedMinecraftInstrument} with the correct octaves shift.<br>
+     * The octaves shift value has to be appended to the sound name to play the note at the correct pitch. (For example: "block.note_block.harp_" + octavesShift)<br>
+     * {@link ShiftedMinecraftInstrument#mcSoundName()} can be used to get the correct sound name with the suffix already appended.<br>
+     * Link to the resource pack: <a href="https://github.com/RaphiMC/NoteBlockLib/raw/main/Extended%20Octave%20Range%20Notes%20Pack.zip">Extended Notes</a>
+     *
+     * @param note The note to modify
+     */
+    public static void applyExtendedNotesResourcePack(final Note note) {
+        if (!(note.getInstrument() instanceof MinecraftInstrument)) {
+            return; // Custom instrument
+        }
+        int octavesShift = 0;
+        while (note.getMidiKey() < LOWEST_MIDI_KEY) {
+            note.setMidiKey(note.getMidiKey() + KEY_COUNT);
+            octavesShift--;
+        }
+        while (note.getMidiKey() > HIGHEST_MIDI_KEY) {
+            note.setMidiKey(note.getMidiKey() - KEY_COUNT);
+            octavesShift++;
+        }
+        if (octavesShift != 0) {
+            note.setInstrument(new ShiftedMinecraftInstrument((MinecraftInstrument) note.getInstrument(), octavesShift));
+        }
+    }
+
+    /**
      * Returns the octave delta to use as a suffix for the sound name and modifies the note key to be within the Minecraft octave range.<br>
      * The octave delta value has to be appended to the sound name to play the note at the correct pitch. (For example: "block.note_block.harp_" + octaveDelta)<br>
      * Link to the resource pack: <a href="https://github.com/RaphiMC/NoteBlockLib/raw/main/Extended%20Octave%20Range%20Notes%20Pack.zip">Extended Notes</a>
      *
      * @param note The note to modify
      * @return The octave delta to use as a suffix for the sound name
+     * @deprecated Replaced by {@link #applyExtendedNotesResourcePack(Note)} which also sets the correct instrument automatically.
      */
-    public static int applyExtendedNotesResourcePack(final Note note) {
+    @Deprecated
+    public static int applyExtendedNotesResourcePackOld(final Note note) {
         int octavesDelta = 0;
         while (note.getMidiKey() < LOWEST_MIDI_KEY) {
             note.setMidiKey(note.getMidiKey() + KEY_COUNT);
