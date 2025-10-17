@@ -23,6 +23,10 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsShowSavePopupEvent;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleBackgroundAccentEvent;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleRainbowEvent;
+import net.raphimc.noteblocklib.model.event.Event;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 
@@ -82,25 +86,20 @@ public class NbsConverter {
         newSong.getCustomInstruments().replaceAll(NbsCustomInstrument::copy);
 
         if (song.getTempoEvents().getTicks().size() > 1) {
-            final NbsCustomInstrument tempoChangerInstrument = new NbsCustomInstrument();
-            tempoChangerInstrument.setName(NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME);
-            final int instrumentId = newSong.getVanillaInstrumentCount() + newSong.getCustomInstruments().size();
-            newSong.getCustomInstruments().add(tempoChangerInstrument);
-
-            final NbsLayer tempoChangerLayer = new NbsLayer();
-            tempoChangerLayer.setName(NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME);
-            tempoChangerLayer.setVolume(0);
-            newSong.getLayers().put(newSong.getLayers().size(), tempoChangerLayer);
-
+            final int instrumentId = addCustomInstrument(newSong, NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME);
+            final NbsLayer layer = addSilentLayer(newSong, NbsDefinitions.TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME);
             for (int tempoEventTick : song.getTempoEvents().getTicks()) {
-                final float tps = song.getTempoEvents().get(tempoEventTick);
-                final NbsNote tempoChangerNote = new NbsNote();
-                tempoChangerNote.setInstrument(instrumentId);
-                tempoChangerNote.setKey(NbsDefinitions.F_SHARP_4_KEY);
-                tempoChangerNote.setPitch((short) Math.round(tps * 15F));
-                tempoChangerLayer.getNotes().put(tempoEventTick, tempoChangerNote);
+                final NbsNote note = new NbsNote();
+                note.setInstrument(instrumentId);
+                note.setKey(NbsDefinitions.F_SHARP_4_KEY);
+                note.setPitch((short) Math.round(song.getTempoEvents().get(tempoEventTick) * 15F));
+                layer.getNotes().put(tempoEventTick, note);
             }
         }
+
+        addEvents(song, newSong, NbsToggleRainbowEvent.class, NbsDefinitions.TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME);
+        addEvents(song, newSong, NbsShowSavePopupEvent.class, NbsDefinitions.SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME);
+        addEvents(song, newSong, NbsToggleBackgroundAccentEvent.class, NbsDefinitions.TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME);
 
         newSong.setLayerCount((short) newSong.getLayers().size());
         newSong.setSourceFileName(song.getFileName());
@@ -131,6 +130,39 @@ public class NbsConverter {
         }
 
         return newSong;
+    }
+
+    private static void addEvents(final Song song, final NbsSong newSong, final Class<? extends Event> eventClass, final String instrumentName) {
+        if (song.getEvents().testEach(eventClass::isInstance)) {
+            final int instrumentId = addCustomInstrument(newSong, instrumentName);
+            final NbsLayer layer = addSilentLayer(newSong, instrumentName);
+            for (int eventTick : song.getEvents().getTicks()) {
+                for (Event event : song.getEvents().get(eventTick)) {
+                    if (eventClass.isInstance(event)) {
+                        final NbsNote note = new NbsNote();
+                        note.setInstrument(instrumentId);
+                        note.setKey(NbsDefinitions.F_SHARP_4_KEY);
+                        layer.getNotes().put(eventTick, note);
+                    }
+                }
+            }
+        }
+    }
+
+    private static int addCustomInstrument(final NbsSong song, final String name) {
+        final NbsCustomInstrument instrument = new NbsCustomInstrument();
+        instrument.setName(name);
+        final int instrumentId = song.getVanillaInstrumentCount() + song.getCustomInstruments().size();
+        song.getCustomInstruments().add(instrument);
+        return instrumentId;
+    }
+
+    private static NbsLayer addSilentLayer(final NbsSong song, final String name) {
+        final NbsLayer layer = new NbsLayer();
+        layer.setName(name);
+        layer.setVolume(0);
+        song.getLayers().put(song.getLayers().size(), layer);
+        return layer;
     }
 
 }

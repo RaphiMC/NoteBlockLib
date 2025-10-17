@@ -25,11 +25,17 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsShowSavePopupEvent;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleBackgroundAccentEvent;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleRainbowEvent;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.io.*;
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static net.raphimc.noteblocklib.format.nbs.NbsDefinitions.*;
 
@@ -132,7 +138,6 @@ public class NbsIo {
             }
         }
 
-        final List<NbsCustomInstrument> customInstruments = song.getCustomInstruments();
         if (dis.available() > 0) {
             final int customInstrumentCount = dis.readUnsignedByte();
             for (int i = 0; i < customInstrumentCount; i++) {
@@ -141,13 +146,13 @@ public class NbsIo {
                 customInstrument.setSoundFilePath(readString(dis));
                 customInstrument.setPitch(dis.readUnsignedByte());
                 customInstrument.setPressKey(dis.readBoolean());
-                customInstruments.add(customInstrument);
+                song.getCustomInstruments().add(customInstrument);
             }
         }
 
         { // Fill generalized song structure with data
-            final Map<NbsCustomInstrument, NbsCustomInstrument> customInstrumentMap = new IdentityHashMap<>(customInstruments.size()); // Cache map to avoid creating new instances for each note
-            for (NbsCustomInstrument customInstrument : customInstruments) {
+            final Map<NbsCustomInstrument, NbsCustomInstrument> customInstrumentMap = new IdentityHashMap<>(song.getCustomInstruments().size()); // Cache map to avoid creating new instances for each note
+            for (NbsCustomInstrument customInstrument : song.getCustomInstruments()) {
                 customInstrumentMap.put(customInstrument, customInstrument.copy().setPitch(F_SHARP_4_KEY));
             }
 
@@ -170,13 +175,14 @@ public class NbsIo {
                     if (nbsNote.getInstrument() < song.getVanillaInstrumentCount()) {
                         note.setInstrument(MinecraftInstrument.fromNbsId(nbsNote.getInstrument()));
                     } else {
-                        final NbsCustomInstrument nbsCustomInstrument = customInstruments.get(nbsNote.getInstrument() - song.getVanillaInstrumentCount());
+                        final NbsCustomInstrument nbsCustomInstrument = song.getCustomInstruments().get(nbsNote.getInstrument() - song.getVanillaInstrumentCount());
                         if (song.getVersion() >= 4) {
                             if (TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 song.getTempoEvents().set(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
                                 continue;
                             }
                             if (TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                song.getEvents().add(noteEntry.getKey(), NbsToggleRainbowEvent.INSTANCE);
                                 continue;
                             }
                         }
@@ -185,12 +191,14 @@ public class NbsIo {
                                 continue; // TODO: Implement sound stopper support
                             }
                             if (SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                song.getEvents().add(noteEntry.getKey(), NbsShowSavePopupEvent.INSTANCE);
                                 continue;
                             }
                             if (nbsCustomInstrument.getNameOr("").toLowerCase(Locale.ROOT).contains(CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME.toLowerCase(Locale.ROOT))) {
                                 continue;
                             }
                             if (TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                                song.getEvents().add(noteEntry.getKey(), NbsToggleBackgroundAccentEvent.INSTANCE);
                                 continue;
                             }
                         }
@@ -327,13 +335,11 @@ public class NbsIo {
     }
 
     private static String readString(final LittleEndianDataInputStream dis) throws IOException {
-        int length = dis.readInt();
-        final StringBuilder builder = new StringBuilder(length);
-        while (length > 0) {
-            builder.append((char) dis.readByte());
-            length--;
+        final char[] buffer = new char[dis.readInt()];
+        for (int i = 0; i < buffer.length; i++) {
+            buffer[i] = (char) dis.readUnsignedByte();
         }
-        return builder.toString();
+        return new String(buffer);
     }
 
     private static void writeString(final LittleEndianDataOutputStream dos, final String string) throws IOException {
