@@ -15,19 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.model;
+package net.raphimc.noteblocklib.model.note;
 
-public class GenericSong extends Song {
+public interface Instrument {
 
-    public GenericSong() {
-        super(null, null);
-    }
-
-    @Override
-    public Song copy() {
-        final GenericSong copySong = new GenericSong();
-        copySong.copyGeneralData(this);
-        return copySong;
-    }
+    Instrument copy();
 
 }

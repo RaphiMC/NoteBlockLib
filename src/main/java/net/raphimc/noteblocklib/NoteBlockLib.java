@@ -30,7 +30,7 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.format.txt.TxtConverter;
 import net.raphimc.noteblocklib.format.txt.TxtIo;
 import net.raphimc.noteblocklib.format.txt.model.TxtSong;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.song.Song;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

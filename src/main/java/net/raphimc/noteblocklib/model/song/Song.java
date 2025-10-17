@@ -15,9 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.model;
+package net.raphimc.noteblocklib.model.song;
 
 import net.raphimc.noteblocklib.format.SongFormat;
+import net.raphimc.noteblocklib.model.event.TempoEvents;
+import net.raphimc.noteblocklib.model.note.Notes;
 
 import java.util.Set;
 import java.util.TreeSet;

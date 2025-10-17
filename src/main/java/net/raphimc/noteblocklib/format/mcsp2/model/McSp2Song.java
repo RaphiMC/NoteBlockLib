@@ -18,7 +18,7 @@
 package net.raphimc.noteblocklib.format.mcsp2.model;
 
 import net.raphimc.noteblocklib.format.SongFormat;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.song.Song;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -19,10 +19,10 @@ package net.raphimc.noteblocklib.format.futureclient;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.LittleEndianDataInputStream;
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.futureclient.model.FutureClientNote;
 import net.raphimc.noteblocklib.format.futureclient.model.FutureClientSong;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
+import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

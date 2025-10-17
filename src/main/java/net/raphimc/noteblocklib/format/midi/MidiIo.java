@@ -22,7 +22,7 @@ import net.raphimc.noteblocklib.format.midi.mapping.MidiMappings;
 import net.raphimc.noteblocklib.format.midi.mapping.PercussionMapping;
 import net.raphimc.noteblocklib.format.midi.model.MidiSong;
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
 

@@ -17,8 +17,8 @@
  */
 package net.raphimc.noteblocklib.format.midi.mapping;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 
 // Thanks u3002 for the mappings (https://gist.github.com/u3002/cf4daa83bc82b5917fc86fb23815578a)
 public class MidiMappings {

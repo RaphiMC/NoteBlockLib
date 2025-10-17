@@ -19,13 +19,13 @@ package net.raphimc.noteblocklib.format.nbs;
 
 import com.google.common.io.LittleEndianDataInputStream;
 import com.google.common.io.LittleEndianDataOutputStream;
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.io.*;
@@ -83,8 +83,6 @@ public class NbsIo {
         }
 
         final Map<Integer, NbsLayer> layers = song.getLayers();
-        final List<NbsCustomInstrument> customInstruments = song.getCustomInstruments();
-
         int tick = -1;
         while (true) {
             final short jumpTicks = dis.readShort();
@@ -134,6 +132,7 @@ public class NbsIo {
             }
         }
 
+        final List<NbsCustomInstrument> customInstruments = song.getCustomInstruments();
         if (dis.available() > 0) {
             final int customInstrumentCount = dis.readUnsignedByte();
             for (int i = 0; i < customInstrumentCount; i++) {

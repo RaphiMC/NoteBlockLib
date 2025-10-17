@@ -17,8 +17,8 @@
  */
 package net.raphimc.noteblocklib.player;
 
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.TimerHack;
 
 import java.util.List;

@@ -17,7 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 
 public class NbsDefinitions {

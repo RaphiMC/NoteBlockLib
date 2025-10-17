@@ -17,9 +17,9 @@
  */
 package net.raphimc.noteblocklib.format.nbs.model;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.SongFormat;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
+import net.raphimc.noteblocklib.model.song.Song;
 
 import java.util.ArrayList;
 import java.util.HashMap;

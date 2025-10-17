@@ -17,13 +17,13 @@
  */
 package net.raphimc.noteblocklib.format.mcsp2;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Layer;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Note;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
 

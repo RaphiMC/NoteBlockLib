@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.model;
+package net.raphimc.noteblocklib.model.note;
 
-import net.raphimc.noteblocklib.data.MinecraftDefinitions;
 import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftDefinitions;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
-import net.raphimc.noteblocklib.model.instrument.Instrument;
 
 import java.util.Objects;
 
@@ -37,14 +37,14 @@ public class Note {
     }
 
     /**
-     * @return The instrument of the note. Default Minecraft instruments are stored in {@link net.raphimc.noteblocklib.data.MinecraftInstrument}.
+     * @return The instrument of the note. Default Minecraft instruments are stored in {@link MinecraftInstrument}.
      */
     public Instrument getInstrument() {
         return this.instrument;
     }
 
     /**
-     * @param instrument The instrument of the note. Default Minecraft instruments are stored in {@link net.raphimc.noteblocklib.data.MinecraftInstrument}.
+     * @param instrument The instrument of the note. Default Minecraft instruments are stored in {@link MinecraftInstrument}.
      * @return this
      */
     public Note setInstrument(final Instrument instrument) {

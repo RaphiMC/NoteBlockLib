@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.data;
+package net.raphimc.noteblocklib.format.minecraft;
 
-import net.raphimc.noteblocklib.model.instrument.Instrument;
+import net.raphimc.noteblocklib.model.note.Instrument;
 
 public enum MinecraftInstrument implements Instrument {
 

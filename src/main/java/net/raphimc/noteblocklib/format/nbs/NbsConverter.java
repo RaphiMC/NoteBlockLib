@@ -17,14 +17,14 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.model.song.Song;
 
 import java.util.List;
 

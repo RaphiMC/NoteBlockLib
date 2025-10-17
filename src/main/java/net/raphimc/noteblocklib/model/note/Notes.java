@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.model;
+package net.raphimc.noteblocklib.model.note;
 
 import java.util.*;
 import java.util.function.Consumer;

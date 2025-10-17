@@ -18,7 +18,7 @@
 package net.raphimc.noteblocklib.format.nbs.model;
 
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
-import net.raphimc.noteblocklib.model.instrument.Instrument;
+import net.raphimc.noteblocklib.model.note.Instrument;
 
 import java.util.Objects;
 

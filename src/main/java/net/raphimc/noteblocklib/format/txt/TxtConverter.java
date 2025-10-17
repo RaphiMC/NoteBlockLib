@@ -17,11 +17,11 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.format.txt.model.TxtSong;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.SongResampler;
 
 import java.util.ArrayList;

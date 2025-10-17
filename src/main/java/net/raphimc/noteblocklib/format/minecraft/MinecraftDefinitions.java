@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.noteblocklib.data;
+package net.raphimc.noteblocklib.format.minecraft;
 
 import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.instrument.Instrument;
+import net.raphimc.noteblocklib.model.note.Instrument;
+import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-import static net.raphimc.noteblocklib.data.MinecraftInstrument.*;
+import static net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument.*;
 
 public class MinecraftDefinitions {
 

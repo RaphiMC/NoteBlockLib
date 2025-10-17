@@ -18,7 +18,7 @@
 package net.raphimc.noteblocklib.format.mcsp2;
 
 import com.google.common.collect.Sets;
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 
 import java.util.Set;
 import java.util.regex.Pattern;

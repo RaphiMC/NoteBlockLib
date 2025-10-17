@@ -17,10 +17,10 @@
  */
 package net.raphimc.noteblocklib.format.mcsp;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpNote;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpSong;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
+import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;

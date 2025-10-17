@@ -17,11 +17,11 @@
  */
 package net.raphimc.noteblocklib.format.mcsp2;
 
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Layer;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Note;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
+import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
