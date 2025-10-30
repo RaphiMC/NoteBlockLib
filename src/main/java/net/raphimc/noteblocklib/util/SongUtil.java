@@ -23,8 +23,9 @@ import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Set;
 
 public class SongUtil {
@@ -62,7 +63,7 @@ public class SongUtil {
      * @return The used custom instruments
      */
     public static Set<NbsCustomInstrument> getUsedNbsCustomInstruments(final Song song) {
-        final Set<NbsCustomInstrument> usedInstruments = new HashSet<>();
+        final Set<NbsCustomInstrument> usedInstruments = Collections.newSetFromMap(new IdentityHashMap<>());
         song.getNotes().forEach(note -> {
             if (note.getInstrument() instanceof NbsCustomInstrument) {
                 usedInstruments.add((NbsCustomInstrument) note.getInstrument());
