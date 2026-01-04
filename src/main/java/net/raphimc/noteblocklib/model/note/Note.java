@@ -1,6 +1,6 @@
 /*
  * This file is part of NoteBlockLib - https://github.com/RaphiMC/NoteBlockLib
- * Copyright (C) 2022-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2022-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
