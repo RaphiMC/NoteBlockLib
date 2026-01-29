@@ -29,6 +29,7 @@ import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleRainbowEvent;
 import net.raphimc.noteblocklib.model.event.Event;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
+import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.util.List;
 
@@ -62,22 +63,13 @@ public class NbsConverter {
                 } else {
                     continue;
                 }
-                nbsNote.setKey(note.getNbsKey());
-                nbsNote.setVelocity(Math.round(note.getVolume() * 100F));
-                nbsNote.setPanning(Math.round(note.getPanning() * 100F) + NbsDefinitions.CENTER_PANNING);
-                nbsNote.setPitch((short) Math.round(note.getFractionalKeyPart() * 100F));
 
                 // NBS limits the key range, but the pitch can be adjusted to reach the desired key anyway
-                if (nbsNote.getKey() < NbsDefinitions.LOWEST_KEY) {
-                    final int keyDiff = NbsDefinitions.LOWEST_KEY - nbsNote.getKey();
-                    nbsNote.setKey(NbsDefinitions.LOWEST_KEY);
-                    nbsNote.setPitch((short) (nbsNote.getPitch() - keyDiff * 100));
-                }
-                if (nbsNote.getKey() > NbsDefinitions.HIGHEST_KEY) {
-                    final int keyDiff = nbsNote.getKey() - NbsDefinitions.HIGHEST_KEY;
-                    nbsNote.setKey(NbsDefinitions.HIGHEST_KEY);
-                    nbsNote.setPitch((short) (nbsNote.getPitch() + keyDiff * 100));
-                }
+                nbsNote.setKey(MathUtil.clamp(note.getNbsKey(), NbsDefinitions.LOWEST_KEY, NbsDefinitions.HIGHEST_KEY));
+                final int keyDiff = nbsNote.getKey() - note.getNbsKey();
+                nbsNote.setPitch((short) Math.round((note.getFractionalKeyPart() - keyDiff) * NbsDefinitions.PITCHES_PER_KEY));
+                nbsNote.setVelocity(Math.round(note.getVolume() * 100F));
+                nbsNote.setPanning(Math.round(note.getPanning() * 100F) + NbsDefinitions.CENTER_PANNING);
 
                 final NbsLayer nbsLayer = newSong.getLayers().computeIfAbsent(i, k -> new NbsLayer());
                 nbsLayer.getNotes().put(tick, nbsNote);
