@@ -17,12 +17,14 @@
  */
 package net.raphimc.noteblocklib.util;
 
+import java.util.Locale;
+
 public class TimerHack {
 
     /**
      * Set this to false (Before using the NoteBlockLib API) to disable the timer hack (Useful if you have your own way of enabling high resolution timers)
      */
-    public static boolean ENABLED = true;
+    public static boolean ENABLED = System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("windows");
     private static Thread THREAD;
 
     /**
@@ -33,7 +35,7 @@ public class TimerHack {
             THREAD = new Thread(() -> {
                 while (true) {
                     try {
-                        Thread.sleep(Integer.MAX_VALUE);
+                        Thread.sleep(Long.MAX_VALUE);
                     } catch (InterruptedException ignored) {
                     }
                 }
