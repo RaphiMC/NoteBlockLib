@@ -24,6 +24,7 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.event.NbsShowSavePopupEvent;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsSoundStopperEvent;
 import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleBackgroundAccentEvent;
 import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleRainbowEvent;
 import net.raphimc.noteblocklib.model.event.Event;
@@ -32,6 +33,7 @@ import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NbsConverter {
 
@@ -46,6 +48,14 @@ public class NbsConverter {
         newSong.copyGeneralData(song);
         newSong.setLength((short) song.getNotes().getLengthInTicks());
         newSong.setTempo((short) Math.round(song.getTempoEvents().get(0) * 100F));
+
+        final int maxNotesPerGroup = song.getNotes().getTicks().stream()
+                .map(tick -> song.getNotes().get(tick))
+                .mapToInt(notes -> notes.stream()
+                        .collect(Collectors.groupingBy(Note::getGroupId, Collectors.counting())).values().stream()
+                        .mapToInt(Long::intValue)
+                        .max().orElse(0))
+                .max().orElse(0);
 
         for (int tick : song.getNotes().getTicks()) {
             final List<Note> notes = song.getNotes().get(tick);
@@ -71,10 +81,38 @@ public class NbsConverter {
                 nbsNote.setVelocity(Math.round(note.getVolume() * 100F));
                 nbsNote.setPanning(Math.round(note.getPanning() * 100F) + NbsDefinitions.CENTER_PANNING);
 
-                final NbsLayer nbsLayer = newSong.getLayers().computeIfAbsent(i, k -> new NbsLayer());
-                nbsLayer.getNotes().put(tick, nbsNote);
+                NbsLayer nbsLayer;
+                if (note.getGroupId() < 0) { // Ungrouped notes
+                    nbsLayer = newSong.getLayers().computeIfAbsent(i, k -> new NbsLayer());
+                } else {
+                    if (maxNotesPerGroup == 1) { // 1:1 mapping of groups to layers possible
+                        nbsLayer = newSong.getLayers().computeIfAbsent(note.getGroupId(), k -> new NbsLayer());
+                    } else { // Multiple notes with the same group id, so we need to find an empty layer for each note
+                        nbsLayer = null;
+                        for (int offset = 0; offset < maxNotesPerGroup; offset++) {
+                            nbsLayer = newSong.getLayers().computeIfAbsent(note.getGroupId() * maxNotesPerGroup + offset, k -> new NbsLayer());
+                            if (!nbsLayer.getNotes().containsKey(tick)) {
+                                break;
+                            }
+                        }
+                        if (nbsLayer == null || nbsLayer.getNotes().containsKey(tick)) {
+                            throw new IllegalStateException("Couldn't find empty layer for note with group id " + note.getGroupId() + " at tick " + tick + " after checking " + maxNotesPerGroup + " layers, this should never happen");
+                        }
+                    }
+                }
+                if (nbsLayer.getNotes().put(tick, nbsNote) != null) {
+                    throw new IllegalStateException("Multiple notes at the same tick and layer after conversion, this should never happen");
+                }
             }
         }
+        // NBS does not allow for gaps in the layer ids, so we need to fill them with empty layers
+        final int highestLayer = newSong.getLayers().keySet().stream().max(Integer::compareTo).orElse(0);
+        for (int i = 0; i < highestLayer; i++) {
+            if (!newSong.getLayers().containsKey(i)) {
+                newSong.getLayers().put(i, new NbsLayer());
+            }
+        }
+
         newSong.getCustomInstruments().replaceAll(NbsCustomInstrument::copy);
 
         if (song.getTempoEvents().getTicks().size() > 1) {
@@ -86,6 +124,30 @@ public class NbsConverter {
                 note.setKey(NbsDefinitions.F_SHARP_4_KEY);
                 note.setPitch((short) Math.round(song.getTempoEvents().get(tempoEventTick) * 15F));
                 layer.getNotes().put(tempoEventTick, note);
+            }
+        }
+
+        if (song.getEvents().testEach(NbsSoundStopperEvent.class::isInstance)) {
+            final int instrumentId = addCustomInstrument(newSong, NbsDefinitions.SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME);
+            final NbsLayer layer = addSilentLayer(newSong, NbsDefinitions.SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME);
+            for (int eventTick : song.getEvents().getTicks()) {
+                for (Event event : song.getEvents().get(eventTick)) {
+                    if (event instanceof NbsSoundStopperEvent) {
+                        final NbsSoundStopperEvent soundStopperEvent = (NbsSoundStopperEvent) event;
+                        final short startLayer = (short) ((soundStopperEvent.getStartLayer() - 1) * maxNotesPerGroup + 1);
+                        final short endLayer = (short) (soundStopperEvent.getEndLayer() * maxNotesPerGroup);
+
+                        final NbsNote note = new NbsNote();
+                        note.setInstrument(instrumentId);
+                        note.setKey(NbsDefinitions.F_SHARP_4_KEY);
+                        note.setPitch(startLayer);
+                        note.setPanning(((endLayer & 0xFF) + 100) & 0xFF);
+                        note.setVelocity(((endLayer >> 8) + 100) & 0xFF);
+                        if (layer.getNotes().put(eventTick, note) != null) {
+                            throw new IllegalStateException("Multiple sound stopper events at the same tick and layer after conversion");
+                        }
+                    }
+                }
             }
         }
 
@@ -134,7 +196,9 @@ public class NbsConverter {
                         final NbsNote note = new NbsNote();
                         note.setInstrument(instrumentId);
                         note.setKey(NbsDefinitions.F_SHARP_4_KEY);
-                        layer.getNotes().put(eventTick, note);
+                        if (layer.getNotes().put(eventTick, note) != null) {
+                            throw new IllegalStateException("Multiple events at the same tick and layer after conversion");
+                        }
                     }
                 }
             }
@@ -152,7 +216,7 @@ public class NbsConverter {
     private static NbsLayer addSilentLayer(final NbsSong song, final String name) {
         final NbsLayer layer = new NbsLayer();
         layer.setName(name);
-        layer.setVolume(0);
+        layer.setStatus(NbsLayer.Status.LOCKED);
         song.getLayers().put(song.getLayers().size(), layer);
         return layer;
     }

@@ -22,7 +22,7 @@ public class NbsToggleBackgroundAccentEvent implements NbsEvent {
     public static final NbsToggleBackgroundAccentEvent INSTANCE = new NbsToggleBackgroundAccentEvent();
 
     @Override
-    public NbsEvent copy() {
+    public NbsToggleBackgroundAccentEvent copy() {
         return this;
     }
 

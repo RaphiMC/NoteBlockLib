@@ -33,7 +33,7 @@ public class Notes {
     }
 
     public List<Note> getOrEmpty(final int tick) {
-        return this.notes.getOrDefault(tick, new ArrayList<>());
+        return this.notes.getOrDefault(tick, Collections.emptyList());
     }
 
     public void set(final int tick, final List<Note> notes) {

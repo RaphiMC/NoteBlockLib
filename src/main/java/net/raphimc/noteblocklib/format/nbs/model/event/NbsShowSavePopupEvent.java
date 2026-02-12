@@ -22,7 +22,7 @@ public class NbsShowSavePopupEvent implements NbsEvent {
     public static final NbsShowSavePopupEvent INSTANCE = new NbsShowSavePopupEvent();
 
     @Override
-    public NbsEvent copy() {
+    public NbsShowSavePopupEvent copy() {
         return this;
     }
 

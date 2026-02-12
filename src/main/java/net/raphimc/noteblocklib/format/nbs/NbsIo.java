@@ -26,6 +26,7 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.format.nbs.model.event.NbsShowSavePopupEvent;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsSoundStopperEvent;
 import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleBackgroundAccentEvent;
 import net.raphimc.noteblocklib.format.nbs.model.event.NbsToggleRainbowEvent;
 import net.raphimc.noteblocklib.model.note.Note;
@@ -158,19 +159,15 @@ public class NbsIo {
 
             song.getTempoEvents().set(0, song.getTempo() / 100F);
             final boolean hasSoloLayers = layers.values().stream().anyMatch(layer -> layer.getStatus() == NbsLayer.Status.SOLO);
-            for (NbsLayer layer : layers.values()) {
+            for (Map.Entry<Integer, NbsLayer> entry : layers.entrySet()) {
+                final NbsLayer layer = entry.getValue();
                 for (Map.Entry<Integer, NbsNote> noteEntry : layer.getNotes().entrySet()) {
                     final NbsNote nbsNote = noteEntry.getValue();
 
                     final Note note = new Note();
+                    note.setGroupId(entry.getKey());
                     final float effectiveKey = (float) (MathUtil.clamp(nbsNote.getKey(), LOWEST_KEY, HIGHEST_KEY) * PITCHES_PER_KEY + nbsNote.getPitch()) / PITCHES_PER_KEY;
                     note.setMidiKey(MathUtil.clamp(LOWEST_MIDI_KEY + effectiveKey, MidiDefinitions.LOWEST_KEY, MidiDefinitions.HIGHEST_KEY));
-                    note.setVolume(MathUtil.clamp(Math.min(layer.getVolume() / 100F, 1F) * (nbsNote.getVelocity() / 100F), 0F, 1F));
-                    if (layer.getPanning() == CENTER_PANNING) { // Special case
-                        note.setPanning((nbsNote.getPanning() - CENTER_PANNING) / 100F);
-                    } else {
-                        note.setPanning(((layer.getPanning() - CENTER_PANNING) + (nbsNote.getPanning() - CENTER_PANNING)) / 200F);
-                    }
 
                     if (nbsNote.getInstrument() < song.getVanillaInstrumentCount()) {
                         note.setInstrument(MinecraftInstrument.fromNbsId(nbsNote.getInstrument()));
@@ -188,7 +185,10 @@ public class NbsIo {
                         }
                         if (song.getVersion() >= 5) {
                             if (SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
-                                continue; // TODO: Implement sound stopper support
+                                final short startLayer = (short) Math.max(nbsNote.getPitch(), 0);
+                                final short endLayer = (short) Math.max((short) (((nbsNote.getPanning() + 156) % 256) + ((nbsNote.getVelocity() + 156) % 256) * 256), startLayer);
+                                song.getEvents().add(noteEntry.getKey(), new NbsSoundStopperEvent(startLayer, endLayer));
+                                continue;
                             }
                             if (SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
                                 song.getEvents().add(noteEntry.getKey(), NbsShowSavePopupEvent.INSTANCE);
@@ -210,6 +210,13 @@ public class NbsIo {
                         } else {
                             note.setInstrument(nbsCustomInstrument);
                         }
+                    }
+
+                    note.setVolume(MathUtil.clamp(Math.min(layer.getVolume() / 100F, 1F) * (nbsNote.getVelocity() / 100F), 0F, 1F));
+                    if (layer.getPanning() == CENTER_PANNING) { // Special case
+                        note.setPanning(MathUtil.clamp((nbsNote.getPanning() - CENTER_PANNING) / 100F, -1F, 1F));
+                    } else {
+                        note.setPanning(MathUtil.clamp(((layer.getPanning() - CENTER_PANNING) + (nbsNote.getPanning() - CENTER_PANNING)) / 200F, -1F, 1F));
                     }
 
                     if (layer.getStatus() == NbsLayer.Status.LOCKED) { // Locked layers are muted

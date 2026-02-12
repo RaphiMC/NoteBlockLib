@@ -26,14 +26,32 @@ import java.util.Objects;
 
 public class Note {
 
+    private int groupId;
     private Instrument instrument;
     private float midiKey;
     private float volume;
     private float panning;
 
     public Note() {
+        this.groupId = -1;
         this.volume = 1F;
         this.panning = 0F;
+    }
+
+    /**
+     * @return The group ID of the note. Groups are used in events to determine which notes are affected by the event. -1 means that the note is not in any group.
+     */
+    public int getGroupId() {
+        return this.groupId;
+    }
+
+    /**
+     * @param groupId The group ID of the note. Groups are used in events to determine which notes are affected by the event. -1 means that the note is not in any group.
+     * @return this
+     */
+    public Note setGroupId(final int groupId) {
+        this.groupId = groupId;
+        return this;
     }
 
     /**
@@ -189,6 +207,7 @@ public class Note {
 
     public Note copy() {
         final Note copyNote = new Note();
+        copyNote.groupId = this.groupId;
         copyNote.instrument = this.instrument.copy();
         copyNote.midiKey = this.midiKey;
         copyNote.volume = this.volume;
@@ -197,15 +216,15 @@ public class Note {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Note note = (Note) o;
-        return midiKey == note.midiKey && Float.compare(volume, note.volume) == 0 && Float.compare(panning, note.panning) == 0 && Objects.equals(instrument, note.instrument);
+        final Note note = (Note) o;
+        return groupId == note.groupId && Float.compare(midiKey, note.midiKey) == 0 && Float.compare(volume, note.volume) == 0 && Float.compare(panning, note.panning) == 0 && Objects.equals(instrument, note.instrument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, midiKey, volume, panning);
+        return Objects.hash(groupId, instrument, midiKey, volume, panning);
     }
 
 }

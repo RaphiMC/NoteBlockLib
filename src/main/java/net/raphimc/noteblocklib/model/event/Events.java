@@ -30,7 +30,7 @@ public class Events {
     }
 
     public List<Event> getOrEmpty(final int tick) {
-        return this.events.getOrDefault(tick, new ArrayList<>());
+        return this.events.getOrDefault(tick, Collections.emptyList());
     }
 
     public void set(final int tick, final List<Event> events) {

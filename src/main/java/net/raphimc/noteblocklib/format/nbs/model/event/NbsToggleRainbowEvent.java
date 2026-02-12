@@ -25,7 +25,7 @@ public class NbsToggleRainbowEvent implements NbsEvent {
     public static final NbsToggleRainbowEvent INSTANCE = new NbsToggleRainbowEvent();
 
     @Override
-    public NbsEvent copy() {
+    public NbsToggleRainbowEvent copy() {
         return this;
     }
 
