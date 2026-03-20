@@ -22,13 +22,13 @@ import net.raphimc.noteblocklib.model.note.Instrument;
 public enum MinecraftInstrument implements Instrument {
 
     HARP(0, 0, "block.note_block.harp"),
-    BASS(1, 4, "block.note_block.bass"),
-    BASS_DRUM(2, 1, "block.note_block.basedrum"),
-    SNARE(3, 2, "block.note_block.snare"),
-    HAT(4, 3, "block.note_block.hat"),
-    GUITAR(5, 7, "block.note_block.guitar"),
-    FLUTE(6, 5, "block.note_block.flute"),
-    BELL(7, 6, "block.note_block.bell"),
+    BASS_DRUM(1, 2, "block.note_block.basedrum"),
+    SNARE(2, 3, "block.note_block.snare"),
+    HAT(3, 4, "block.note_block.hat"),
+    BASS(4, 1, "block.note_block.bass"),
+    FLUTE(5, 6, "block.note_block.flute"),
+    BELL(6, 7, "block.note_block.bell"),
+    GUITAR(7, 5, "block.note_block.guitar"),
     CHIME(8, 8, "block.note_block.chime"),
     XYLOPHONE(9, 9, "block.note_block.xylophone"),
     IRON_XYLOPHONE(10, 10, "block.note_block.iron_xylophone"),
@@ -36,30 +36,34 @@ public enum MinecraftInstrument implements Instrument {
     DIDGERIDOO(12, 12, "block.note_block.didgeridoo"),
     BIT(13, 13, "block.note_block.bit"),
     BANJO(14, 14, "block.note_block.banjo"),
-    PLING(15, 15, "block.note_block.pling");
+    PLING(15, 15, "block.note_block.pling"),
+    TRUMPET(16, 16, "block.note_block.trumpet"),
+    TRUMPET_EXPOSED(17, 17, "block.note_block.trumpet_exposed"),
+    TRUMPET_OXIDIZED(18, 18, "block.note_block.trumpet_oxidized"),
+    TRUMPET_WEATHERED(19, 19, "block.note_block.trumpet_weathered");
 
-    private final int nbsId;
     private final int mcId;
+    private final int nbsId;
     private final String mcSoundName;
 
-    MinecraftInstrument(final int nbsId, final int mcId, final String mcSoundName) {
-        this.nbsId = nbsId;
+    MinecraftInstrument(final int mcId, final int nbsId, final String mcSoundName) {
         this.mcId = mcId;
+        this.nbsId = nbsId;
         this.mcSoundName = mcSoundName;
     }
 
-    public static MinecraftInstrument fromNbsId(final int nbsId) {
+    public static MinecraftInstrument fromMcId(final int mcId) {
         for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
-            if (instrument.nbsId == nbsId) {
+            if (instrument.mcId == mcId) {
                 return instrument;
             }
         }
         return null;
     }
 
-    public static MinecraftInstrument fromMcId(final int mcId) {
+    public static MinecraftInstrument fromNbsId(final int nbsId) {
         for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
-            if (instrument.mcId == mcId) {
+            if (instrument.nbsId == nbsId) {
                 return instrument;
             }
         }
@@ -75,12 +79,12 @@ public enum MinecraftInstrument implements Instrument {
         return null;
     }
 
-    public int nbsId() {
-        return this.nbsId;
-    }
-
     public int mcId() {
         return this.mcId;
+    }
+
+    public int nbsId() {
+        return this.nbsId;
     }
 
     public String mcSoundName() {

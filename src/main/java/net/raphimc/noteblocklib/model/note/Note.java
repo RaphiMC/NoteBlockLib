@@ -39,14 +39,14 @@ public class Note {
     }
 
     /**
-     * @return The group ID of the note. Groups are used in events to determine which notes are affected by the event. -1 means that the note is not in any group.
+     * @return The group ID of the note. Groups are used in events to determine which notes are affected by an event. -1 means that the note is not in any group.
      */
     public int getGroupId() {
         return this.groupId;
     }
 
     /**
-     * @param groupId The group ID of the note. Groups are used in events to determine which notes are affected by the event. -1 means that the note is not in any group.
+     * @param groupId The group ID of the note. Groups are used in events to determine which notes are affected by an event. -1 means that the note is not in any group.
      * @return this
      */
     public Note setGroupId(final int groupId) {

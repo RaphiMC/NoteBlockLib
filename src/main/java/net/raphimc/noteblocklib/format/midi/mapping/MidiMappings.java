@@ -21,6 +21,7 @@ import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
 import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 
 // Thanks u3002 for the mappings (https://gist.github.com/u3002/cf4daa83bc82b5917fc86fb23815578a)
+// Also credit to OpenNoteBlockStudio (https://github.com/OpenNBS/NoteBlockStudio/blob/development/scripts/midi_instruments/midi_instruments.gml)
 public class MidiMappings {
 
     public static final InstrumentMapping[] INSTRUMENT_MAPPINGS = new InstrumentMapping[MidiDefinitions.KEY_COUNT];
@@ -49,7 +50,7 @@ public class MidiMappings {
         INSTRUMENT_MAPPINGS[19] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[20] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[21] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[22] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
+        INSTRUMENT_MAPPINGS[22] = new InstrumentMapping(MinecraftInstrument.TRUMPET, 0);
         INSTRUMENT_MAPPINGS[23] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[24] = new InstrumentMapping(MinecraftInstrument.GUITAR, 1);
         INSTRUMENT_MAPPINGS[25] = new InstrumentMapping(MinecraftInstrument.GUITAR, 1);
@@ -83,18 +84,18 @@ public class MidiMappings {
         INSTRUMENT_MAPPINGS[53] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[54] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[55] = new InstrumentMapping(MinecraftInstrument.SNARE, 0);
-        INSTRUMENT_MAPPINGS[56] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[57] = new InstrumentMapping(MinecraftInstrument.DIDGERIDOO, 2);
-        INSTRUMENT_MAPPINGS[58] = new InstrumentMapping(MinecraftInstrument.DIDGERIDOO, 2);
-        INSTRUMENT_MAPPINGS[59] = new InstrumentMapping(MinecraftInstrument.DIDGERIDOO, 2);
-        INSTRUMENT_MAPPINGS[60] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[61] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[62] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[63] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
+        INSTRUMENT_MAPPINGS[56] = new InstrumentMapping(MinecraftInstrument.TRUMPET, 0);
+        INSTRUMENT_MAPPINGS[57] = new InstrumentMapping(MinecraftInstrument.TRUMPET_EXPOSED, 0);
+        INSTRUMENT_MAPPINGS[58] = new InstrumentMapping(MinecraftInstrument.TRUMPET_WEATHERED, 2);
+        INSTRUMENT_MAPPINGS[59] = new InstrumentMapping(MinecraftInstrument.TRUMPET_OXIDIZED, 1);
+        INSTRUMENT_MAPPINGS[60] = new InstrumentMapping(MinecraftInstrument.TRUMPET_EXPOSED, 0);
+        INSTRUMENT_MAPPINGS[61] = new InstrumentMapping(MinecraftInstrument.TRUMPET_EXPOSED, 0);
+        INSTRUMENT_MAPPINGS[62] = new InstrumentMapping(MinecraftInstrument.TRUMPET_EXPOSED, 0);
+        INSTRUMENT_MAPPINGS[63] = new InstrumentMapping(MinecraftInstrument.TRUMPET, 0);
         INSTRUMENT_MAPPINGS[64] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[65] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[66] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
-        INSTRUMENT_MAPPINGS[67] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
+        INSTRUMENT_MAPPINGS[65] = new InstrumentMapping(MinecraftInstrument.TRUMPET, 0);
+        INSTRUMENT_MAPPINGS[66] = new InstrumentMapping(MinecraftInstrument.TRUMPET, 0);
+        INSTRUMENT_MAPPINGS[67] = new InstrumentMapping(MinecraftInstrument.TRUMPET_EXPOSED, 0);
         INSTRUMENT_MAPPINGS[68] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[69] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);
         INSTRUMENT_MAPPINGS[70] = new InstrumentMapping(MinecraftInstrument.FLUTE, -1);

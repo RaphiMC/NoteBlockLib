@@ -63,7 +63,7 @@ public class NbsIo {
             song.setVanillaInstrumentCount(10);
         }
 
-        if (song.getVersion() < 0 || song.getVersion() > 5) {
+        if (song.getVersion() < 0 || song.getVersion() > 6) {
             throw new IllegalStateException("Unsupported NBS version: " + song.getVersion());
         }
 
@@ -234,7 +234,7 @@ public class NbsIo {
     }
 
     public static void writeSong(final NbsSong song, final OutputStream os) throws IOException {
-        if (song.getVersion() < 0 || song.getVersion() > 5) {
+        if (song.getVersion() < 0 || song.getVersion() > 6) {
             throw new IllegalArgumentException("Unsupported NBS version: " + song.getVersion());
         }
         if (song.getLayerCount() > song.getLayers().size()) {

@@ -129,7 +129,7 @@ public class NbsSong extends Song {
 
     public NbsSong(final String fileName) {
         super(SongFormat.NBS, fileName);
-        this.version = 5;
+        this.version = 6;
         this.vanillaInstrumentCount = (byte) MinecraftInstrument.values().length;
     }
 

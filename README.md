@@ -6,15 +6,14 @@ For a reference implementation of NoteBlockLib, check out [NoteBlockTool](https:
 
 ## Features
 - Supports reading .nbs, .mid, .txt, .mcsp, .mcsp2 and .notebot files
-- Supports writing .nbs, .txt and .mcsp2 files
-- Can convert all formats to .nbs
+- Supports writing (and converting to) .nbs, .txt and .mcsp2 files
 - Offers an easy way to play note block songs in your application
 - Good MIDI importer
   - Supports most MIDI files
   - Supports velocity and panning
   - Can handle Black MIDI files
 - Supports all NBS versions
-  - Version 0 - 5
+  - Version 0 - 6
   - Supports Tempo Changers
 - Many tools for manipulating songs
   - Optimize songs for use in Minecraft (Transposing, Resampling)

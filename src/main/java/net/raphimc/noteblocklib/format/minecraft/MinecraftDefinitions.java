@@ -38,23 +38,47 @@ public class MinecraftDefinitions {
     // Instrument -> [lower shifts, upper shifts]
     private static final Map<MinecraftInstrument, MinecraftInstrument[][]> INSTRUMENT_SHIFTS = new EnumMap<>(MinecraftInstrument.class);
 
+    //     |    1    |    2    |    3    |    4    |    5    |    6    |    7    |
+    //          |         |         |       HARP        |         |         |
+    //          |    (BASS_DRUM)    |         |         |         |         |
+    //          |         |         |      (SNARE)      |         |         |
+    //          |         |         |         |         |       (HAT)       |
+    //          |        BASS       |         |       FLUTE       |         |
+    //          |         |         |         |         |       BELL        |
+    //          |         |       GUITAR      |         |         |         |
+    //          |         |         |         |         |       CHIME       |
+    //          |         |         |         |         |     XYLOPHONE     |
+    //          |         |         |  IRON_XYLOPHONE   |         |         |
+    //          |         |         |         |     COW_BELL      |         |
+    //          |     DIDGERIDOO    |         |         |         |         |
+    //          |         |         |        BIT        |         |         |
+    //          |         |         |       BANJO       |         |         |
+    //          |         |         |       PLING       |         |         |
+    //          |         |         |      TRUMPET      |         |         |
+    //          |         |         |  TRUMPET_EXPOSED  |         |         |
+    //          |         |  TRUMPET_OXIDIZED |         |         |         |
+    //          |         | TRUMPET_WEATHERED |         |         |         |
     static {
         INSTRUMENT_SHIFTS.put(HARP, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS}, new MinecraftInstrument[]{BELL}});
-        INSTRUMENT_SHIFTS.put(BASS, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{HARP, BELL}});
         INSTRUMENT_SHIFTS.put(BASS_DRUM, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{SNARE}});
         INSTRUMENT_SHIFTS.put(SNARE, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS_DRUM}, new MinecraftInstrument[]{HAT}});
-        INSTRUMENT_SHIFTS.put(HAT, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS_DRUM}, new MinecraftInstrument[]{CHIME}});
-        INSTRUMENT_SHIFTS.put(GUITAR, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS}, new MinecraftInstrument[]{COW_BELL, XYLOPHONE}});
-        INSTRUMENT_SHIFTS.put(FLUTE, new MinecraftInstrument[][]{new MinecraftInstrument[]{DIDGERIDOO}, new MinecraftInstrument[]{BELL, CHIME}});
-        INSTRUMENT_SHIFTS.put(BELL, new MinecraftInstrument[][]{new MinecraftInstrument[]{HARP}, new MinecraftInstrument[0]});
-        INSTRUMENT_SHIFTS.put(CHIME, new MinecraftInstrument[][]{new MinecraftInstrument[]{BELL}, new MinecraftInstrument[0]});
-        INSTRUMENT_SHIFTS.put(XYLOPHONE, new MinecraftInstrument[][]{new MinecraftInstrument[]{COW_BELL}, new MinecraftInstrument[]{CHIME}});
-        INSTRUMENT_SHIFTS.put(IRON_XYLOPHONE, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS}, new MinecraftInstrument[]{BELL}});
+        INSTRUMENT_SHIFTS.put(HAT, new MinecraftInstrument[][]{new MinecraftInstrument[]{SNARE}, new MinecraftInstrument[0]});
+        INSTRUMENT_SHIFTS.put(BASS, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{HARP, BELL}});
+        INSTRUMENT_SHIFTS.put(FLUTE, new MinecraftInstrument[][]{new MinecraftInstrument[]{GUITAR}, new MinecraftInstrument[0]});
+        INSTRUMENT_SHIFTS.put(BELL, new MinecraftInstrument[][]{new MinecraftInstrument[]{HARP, BASS}, new MinecraftInstrument[0]});
+        INSTRUMENT_SHIFTS.put(GUITAR, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{FLUTE}});
+        INSTRUMENT_SHIFTS.put(CHIME, new MinecraftInstrument[][]{new MinecraftInstrument[]{HARP, DIDGERIDOO}, new MinecraftInstrument[0]});
+        INSTRUMENT_SHIFTS.put(XYLOPHONE, new MinecraftInstrument[][]{new MinecraftInstrument[]{IRON_XYLOPHONE, BASS}, new MinecraftInstrument[0]});
+        INSTRUMENT_SHIFTS.put(IRON_XYLOPHONE, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS}, new MinecraftInstrument[]{XYLOPHONE}});
         INSTRUMENT_SHIFTS.put(COW_BELL, new MinecraftInstrument[][]{new MinecraftInstrument[]{GUITAR}, new MinecraftInstrument[]{XYLOPHONE}});
-        INSTRUMENT_SHIFTS.put(DIDGERIDOO, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS}, new MinecraftInstrument[]{FLUTE, BELL}});
+        INSTRUMENT_SHIFTS.put(DIDGERIDOO, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{BANJO, BELL}});
         INSTRUMENT_SHIFTS.put(BIT, new MinecraftInstrument[][]{new MinecraftInstrument[]{DIDGERIDOO}, new MinecraftInstrument[]{BELL}});
         INSTRUMENT_SHIFTS.put(BANJO, new MinecraftInstrument[][]{new MinecraftInstrument[]{DIDGERIDOO}, new MinecraftInstrument[]{BELL}});
         INSTRUMENT_SHIFTS.put(PLING, new MinecraftInstrument[][]{new MinecraftInstrument[]{BASS}, new MinecraftInstrument[]{BELL}});
+        INSTRUMENT_SHIFTS.put(TRUMPET, new MinecraftInstrument[][]{new MinecraftInstrument[]{DIDGERIDOO}, new MinecraftInstrument[]{CHIME}});
+        INSTRUMENT_SHIFTS.put(TRUMPET_EXPOSED, new MinecraftInstrument[][]{new MinecraftInstrument[]{DIDGERIDOO}, new MinecraftInstrument[]{CHIME}});
+        INSTRUMENT_SHIFTS.put(TRUMPET_OXIDIZED, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{FLUTE}});
+        INSTRUMENT_SHIFTS.put(TRUMPET_WEATHERED, new MinecraftInstrument[][]{new MinecraftInstrument[0], new MinecraftInstrument[]{FLUTE}});
     }
 
     /**
