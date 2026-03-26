@@ -17,10 +17,8 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
-import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.format.txt.model.TxtSong;
-import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -58,18 +56,7 @@ public class TxtIo {
             }
         }
 
-        { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, TxtDefinitions.TEMPO);
-            for (Map.Entry<Integer, List<TxtNote>> entry : notes.entrySet()) {
-                for (TxtNote txtNote : entry.getValue()) {
-                    final Note note = new Note();
-                    note.setInstrument(MinecraftInstrument.fromMcId(txtNote.getInstrument()));
-                    note.setMcKey(txtNote.getKey());
-                    song.getNotes().add(entry.getKey(), note);
-                }
-            }
-        }
-
+        TxtConverter.fillGeneralData(song);
         return song;
     }
 

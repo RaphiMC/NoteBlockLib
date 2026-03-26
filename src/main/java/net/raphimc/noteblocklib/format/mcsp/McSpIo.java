@@ -19,8 +19,6 @@ package net.raphimc.noteblocklib.format.mcsp;
 
 import net.raphimc.noteblocklib.format.mcsp.model.McSpNote;
 import net.raphimc.noteblocklib.format.mcsp.model.McSpSong;
-import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
-import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -60,22 +58,7 @@ public class McSpIo {
             notes.put(tick, noteArray);
         }
 
-        { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, McSpDefinitions.TEMPO);
-            for (Map.Entry<Integer, McSpNote[]> entry : notes.entrySet()) {
-                for (McSpNote mcSpNote : entry.getValue()) {
-                    if (mcSpNote == null) {
-                        continue;
-                    }
-
-                    final Note note = new Note();
-                    note.setInstrument(MinecraftInstrument.fromNbsId(mcSpNote.getInstrument()));
-                    note.setMcKey(mcSpNote.getKey());
-                    song.getNotes().add(entry.getKey(), note);
-                }
-            }
-        }
-
+        McSpConverter.fillGeneralData(song);
         return song;
     }
 

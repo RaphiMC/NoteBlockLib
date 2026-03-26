@@ -20,8 +20,6 @@ package net.raphimc.noteblocklib.format.mcsp2;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Layer;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Note;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
-import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
-import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -79,20 +77,7 @@ public class McSp2Io {
         } catch (NoSuchElementException ignored) {
         }
 
-        { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, song.getTempo());
-            for (McSp2Layer layer : song.getLayers().values()) {
-                for (Map.Entry<Integer, McSp2Note> noteEntry : layer.getNotes().entrySet()) {
-                    final McSp2Note mcSp2Note = noteEntry.getValue();
-
-                    final Note note = new Note();
-                    note.setInstrument(MinecraftInstrument.fromNbsId(mcSp2Note.getInstrument()));
-                    note.setMcKey(mcSp2Note.getKey());
-                    song.getNotes().add(noteEntry.getKey(), note);
-                }
-            }
-        }
-
+        McSp2Converter.fillGeneralData(song);
         return song;
     }
 

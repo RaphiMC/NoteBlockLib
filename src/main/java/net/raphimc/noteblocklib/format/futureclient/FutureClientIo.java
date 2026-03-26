@@ -21,8 +21,6 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.LittleEndianDataInputStream;
 import net.raphimc.noteblocklib.format.futureclient.model.FutureClientNote;
 import net.raphimc.noteblocklib.format.futureclient.model.FutureClientSong;
-import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
-import net.raphimc.noteblocklib.model.note.Note;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -64,18 +62,7 @@ public class FutureClientIo {
             }
         }
 
-        { // Fill generalized song structure with data
-            song.getTempoEvents().set(0, FutureClientDefinitions.TEMPO);
-            for (Map.Entry<Integer, List<FutureClientNote>> entry : notes.entrySet()) {
-                for (FutureClientNote futureClientNote : entry.getValue()) {
-                    final Note note = new Note();
-                    note.setInstrument(MinecraftInstrument.fromMcId(futureClientNote.getInstrument()));
-                    note.setMcKey(futureClientNote.getKey());
-                    song.getNotes().add(entry.getKey(), note);
-                }
-            }
-        }
-
+        FutureClientConverter.fillGeneralData(song);
         return song;
     }
 

@@ -28,8 +28,28 @@ import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
 
 import java.util.List;
+import java.util.Map;
 
 public class McSp2Converter {
+
+    /**
+     * Fills the general data of the given song from the MCSP2 specific data.
+     *
+     * @param song The song
+     */
+    public static void fillGeneralData(final McSp2Song song) {
+        song.getTempoEvents().set(0, song.getTempo());
+        for (McSp2Layer layer : song.getLayers().values()) {
+            for (Map.Entry<Integer, McSp2Note> noteEntry : layer.getNotes().entrySet()) {
+                final McSp2Note mcSp2Note = noteEntry.getValue();
+
+                final Note note = new Note();
+                note.setInstrument(MinecraftInstrument.fromNbsId(mcSp2Note.getInstrument()));
+                note.setMcKey(mcSp2Note.getKey());
+                song.getNotes().add(noteEntry.getKey(), note);
+            }
+        }
+    }
 
     /**
      * Creates a new MCSP2 song from the general data of the given song (Also copies some format specific fields if applicable).

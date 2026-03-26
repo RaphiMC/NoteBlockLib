@@ -18,6 +18,7 @@
 package net.raphimc.noteblocklib.format.nbs;
 
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
+import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
 import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
@@ -32,10 +33,100 @@ import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.MathUtil;
 
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static net.raphimc.noteblocklib.format.nbs.NbsDefinitions.*;
+
 public class NbsConverter {
+
+    /**
+     * Fills the general data of the given song from the NBS specific data.
+     *
+     * @param song The song
+     */
+    public static void fillGeneralData(final NbsSong song) {
+        song.getTempoEvents().set(0, song.getTempo() / 100F);
+        final Map<NbsCustomInstrument, NbsCustomInstrument> customInstrumentMap = new IdentityHashMap<>(song.getCustomInstruments().size()); // Cache map to avoid creating new instances for each note
+        for (NbsCustomInstrument customInstrument : song.getCustomInstruments()) {
+            customInstrumentMap.put(customInstrument, customInstrument.copy().setPitch(F_SHARP_4_KEY));
+        }
+
+        final Map<Integer, NbsLayer> layers = song.getLayers();
+        final boolean hasSoloLayers = layers.values().stream().anyMatch(layer -> layer.getStatus() == NbsLayer.Status.SOLO);
+        for (Map.Entry<Integer, NbsLayer> entry : layers.entrySet()) {
+            final NbsLayer layer = entry.getValue();
+            for (Map.Entry<Integer, NbsNote> noteEntry : layer.getNotes().entrySet()) {
+                final NbsNote nbsNote = noteEntry.getValue();
+
+                final Note note = new Note();
+                note.setGroupId(entry.getKey());
+                final float effectiveKey = (float) (MathUtil.clamp(nbsNote.getKey(), LOWEST_KEY, HIGHEST_KEY) * PITCHES_PER_KEY + nbsNote.getPitch()) / PITCHES_PER_KEY;
+                note.setMidiKey(MathUtil.clamp(LOWEST_MIDI_KEY + effectiveKey, MidiDefinitions.LOWEST_KEY, MidiDefinitions.HIGHEST_KEY));
+
+                if (nbsNote.getInstrument() < song.getVanillaInstrumentCount()) {
+                    note.setInstrument(MinecraftInstrument.fromNbsId(nbsNote.getInstrument()));
+                } else {
+                    final NbsCustomInstrument nbsCustomInstrument = song.getCustomInstruments().get(nbsNote.getInstrument() - song.getVanillaInstrumentCount());
+                    if (song.getVersion() >= 4) {
+                        if (TEMPO_CHANGER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            song.getTempoEvents().set(noteEntry.getKey(), Math.abs(nbsNote.getPitch() / 15F));
+                            continue;
+                        }
+                        if (TOGGLE_RAINBOW_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            song.getEvents().add(noteEntry.getKey(), NbsToggleRainbowEvent.INSTANCE);
+                            continue;
+                        }
+                    }
+                    if (song.getVersion() >= 5) {
+                        if (SOUND_STOPPER_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            final short startLayer = (short) Math.max(nbsNote.getPitch(), 0);
+                            final short endLayer = (short) Math.max((short) (((nbsNote.getPanning() + 156) % 256) + ((nbsNote.getVelocity() + 156) % 256) * 256), startLayer);
+                            song.getEvents().add(noteEntry.getKey(), new NbsSoundStopperEvent(startLayer, endLayer));
+                            continue;
+                        }
+                        if (SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            song.getEvents().add(noteEntry.getKey(), NbsShowSavePopupEvent.INSTANCE);
+                            continue;
+                        }
+                        if (nbsCustomInstrument.getNameOr("").toLowerCase(Locale.ROOT).contains(CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME.toLowerCase(Locale.ROOT))) {
+                            continue;
+                        }
+                        if (TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME.equals(nbsCustomInstrument.getName())) {
+                            song.getEvents().add(noteEntry.getKey(), NbsToggleBackgroundAccentEvent.INSTANCE);
+                            continue;
+                        }
+                    }
+
+                    final int pitchModifier = nbsCustomInstrument.getPitch() - F_SHARP_4_KEY;
+                    if (pitchModifier != 0) { // Pre-apply pitch modifier to note to make it easier for player implementations
+                        note.setNbsKey(note.getNbsKey() + pitchModifier);
+                        note.setInstrument(customInstrumentMap.get(nbsCustomInstrument)); // Use custom instrument with no pitch modifier, because the pitch modifier is already applied to the note
+                    } else {
+                        note.setInstrument(nbsCustomInstrument);
+                    }
+                }
+
+                note.setVolume(MathUtil.clamp(Math.min(layer.getVolume() / 100F, 1F) * (nbsNote.getVelocity() / 100F), 0F, 1F));
+                if (layer.getPanning() == CENTER_PANNING) { // Special case
+                    note.setPanning(MathUtil.clamp((nbsNote.getPanning() - CENTER_PANNING) / 100F, -1F, 1F));
+                } else {
+                    note.setPanning(MathUtil.clamp(((layer.getPanning() - CENTER_PANNING) + (nbsNote.getPanning() - CENTER_PANNING)) / 200F, -1F, 1F));
+                }
+
+                if (layer.getStatus() == NbsLayer.Status.LOCKED) { // Locked layers are muted
+                    note.setVolume(0F);
+                } else if (hasSoloLayers && layer.getStatus() != NbsLayer.Status.SOLO) { // Non-solo layers are muted if there are solo layers
+                    note.setVolume(0F);
+                }
+
+                song.getNotes().add(noteEntry.getKey(), note);
+            }
+        }
+    }
 
     /**
      * Creates a new NBS song from the general data of the given song (Also copies some format specific fields if applicable).

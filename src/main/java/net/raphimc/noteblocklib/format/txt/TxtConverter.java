@@ -25,8 +25,27 @@ import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.SongResampler;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class TxtConverter {
+
+    /**
+     * Fills the general data of the given song from the TXT specific data.
+     *
+     * @param song The song
+     */
+    public static void fillGeneralData(final TxtSong song) {
+        song.getTempoEvents().set(0, TxtDefinitions.TEMPO);
+        for (Map.Entry<Integer, List<TxtNote>> entry : song.getTxtNotes().entrySet()) {
+            for (TxtNote txtNote : entry.getValue()) {
+                final Note note = new Note();
+                note.setInstrument(MinecraftInstrument.fromMcId(txtNote.getInstrument()));
+                note.setMcKey(txtNote.getKey());
+                song.getNotes().add(entry.getKey(), note);
+            }
+        }
+    }
 
     /**
      * Creates a new TXT song from the general data of the given song (Also copies some format specific fields if applicable).
