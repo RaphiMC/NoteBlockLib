@@ -52,7 +52,7 @@ public class ShiftedMinecraftInstrument implements Instrument {
 
     @Override
     public ShiftedMinecraftInstrument copy() {
-        return new ShiftedMinecraftInstrument(this.instrument, this.octavesShift);
+        return this;
     }
 
     @Override

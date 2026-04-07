@@ -22,15 +22,12 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
 public class SongUtil {
-
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     /**
      * @param song The song

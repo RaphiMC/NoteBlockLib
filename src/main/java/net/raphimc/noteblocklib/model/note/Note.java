@@ -40,6 +40,7 @@ public class Note {
 
     /**
      * @return The group ID of the note. Groups are used in events to determine which notes are affected by an event. -1 means that the note is not in any group.
+     * @implNote Not checked for in equals and hashCode, as it is only used for events and does not affect the sound of the note.
      */
     public int getGroupId() {
         return this.groupId;
@@ -48,6 +49,7 @@ public class Note {
     /**
      * @param groupId The group ID of the note. Groups are used in events to determine which notes are affected by an event. -1 means that the note is not in any group.
      * @return this
+     * @implNote Not checked for in equals and hashCode, as it is only used for events and does not affect the sound of the note.
      */
     public Note setGroupId(final int groupId) {
         this.groupId = groupId;
@@ -219,12 +221,12 @@ public class Note {
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         final Note note = (Note) o;
-        return groupId == note.groupId && Float.compare(midiKey, note.midiKey) == 0 && Float.compare(volume, note.volume) == 0 && Float.compare(panning, note.panning) == 0 && Objects.equals(instrument, note.instrument);
+        return Float.compare(midiKey, note.midiKey) == 0 && Float.compare(volume, note.volume) == 0 && Float.compare(panning, note.panning) == 0 && Objects.equals(instrument, note.instrument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, instrument, midiKey, volume, panning);
+        return Objects.hash(instrument, midiKey, volume, panning);
     }
 
 }
