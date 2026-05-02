@@ -68,7 +68,7 @@ public enum SongFormat {
     }
 
     public static SongFormat getByExtension(final String extension) {
-        for (final SongFormat format : values()) {
+        for (SongFormat format : values()) {
             if (format.extensions.contains(extension.toLowerCase(Locale.ROOT))) {
                 return format;
             }
@@ -78,7 +78,7 @@ public enum SongFormat {
     }
 
     public static SongFormat getByName(final String name) {
-        for (final SongFormat format : values()) {
+        for (SongFormat format : values()) {
             if (format.name().equalsIgnoreCase(name)) {
                 return format;
             }

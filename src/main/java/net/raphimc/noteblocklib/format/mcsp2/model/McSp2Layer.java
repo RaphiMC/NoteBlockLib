@@ -35,7 +35,7 @@ public class McSp2Layer {
         final McSp2Layer copyLayer = new McSp2Layer();
         final Map<Integer, McSp2Note> notes = this.getNotes();
         final Map<Integer, McSp2Note> copyNotes = copyLayer.getNotes();
-        for (final Map.Entry<Integer, McSp2Note> entry : notes.entrySet()) {
+        for (Map.Entry<Integer, McSp2Note> entry : notes.entrySet()) {
             copyNotes.put(entry.getKey(), entry.getValue().copy());
         }
         return copyLayer;

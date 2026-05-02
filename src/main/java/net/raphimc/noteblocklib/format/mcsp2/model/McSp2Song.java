@@ -175,7 +175,7 @@ public class McSp2Song extends Song {
         copySong.setNoteBlocksRemoved(this.getNoteBlocksRemoved());
         final Map<Integer, McSp2Layer> layers = this.getLayers();
         final Map<Integer, McSp2Layer> copyLayers = copySong.getLayers();
-        for (final Map.Entry<Integer, McSp2Layer> entry : layers.entrySet()) {
+        for (Map.Entry<Integer, McSp2Layer> entry : layers.entrySet()) {
             copyLayers.put(entry.getKey(), entry.getValue().copy());
         }
         return copySong;

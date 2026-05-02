@@ -162,7 +162,7 @@ public class NbsLayer {
         copyLayer.setStatus(this.getStatus());
         final Map<Integer, NbsNote> notes = this.getNotes();
         final Map<Integer, NbsNote> copyNotes = copyLayer.getNotes();
-        for (final Map.Entry<Integer, NbsNote> entry : notes.entrySet()) {
+        for (Map.Entry<Integer, NbsNote> entry : notes.entrySet()) {
             copyNotes.put(entry.getKey(), entry.getValue().copy());
         }
         return copyLayer;

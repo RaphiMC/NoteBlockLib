@@ -505,12 +505,12 @@ public class NbsSong extends Song {
         copySong.setLoopStartTick(this.getLoopStartTick());
         final Map<Integer, NbsLayer> layers = this.getLayers();
         final Map<Integer, NbsLayer> copyLayers = copySong.getLayers();
-        for (final Map.Entry<Integer, NbsLayer> entry : layers.entrySet()) {
+        for (Map.Entry<Integer, NbsLayer> entry : layers.entrySet()) {
             copyLayers.put(entry.getKey(), entry.getValue().copy());
         }
         final List<NbsCustomInstrument> customInstruments = this.getCustomInstruments();
         final List<NbsCustomInstrument> copyCustomInstruments = copySong.getCustomInstruments();
-        for (final NbsCustomInstrument customInstrument : customInstruments) {
+        for (NbsCustomInstrument customInstrument : customInstruments) {
             copyCustomInstruments.add(customInstrument.copy());
         }
         return copySong;

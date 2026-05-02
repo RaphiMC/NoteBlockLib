@@ -53,7 +53,7 @@ public enum MinecraftInstrument implements Instrument {
     }
 
     public static MinecraftInstrument fromMcId(final int mcId) {
-        for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
+        for (MinecraftInstrument instrument : MinecraftInstrument.values()) {
             if (instrument.mcId == mcId) {
                 return instrument;
             }
@@ -62,7 +62,7 @@ public enum MinecraftInstrument implements Instrument {
     }
 
     public static MinecraftInstrument fromNbsId(final int nbsId) {
-        for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
+        for (MinecraftInstrument instrument : MinecraftInstrument.values()) {
             if (instrument.nbsId == nbsId) {
                 return instrument;
             }
@@ -71,7 +71,7 @@ public enum MinecraftInstrument implements Instrument {
     }
 
     public static MinecraftInstrument fromMcSoundName(final String mcSoundName) {
-        for (final MinecraftInstrument instrument : MinecraftInstrument.values()) {
+        for (MinecraftInstrument instrument : MinecraftInstrument.values()) {
             if (instrument.mcSoundName.equals(mcSoundName)) {
                 return instrument;
             }
