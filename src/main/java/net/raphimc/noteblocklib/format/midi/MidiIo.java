@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static javax.sound.midi.ShortMessage.*;
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
@@ -49,24 +51,25 @@ public class MidiIo {
         return parseSong(sequence, fileName, true);
     }
 
-    public static MidiSong parseSong(final Sequence sequence, final String fileName, final boolean skipOutOfRangeNotes) {
-        final MidiSong song = new MidiSong(fileName);
-
+    public static MidiSong parseSong(final Sequence sequence, final String fileName, final boolean skipOutOfNbsRangeNotes) {
         if (sequence.getTickLength() > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("MIDI sequence has too many ticks");
         }
 
+        final MidiSong song = new MidiSong(fileName);
         if (sequence.getDivisionType() == Sequence.PPQ) {
-            song.getTempoEvents().set(0, (float) (1_000_000D / ((double) MidiDefinitions.DEFAULT_TEMPO_MPQ / sequence.getResolution())));
+            song.getTempoEvents().set(0, (float) (1_000_000D / ((double) DEFAULT_TEMPO_MPQ / sequence.getResolution())));
         } else {
             song.getTempoEvents().set(0, sequence.getResolution() * sequence.getDivisionType());
         }
 
-        final byte[] channelInstruments = new byte[MidiDefinitions.CHANNEL_COUNT];
-        final byte[] channelVolumes = new byte[MidiDefinitions.CHANNEL_COUNT];
-        final byte[] channelPans = new byte[MidiDefinitions.CHANNEL_COUNT];
-        Arrays.fill(channelVolumes, MidiDefinitions.MAX_VELOCITY);
-        Arrays.fill(channelPans, MidiDefinitions.CENTER_PAN);
+        final byte[] channelInstruments = new byte[CHANNEL_COUNT];
+        final byte[] channelVolumes = new byte[CHANNEL_COUNT];
+        final byte[] channelPans = new byte[CHANNEL_COUNT];
+        final byte[] channelExpressions = new byte[CHANNEL_COUNT];
+        Arrays.fill(channelVolumes, DEFAULT_VOLUME);
+        Arrays.fill(channelPans, CENTER_PAN);
+        Arrays.fill(channelExpressions, Byte.MAX_VALUE);
 
         for (int trackIdx = 0; trackIdx < sequence.getTracks().length; trackIdx++) {
             final Track track = sequence.getTracks()[trackIdx];
@@ -78,82 +81,169 @@ public class MidiIo {
                     final ShortMessage shortMessage = (ShortMessage) message;
                     switch (shortMessage.getCommand()) {
                         case NOTE_ON:
+                            final byte key = (byte) MathUtil.clamp(shortMessage.getData1(), LOWEST_KEY, HIGHEST_KEY);
+                            final byte velocity = (byte) MathUtil.clamp(shortMessage.getData2(), 0, MAX_VELOCITY);
                             final byte instrument = channelInstruments[shortMessage.getChannel()];
-                            final byte key = (byte) shortMessage.getData1();
-                            final byte velocity = (byte) shortMessage.getData2();
+                            final byte volume = channelVolumes[shortMessage.getChannel()];
                             final byte pan = channelPans[shortMessage.getChannel()];
+                            final byte expression = channelExpressions[shortMessage.getChannel()];
 
                             final Note note = new Note();
                             if (shortMessage.getChannel() == PERCUSSION_CHANNEL) {
                                 final PercussionMapping mapping = MidiMappings.PERCUSSION_MAPPINGS[key];
-                                if (mapping == null) continue;
+                                if (mapping == null) {
+                                    continue;
+                                }
 
                                 note.setInstrument(mapping.getInstrument());
                                 note.setNbsKey(mapping.getNbsKey());
                             } else {
                                 final InstrumentMapping mapping = MidiMappings.INSTRUMENT_MAPPINGS[instrument];
-                                if (mapping == null) continue;
+                                if (mapping == null) {
+                                    continue;
+                                }
 
                                 note.setInstrument(mapping.getInstrument());
                                 note.setMidiKey(MathUtil.clamp(key + KEYS_PER_OCTAVE * mapping.getOctaveModifier(), LOWEST_KEY, HIGHEST_KEY));
                             }
-                            note.setVolume(((float) velocity / MAX_VELOCITY) * (float) channelVolumes[shortMessage.getChannel()] / MAX_VELOCITY);
-                            note.setPanning((float) (pan - CENTER_PAN) / CENTER_PAN);
-
-                            if (skipOutOfRangeNotes && (note.getMidiKey() < NbsDefinitions.LOWEST_MIDI_KEY || note.getMidiKey() > NbsDefinitions.HIGHEST_MIDI_KEY)) {
+                            if (skipOutOfNbsRangeNotes && (note.getMidiKey() < NbsDefinitions.LOWEST_MIDI_KEY || note.getMidiKey() > NbsDefinitions.HIGHEST_MIDI_KEY)) {
                                 continue;
                             }
-
+                            note.setVolume(((float) velocity / MAX_VELOCITY) * ((float) volume / MAX_VELOCITY) * ((float) expression / MAX_VELOCITY));
+                            if (pan < CENTER_PAN) { // 0-63 (64 values) -> left
+                                note.setPanning((float) (pan - CENTER_PAN) / CENTER_PAN);
+                            } else if (pan > CENTER_PAN) { // 65-127 (63 values) -> right
+                                note.setPanning((float) (pan - CENTER_PAN) / (Byte.MAX_VALUE - CENTER_PAN));
+                            }
                             song.getNotes().add((int) event.getTick(), note);
                             break;
                         case NOTE_OFF:
                             // Ignore note off events
                             break;
                         case PROGRAM_CHANGE:
-                            channelInstruments[shortMessage.getChannel()] = (byte) shortMessage.getData1();
+                            channelInstruments[shortMessage.getChannel()] = (byte) Math.max((byte) shortMessage.getData1(), 0);
                             break;
                         case CONTROL_CHANGE:
                             switch (shortMessage.getData1()) {
-                                case VOLUME_CONTROL_MSB:
-                                    channelVolumes[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                                case CONTROL_CHANNEL_VOLUME_MSB:
+                                    channelVolumes[shortMessage.getChannel()] = (byte) MathUtil.clamp(shortMessage.getData2(), 0, MAX_VELOCITY);
                                     break;
-                                case PAN_CONTROL_MSB:
-                                    channelPans[shortMessage.getChannel()] = (byte) shortMessage.getData2();
+                                case CONTROL_PAN_MSB:
+                                    channelPans[shortMessage.getChannel()] = (byte) MathUtil.clamp(shortMessage.getData2(), 0, Byte.MAX_VALUE);
                                     break;
-                                case RESET_CONTROLS:
-                                    channelVolumes[shortMessage.getChannel()] = MAX_VELOCITY;
-                                    channelPans[shortMessage.getChannel()] = CENTER_PAN;
+                                case CONTROL_EXPRESSION_CONTROLLER_MSB:
+                                    channelExpressions[shortMessage.getChannel()] = (byte) MathUtil.clamp(shortMessage.getData2(), 0, Byte.MAX_VALUE);
+                                    break;
+                                case CONTROL_RESET_ALL_CONTROLLERS:
+                                    // Most MIDI synths don't reset volume and pan
+                                    channelExpressions[shortMessage.getChannel()] = Byte.MAX_VALUE;
                                     break;
                             }
                             break;
                         case PITCH_BEND:
                             // Ignore pitch bend events
                             break;
-                        case SYSTEM_RESET:
-                            Arrays.fill(channelInstruments, (byte) 0);
-                            Arrays.fill(channelVolumes, MAX_VELOCITY);
-                            Arrays.fill(channelPans, CENTER_PAN);
+                        case CHANNEL_PRESSURE:
+                            // Ignore channel pressure events
                             break;
+                        case POLY_PRESSURE:
+                            // Ignore poly pressure events
+                            break;
+                        default:
+                            throw new IllegalStateException("Unsupported MIDI command: " + shortMessage.getCommand());
                     }
                 } else if (message instanceof MetaMessage) {
                     final MetaMessage metaMessage = (MetaMessage) message;
                     final byte[] data = metaMessage.getData();
-                    if (metaMessage.getType() == META_SET_TEMPO && data.length == 3 && sequence.getDivisionType() == Sequence.PPQ) {
-                        final int newMpq = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
-                        final double microsPerTick = (double) newMpq / sequence.getResolution();
-                        song.getTempoEvents().set((int) event.getTick(), (float) (1_000_000D / microsPerTick));
-                    } else if (metaMessage.getType() == META_COPYRIGHT_NOTICE) {
-                        song.setOriginalAuthor(new String(data, StandardCharsets.US_ASCII));
-                    } else if (metaMessage.getType() == META_TRACK_NAME) {
-                        song.getTrackNames().put(trackIdx, new String(data, StandardCharsets.US_ASCII));
+                    switch (metaMessage.getType()) {
+                        case META_SET_TEMPO:
+                            if (data.length == 3 && sequence.getDivisionType() == Sequence.PPQ) {
+                                final int newMpq = ((data[0] & 0xFF) << 16) | ((data[1] & 0xFF) << 8) | (data[2] & 0xFF);
+                                final double microsPerTick = (double) newMpq / sequence.getResolution();
+                                song.getTempoEvents().set((int) event.getTick(), (float) (1_000_000D / microsPerTick));
+                            }
+                            break;
+                        case META_TEXT:
+                            final String text = Arrays.stream(new String(data, StandardCharsets.US_ASCII).split("\n"))
+                                    .map(String::trim)
+                                    .filter(line -> !line.isEmpty())
+                                    .map(line -> "Text: " + line)
+                                    .collect(Collectors.joining("\n"));
+                            if (!text.isEmpty()) {
+                                if (song.getDescription() == null) {
+                                    song.setDescription(text);
+                                } else {
+                                    song.setDescription(song.getDescription() + "\n" + text);
+                                }
+                            }
+                            break;
+                        case META_COPYRIGHT_NOTICE:
+                            final String copyright = Arrays.stream(new String(data, StandardCharsets.US_ASCII).split("\n"))
+                                    .map(String::trim)
+                                    .filter(line -> !line.isEmpty())
+                                    .map(line -> "Copyright: " + line)
+                                    .collect(Collectors.joining("\n"));
+                            if (!copyright.isEmpty()) {
+                                if (song.getDescription() == null) {
+                                    song.setDescription(copyright);
+                                } else {
+                                    song.setDescription(song.getDescription() + "\n" + copyright);
+                                }
+                            }
+                            break;
+                        case META_TRACK_NAME:
+                            final String trackName = Arrays.stream(new String(data, StandardCharsets.US_ASCII).split("\n"))
+                                    .map(String::trim)
+                                    .filter(line -> !line.isEmpty())
+                                    .map(line -> "Track Name: " + line)
+                                    .collect(Collectors.joining("\n"));
+                            if (!trackName.isEmpty()) {
+                                if (song.getDescription() == null) {
+                                    song.setDescription(trackName);
+                                } else {
+                                    song.setDescription(song.getDescription() + "\n" + trackName);
+                                }
+                            }
+                            break;
                     }
+                } else if (message instanceof SysexMessage) {
+                    final SysexMessage sysexMessage = (SysexMessage) message;
+                    if (sysexMessage.getStatus() == SysexMessage.SYSTEM_EXCLUSIVE) {
+                        final byte[] data = sysexMessage.getData();
+                        if (data.length == 4 && (data[0] & 0xFF) == SYSEX_UNIVERSAL_NON_REALTIME_MESSAGE && (data[1] & 0xFF) == SYSEX_DEVICE_ALL && (data[2] & 0xFF) == SYSEX_SUB_ID_GENERAL_MIDI) {
+                            final int subId2 = data[3] & 0xFF;
+                            if (subId2 == SYSEX_GENERAL_MIDI_GM1_SYSTEM_ON || subId2 == SYSEX_GENERAL_MIDI_GM2_SYSTEM_ON) {
+                                Arrays.fill(channelInstruments, (byte) 0);
+                                Arrays.fill(channelVolumes, DEFAULT_VOLUME);
+                                Arrays.fill(channelPans, CENTER_PAN);
+                                Arrays.fill(channelExpressions, Byte.MAX_VALUE);
+                            }
+                        }
+                    }
+                } else {
+                    throw new IllegalStateException("Unsupported MIDI message type: " + message.getClass().getName());
                 }
             }
         }
 
-        final float maxTempo = song.getTempoEvents().getTempoRange()[1];
-        if (maxTempo > SONG_TARGET_TEMPO) {
-            SongResampler.changeTickSpeed(song, SONG_TARGET_TEMPO);
+        if (song.getTempoEvents().getTempoRange()[1] > SONG_TARGET_TEMPO) {
+            final double[] times = SongResampler.getNotesByTime(song).keySet().stream().mapToDouble(Double::doubleValue).sorted().toArray();
+            final double[] timeSpaces = IntStream.range(1, times.length).mapToDouble(i -> times[i] - times[i - 1]).sorted().toArray();
+            if (timeSpaces.length > 0) {
+                final float minTimeSpace = (float) timeSpaces[0];
+                final float p05TimeSpace = (float) timeSpaces[timeSpaces.length / 20];
+                final float p10TimeSpace = (float) timeSpaces[timeSpaces.length / 10];
+                final float[] candidateTempos = new float[]{1000F / minTimeSpace, 1000F / p05TimeSpace, 1000F / p10TimeSpace};
+                for (float candidateTempo : candidateTempos) {
+                    if (candidateTempo <= SONG_TARGET_TEMPO) {
+                        SongResampler.changeTickSpeed(song, candidateTempo);
+                        break;
+                    }
+                }
+            }
+            if (song.getTempoEvents().getTempoRange()[1] > SONG_TARGET_TEMPO) {
+                SongResampler.changeTickSpeed(song, SONG_TARGET_TEMPO);
+            }
         }
 
         return song;

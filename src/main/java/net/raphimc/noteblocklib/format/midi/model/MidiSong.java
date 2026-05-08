@@ -25,6 +25,7 @@ import java.util.Map;
 
 public class MidiSong extends Song {
 
+    @Deprecated
     private final Map<Integer, String> trackNames = new HashMap<>();
 
     public MidiSong() {
@@ -35,6 +36,7 @@ public class MidiSong extends Song {
         super(SongFormat.MIDI, fileName);
     }
 
+    @Deprecated
     public Map<Integer, String> getTrackNames() {
         return this.trackNames;
     }
@@ -43,7 +45,6 @@ public class MidiSong extends Song {
     public MidiSong copy() {
         final MidiSong copySong = new MidiSong(this.getFileName());
         copySong.copyGeneralData(this);
-        copySong.getTrackNames().putAll(this.getTrackNames());
         return copySong;
     }
 

@@ -25,66 +25,59 @@ import java.util.*;
 public class SongResampler {
 
     /**
+     * Converts a song with dynamic tempo changes into one with a static tempo. This allows the song to be played in players which don't support dynamic tempo changes.
+     *
+     * @param song The song
+     */
+    public static void precomputeTempoEvents(final Song song) {
+        if (song.getTempoEvents().getTicks().size() > 1) {
+            changeTickSpeed(song, song.getTempoEvents().getTempoRange()[1]);
+        }
+    }
+
+    /**
      * Changes the tick speed (sample rate) of a song, without changing the musical speed or length.<br>
      * Changing the speed to a lower one than original will result in a loss of timing precision.
      *
-     * @param song The song
+     * @param song     The song
      * @param newTempo The new tick speed (Ticks per second)
      */
     public static void changeTickSpeed(final Song song, final float newTempo) {
-        precomputeTempoEvents(song); // Ensure song has static tempo
-
-        final float divider = song.getTempoEvents().get(0) / newTempo;
-        if (divider == 1F) return;
-
-        final Map<Integer, List<Note>> newNotes = new HashMap<>();
-        for (int tick : song.getNotes().getTicks()) {
-            newNotes.computeIfAbsent(Math.round(tick / divider), k -> new ArrayList<>()).addAll(song.getNotes().get(tick));
-        }
-
+        final Map<Double, List<Note>> notesByTime = getNotesByTime(song);
         song.getNotes().clear();
-        for (Map.Entry<Integer, List<Note>> entry : newNotes.entrySet()) {
-            song.getNotes().set(entry.getKey(), entry.getValue());
+        for (Map.Entry<Double, List<Note>> entry : notesByTime.entrySet()) {
+            song.getNotes().add(Math.toIntExact(Math.round(entry.getKey() / 1000D * newTempo)), entry.getValue());
         }
+        song.getTempoEvents().clear();
         song.getTempoEvents().set(0, newTempo);
     }
 
     /**
-     * Converts a song with dynamic tempo changes into one with a static tempo. This allows the song to be played in players which don't support dynamic tempo changes.
+     * Gets a map of notes grouped by their time in milliseconds, taking into account tempo changes.
+     *
      * @param song The song
+     * @return A map of notes grouped by their time in milliseconds
      */
-    public static void precomputeTempoEvents(final Song song) {
-        if (song.getTempoEvents().getTicks().size() <= 1) {
-            return; // Already static tempo
-        }
-
-        final float newTempo = song.getTempoEvents().getTempoRange()[1]; // Highest tempo in song
-        final Map<Integer, List<Note>> newNotes = new HashMap<>();
+    public static Map<Double, List<Note>> getNotesByTime(final Song song) {
+        final Map<Double, List<Note>> notesByTime = new HashMap<>(song.getNotes().getTicks().size());
         final Set<Integer> ticks = new TreeSet<>(song.getNotes().getTicks());
         ticks.addAll(song.getTempoEvents().getTicks());
 
         int lastTick = 0;
-        float totalMilliseconds = 0;
+        double totalMilliseconds = 0D;
         for (int tick : ticks) {
             final float tps = song.getTempoEvents().getEffectiveTempo(lastTick);
             final int ticksInSegment = tick - lastTick;
-            final float segmentMilliseconds = (ticksInSegment / tps) * 1000F;
+            final double segmentMilliseconds = (ticksInSegment / tps) * 1000D;
             totalMilliseconds += segmentMilliseconds;
             lastTick = tick;
 
             final List<Note> notes = song.getNotes().get(tick);
             if (notes != null) {
-                final int newTick = Math.round(newTempo * totalMilliseconds / 1000F);
-                newNotes.computeIfAbsent(newTick, k -> new ArrayList<>()).addAll(notes);
+                notesByTime.computeIfAbsent(totalMilliseconds, k -> new ArrayList<>()).addAll(notes);
             }
         }
-
-        song.getNotes().clear();
-        for (Map.Entry<Integer, List<Note>> entry : newNotes.entrySet()) {
-            song.getNotes().set(entry.getKey(), entry.getValue());
-        }
-        song.getTempoEvents().clear();
-        song.getTempoEvents().set(0, newTempo);
+        return notesByTime;
     }
 
 }

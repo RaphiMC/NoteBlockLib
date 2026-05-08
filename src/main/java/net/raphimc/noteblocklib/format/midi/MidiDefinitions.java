@@ -19,14 +19,26 @@ package net.raphimc.noteblocklib.format.midi;
 
 public class MidiDefinitions {
 
+    // MetaMessage types
+    public static final int META_TEXT = 0x01;
     public static final int META_COPYRIGHT_NOTICE = 0x02;
     public static final int META_TRACK_NAME = 0x03;
     public static final int META_SET_TEMPO = 0x51;
 
+    // CONTROL_CHANGE commands
+    public static final int CONTROL_CHANNEL_VOLUME_MSB = 0x07;
+    public static final int CONTROL_PAN_MSB = 0x0A;
+    public static final int CONTROL_EXPRESSION_CONTROLLER_MSB = 0x0B;
+    public static final int CONTROL_RESET_ALL_CONTROLLERS = 0x79;
+
+    // SysexMessage
+    public static final int SYSEX_UNIVERSAL_NON_REALTIME_MESSAGE = 0x7E;
+    public static final int SYSEX_DEVICE_ALL = 0x7F;
+    public static final int SYSEX_SUB_ID_GENERAL_MIDI = 0x09;
+    public static final int SYSEX_GENERAL_MIDI_GM1_SYSTEM_ON = 0x01;
+    public static final int SYSEX_GENERAL_MIDI_GM2_SYSTEM_ON = 0x03;
+
     public static final int PERCUSSION_CHANNEL = 9;
-    public static final int VOLUME_CONTROL_MSB = 0x07;
-    public static final int PAN_CONTROL_MSB = 0x0A;
-    public static final int RESET_CONTROLS = 0x79;
 
     public static final int LOWEST_KEY = 0;
     public static final int HIGHEST_KEY = 127;
@@ -36,6 +48,7 @@ public class MidiDefinitions {
 
     public static final int CHANNEL_COUNT = 16;
     public static final int DEFAULT_TEMPO_MPQ = 500_000;
+    public static final byte DEFAULT_VOLUME = 100;
     public static final byte MAX_VELOCITY = 127;
     public static final byte CENTER_PAN = 64;
 
