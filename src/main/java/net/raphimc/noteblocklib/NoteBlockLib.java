@@ -50,7 +50,7 @@ public class NoteBlockLib {
     }
 
     public static Song readSong(final Path path, final SongFormat format) throws Exception {
-        return readSong(Files.newInputStream(path), format, path.getFileName().toString());
+        return readSong(Files.newInputStream(path), format, com.google.common.io.Files.getNameWithoutExtension(path.getFileName().toString()));
     }
 
     public static Song readSong(final byte[] bytes, final SongFormat format) throws Exception {
