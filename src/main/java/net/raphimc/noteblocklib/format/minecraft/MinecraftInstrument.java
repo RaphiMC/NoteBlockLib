@@ -39,8 +39,8 @@ public enum MinecraftInstrument implements Instrument {
     PLING(15, 15, "block.note_block.pling"),
     TRUMPET(16, 16, "block.note_block.trumpet"),
     TRUMPET_EXPOSED(17, 17, "block.note_block.trumpet_exposed"),
-    TRUMPET_OXIDIZED(18, 18, "block.note_block.trumpet_oxidized"),
-    TRUMPET_WEATHERED(19, 19, "block.note_block.trumpet_weathered");
+    TRUMPET_OXIDIZED(18, 19, "block.note_block.trumpet_oxidized"),
+    TRUMPET_WEATHERED(19, 18, "block.note_block.trumpet_weathered");
 
     private final int mcId;
     private final int nbsId;
