@@ -17,6 +17,7 @@
  */
 package net.raphimc.noteblocklib.player;
 
+import net.raphimc.noteblocklib.model.event.Event;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.TimerHack;
@@ -52,22 +53,24 @@ public abstract class SongPlayer {
     /**
      * Starts playing the song from the beginning.
      *
-     * @param delay The delay in milliseconds before starting the song.
+     * @param delayMs The delay in milliseconds before starting the song.
      */
-    public void start(final int delay) {
-        this.start(delay, 0);
+    public void start(final int delayMs) {
+        this.start(delayMs, 0);
     }
 
     /**
      * Starts playing the song from the given tick.
      *
-     * @param delay The delay in milliseconds before starting the song.
+     * @param delayMs The delay in milliseconds before starting the song.
      * @param tick  The tick to start playing from.
      */
-    public void start(final int delay, final int tick) {
-        if (this.isRunning()) this.stop();
+    public void start(final int delayMs, final int tick) {
+        if (this.isRunning()) {
+            this.stop();
+        }
 
-        this.ticksPerSecond = this.song.getTempoEvents().get(0);
+        this.ticksPerSecond = this.song.getTempoEvents().getEffectiveTempo(tick);
         this.tick = tick;
 
         TimerHack.ensureRunning();
@@ -79,14 +82,16 @@ public abstract class SongPlayer {
                 return thread;
             });
         }
-        this.createTickTask(TimeUnit.MILLISECONDS.toNanos(delay));
+        this.createTickTask(TimeUnit.MILLISECONDS.toNanos(delayMs));
     }
 
     /**
      * Stops playing the song.
      */
     public void stop() {
-        if (!this.isRunning()) return;
+        if (!this.isRunning()) {
+            return;
+        }
 
         this.tickTask.cancel(false);
         this.tickTask = null;
@@ -214,15 +219,14 @@ public abstract class SongPlayer {
      */
     protected void tick() {
         try {
-            if (!this.shouldTick()) {
-                return;
-            }
+            this.preTick();
             try {
                 if (this.paused) {
                     return;
                 }
 
                 this.playNotes(this.song.getNotes().getOrEmpty(this.tick));
+                this.handleEvents(this.song.getEvents().getOrEmpty(this.tick));
 
                 this.tick++;
                 if (this.tick >= this.song.getNotes().getLengthInTicks()) {
@@ -239,18 +243,11 @@ public abstract class SongPlayer {
                 this.postTick();
             }
         } catch (Throwable e) {
-            if (e.getCause() instanceof InterruptedException) return;
+            if (e.getCause() instanceof InterruptedException) {
+                return;
+            }
             this.onTickException(e);
         }
-    }
-
-    /**
-     * Called before each tick (Even when paused).
-     *
-     * @return Whether the tick should be executed.
-     */
-    protected boolean shouldTick() {
-        return this.preTick();
     }
 
     /**
@@ -261,17 +258,30 @@ public abstract class SongPlayer {
     protected abstract void playNotes(final List<Note> notes);
 
     /**
-     * Called when the song has finished playing. Stops the song player by default.
+     * Called each tick to handle the events for the current tick.
+     *
+     * @param events The events to handle.
      */
-    protected void onSongFinished() {
-        this.stop();
-        this.onFinished();
+    protected void handleEvents(final List<Event> events) {
+    }
+
+    /**
+     * Called before each tick (Even when paused).
+     */
+    protected void preTick() {
     }
 
     /**
      * Called after each tick (Even when paused).
      */
     protected void postTick() {
+    }
+
+    /**
+     * Called when the song has finished playing. Stops the song player by default.
+     */
+    protected void onSongFinished() {
+        this.stop();
     }
 
     /**
@@ -283,26 +293,6 @@ public abstract class SongPlayer {
     protected void onTickException(final Throwable e) {
         e.printStackTrace();
         this.stop();
-    }
-
-    /**
-     * Called before each tick (Even when paused).
-     *
-     * @return Whether the tick should be executed.
-     * @see #shouldTick()
-     */
-    @Deprecated
-    protected boolean preTick() {
-        return true;
-    }
-
-    /**
-     * Called when the song has finished playing.
-     *
-     * @see #onSongFinished()
-     */
-    @Deprecated
-    protected void onFinished() {
     }
 
 }
