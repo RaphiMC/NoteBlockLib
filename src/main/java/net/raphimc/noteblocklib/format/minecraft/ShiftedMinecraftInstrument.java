@@ -56,15 +56,17 @@ public class ShiftedMinecraftInstrument implements Instrument {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ShiftedMinecraftInstrument that = (ShiftedMinecraftInstrument) o;
-        return octavesShift == that.octavesShift && instrument == that.instrument;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ShiftedMinecraftInstrument that = (ShiftedMinecraftInstrument) o;
+        return this.octavesShift == that.octavesShift && this.instrument == that.instrument;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, octavesShift);
+        return Objects.hash(this.instrument, this.octavesShift);
     }
 
 }

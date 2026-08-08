@@ -57,8 +57,8 @@ public class NbsCustomInstrument implements Instrument {
     }
 
     /**
-     * @return The name of the instrument.
      * @param fallback The fallback value if the name is not set.
+     * @return The name of the instrument.
      * @since v0
      */
     public String getNameOr(final String fallback) {
@@ -88,8 +88,8 @@ public class NbsCustomInstrument implements Instrument {
     }
 
     /**
-     * @return The sound file of the instrument.
      * @param fallback The fallback value if the sound file path is not set.
+     * @return The sound file of the instrument.
      * @since v0
      */
     public String getSoundFilePathOr(final String fallback) {
@@ -159,15 +159,17 @@ public class NbsCustomInstrument implements Instrument {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        NbsCustomInstrument that = (NbsCustomInstrument) o;
-        return pitch == that.pitch && pressKey == that.pressKey && Objects.equals(name, that.name) && Objects.equals(soundFilePath, that.soundFilePath);
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final NbsCustomInstrument that = (NbsCustomInstrument) o;
+        return this.pitch == that.pitch && this.pressKey == that.pressKey && Objects.equals(this.name, that.name) && Objects.equals(this.soundFilePath, that.soundFilePath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, soundFilePath, pitch, pressKey);
+        return Objects.hash(this.name, this.soundFilePath, this.pitch, this.pressKey);
     }
 
 }

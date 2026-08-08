@@ -21,7 +21,12 @@ import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Layer;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Note;
 import net.raphimc.noteblocklib.format.mcsp2.model.McSp2Song;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -29,9 +34,12 @@ import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 
-public class McSp2Io {
+public final class McSp2Io {
 
     private static final int BUFFER_SIZE = 1024 * 1024;
+
+    private McSp2Io() {
+    }
 
     public static McSp2Song readSong(final InputStream is, final String fileName) {
         final Scanner scanner = new Scanner(new BufferedInputStream(is, BUFFER_SIZE), StandardCharsets.ISO_8859_1.name()).useDelimiter("[|\\n]");
@@ -74,7 +82,7 @@ public class McSp2Io {
             song.setNoteBlocksAdded(scanner.nextInt());
             song.setNoteBlocksRemoved(scanner.nextInt());
             song.setMinutesSpent(scanner.nextInt());
-        } catch (NoSuchElementException ignored) {
+        } catch (final NoSuchElementException ignored) {
         }
 
         McSp2Converter.fillGeneralData(song);

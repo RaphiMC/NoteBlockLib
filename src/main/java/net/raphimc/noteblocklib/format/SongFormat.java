@@ -58,8 +58,7 @@ public enum SongFormat {
      *
      * @see <a href="https://en.wikipedia.org/wiki/MIDI">WikiPedia</a>
      */
-    MIDI("mid", "midi"),
-    ;
+    MIDI("mid", "midi");
 
     private final List<String> extensions;
 

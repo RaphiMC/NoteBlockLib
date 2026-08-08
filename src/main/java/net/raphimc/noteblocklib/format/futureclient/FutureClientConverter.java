@@ -25,7 +25,10 @@ import net.raphimc.noteblocklib.model.note.Note;
 import java.util.List;
 import java.util.Map;
 
-public class FutureClientConverter {
+public final class FutureClientConverter {
+
+    private FutureClientConverter() {
+    }
 
     /**
      * Fills the general data of the given song from the Future Client specific data.

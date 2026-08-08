@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument.*;
 
-public class MinecraftDefinitions {
+public final class MinecraftDefinitions {
 
     public static final int LOWEST_MIDI_KEY = 54;
     public static final int HIGHEST_MIDI_KEY = 78;
@@ -37,6 +37,9 @@ public class MinecraftDefinitions {
 
     // Instrument -> [lower shifts, upper shifts]
     private static final Map<MinecraftInstrument, MinecraftInstrument[][]> INSTRUMENT_SHIFTS = new EnumMap<>(MinecraftInstrument.class);
+
+    private MinecraftDefinitions() {
+    }
 
     //     |    1    |    2    |    3    |    4    |    5    |    6    |    7    |
     //          |         |         |       HARP        |         |         |

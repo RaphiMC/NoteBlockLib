@@ -50,15 +50,17 @@ public class McSpNote {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        McSpNote mcSpNote = (McSpNote) o;
-        return instrument == mcSpNote.instrument && key == mcSpNote.key;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final McSpNote mcSpNote = (McSpNote) o;
+        return this.instrument == mcSpNote.instrument && this.key == mcSpNote.key;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, key);
+        return Objects.hash(this.instrument, this.key);
     }
 
 }

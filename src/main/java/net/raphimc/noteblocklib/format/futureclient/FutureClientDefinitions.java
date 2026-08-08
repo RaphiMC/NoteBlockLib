@@ -17,8 +17,11 @@
  */
 package net.raphimc.noteblocklib.format.futureclient;
 
-public class FutureClientDefinitions {
+public final class FutureClientDefinitions {
 
     public static final int TEMPO = 20;
+
+    private FutureClientDefinitions() {
+    }
 
 }

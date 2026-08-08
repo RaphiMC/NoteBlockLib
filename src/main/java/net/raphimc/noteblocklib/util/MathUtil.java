@@ -17,7 +17,10 @@
  */
 package net.raphimc.noteblocklib.util;
 
-public class MathUtil {
+public final class MathUtil {
+
+    private MathUtil() {
+    }
 
     public static int clamp(final int value, final int min, final int max) {
         return Math.max(min, Math.min(value, max));

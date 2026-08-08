@@ -50,15 +50,17 @@ public class TxtNote {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        TxtNote txtNote = (TxtNote) o;
-        return instrument == txtNote.instrument && key == txtNote.key;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TxtNote txtNote = (TxtNote) o;
+        return this.instrument == txtNote.instrument && this.key == txtNote.key;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, key);
+        return Objects.hash(this.instrument, this.key);
     }
 
 }

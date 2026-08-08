@@ -30,7 +30,7 @@ public class NbsToggleRainbowEvent implements NbsEvent {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return o != null && getClass() == o.getClass();
     }
 

@@ -20,7 +20,7 @@ package net.raphimc.noteblocklib.format.nbs;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 
-public class NbsDefinitions {
+public final class NbsDefinitions {
 
     public static final int LOWEST_MIDI_KEY = 21;
     public static final int HIGHEST_MIDI_KEY = 108;
@@ -40,6 +40,9 @@ public class NbsDefinitions {
     public static final String SHOW_SAVE_POPUP_CUSTOM_INSTRUMENT_NAME = "Show Save Popup";
     public static final String CHANGE_COLOR_CUSTOM_INSTRUMENT_NAME = "Change Color to #";
     public static final String TOGGLE_BACKGROUND_ACCENT_CUSTOM_INSTRUMENT_NAME = "Toggle Background Accent";
+
+    private NbsDefinitions() {
+    }
 
     /**
      * Clamps the key of the note to fall within NBS octave range.<br>

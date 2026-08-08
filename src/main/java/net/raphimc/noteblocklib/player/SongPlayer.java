@@ -63,7 +63,7 @@ public abstract class SongPlayer {
      * Starts playing the song from the given tick.
      *
      * @param delayMs The delay in milliseconds before starting the song.
-     * @param tick  The tick to start playing from.
+     * @param tick    The tick to start playing from.
      */
     public void start(final int delayMs, final int tick) {
         if (this.isRunning()) {
@@ -99,7 +99,7 @@ public abstract class SongPlayer {
             this.scheduler.shutdownNow();
             try {
                 this.scheduler.awaitTermination(1, TimeUnit.SECONDS);
-            } catch (InterruptedException ignored) {
+            } catch (final InterruptedException ignored) {
             }
             this.scheduler = null;
         }
@@ -242,7 +242,7 @@ public abstract class SongPlayer {
             } finally {
                 this.postTick();
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (e.getCause() instanceof InterruptedException) {
                 return;
             }

@@ -41,7 +41,10 @@ import java.util.stream.Collectors;
 
 import static net.raphimc.noteblocklib.format.nbs.NbsDefinitions.*;
 
-public class NbsConverter {
+public final class NbsConverter {
+
+    private NbsConverter() {
+    }
 
     /**
      * Fills the general data of the given song from the NBS specific data.
@@ -141,12 +144,12 @@ public class NbsConverter {
         newSong.setTempo((short) Math.round(song.getTempoEvents().get(0) * 100F));
 
         final int maxNotesPerGroup = song.getNotes().getTicks().stream()
-                .map(tick -> song.getNotes().get(tick))
-                .mapToInt(notes -> notes.stream()
-                        .collect(Collectors.groupingBy(Note::getGroupId, Collectors.counting())).values().stream()
-                        .mapToInt(Long::intValue)
-                        .max().orElse(0))
-                .max().orElse(0);
+            .map(tick -> song.getNotes().get(tick))
+            .mapToInt(notes -> notes.stream()
+                .collect(Collectors.groupingBy(Note::getGroupId, Collectors.counting())).values().stream()
+                .mapToInt(Long::intValue)
+                .max().orElse(0))
+            .max().orElse(0);
 
         for (int tick : song.getNotes().getTicks()) {
             final List<Note> notes = song.getNotes().get(tick);

@@ -29,9 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FutureClientIo {
+public final class FutureClientIo {
 
     private static final int BUFFER_SIZE = 1024 * 1024;
+
+    private FutureClientIo() {
+    }
 
     public static FutureClientSong readSong(final InputStream is, final String fileName) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(is, BUFFER_SIZE));

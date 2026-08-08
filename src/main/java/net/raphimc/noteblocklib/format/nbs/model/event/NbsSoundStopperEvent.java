@@ -82,14 +82,16 @@ public class NbsSoundStopperEvent implements NbsEvent {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         final NbsSoundStopperEvent that = (NbsSoundStopperEvent) o;
-        return startLayer == that.startLayer && endLayer == that.endLayer;
+        return this.startLayer == that.startLayer && this.endLayer == that.endLayer;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startLayer, endLayer);
+        return Objects.hash(this.startLayer, this.endLayer);
     }
 
 }

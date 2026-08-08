@@ -24,7 +24,10 @@ import net.raphimc.noteblocklib.model.note.Note;
 
 import java.util.Map;
 
-public class McSpConverter {
+public final class McSpConverter {
+
+    private McSpConverter() {
+    }
 
     /**
      * Fills the general data of the given song from the MCSP specific data.

@@ -24,13 +24,20 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class NbsIo {
+public final class NbsIo {
 
     private static final int BUFFER_SIZE = 1024 * 1024;
+
+    private NbsIo() {
+    }
 
     public static NbsSong readSong(final InputStream is, final String fileName) throws IOException {
         final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(is, BUFFER_SIZE));
@@ -81,13 +88,17 @@ public class NbsIo {
         int tick = -1;
         while (true) {
             final short jumpTicks = dis.readShort();
-            if (jumpTicks == 0) break;
+            if (jumpTicks == 0) {
+                break;
+            }
             tick += jumpTicks;
 
             int layer = -1;
             while (true) {
                 final short jumpLayers = dis.readShort();
-                if (jumpLayers == 0) break;
+                if (jumpLayers == 0) {
+                    break;
+                }
                 layer += jumpLayers;
 
                 final NbsNote note = new NbsNote();

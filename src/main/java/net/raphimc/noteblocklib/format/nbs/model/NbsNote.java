@@ -172,15 +172,17 @@ public class NbsNote {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        NbsNote nbsNote = (NbsNote) o;
-        return instrument == nbsNote.instrument && key == nbsNote.key && velocity == nbsNote.velocity && panning == nbsNote.panning && pitch == nbsNote.pitch;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final NbsNote nbsNote = (NbsNote) o;
+        return this.instrument == nbsNote.instrument && this.key == nbsNote.key && this.velocity == nbsNote.velocity && this.panning == nbsNote.panning && this.pitch == nbsNote.pitch;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, key, velocity, panning, pitch);
+        return Objects.hash(this.instrument, this.key, this.velocity, this.panning, this.pitch);
     }
 
 }

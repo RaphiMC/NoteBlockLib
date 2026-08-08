@@ -219,14 +219,16 @@ public class Note {
 
     @Override
     public boolean equals(final Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         final Note note = (Note) o;
-        return Float.compare(midiKey, note.midiKey) == 0 && Float.compare(volume, note.volume) == 0 && Float.compare(panning, note.panning) == 0 && Objects.equals(instrument, note.instrument);
+        return Float.compare(this.midiKey, note.midiKey) == 0 && Float.compare(this.volume, note.volume) == 0 && Float.compare(this.panning, note.panning) == 0 && Objects.equals(this.instrument, note.instrument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, midiKey, volume, panning);
+        return Objects.hash(this.instrument, this.midiKey, this.volume, this.panning);
     }
 
 }

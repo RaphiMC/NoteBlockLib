@@ -39,7 +39,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class NoteBlockLib {
+public final class NoteBlockLib {
+
+    private NoteBlockLib() {
+    }
 
     public static Song readSong(final File file) throws Exception {
         return readSong(file.toPath());
@@ -79,7 +82,7 @@ public class NoteBlockLib {
                 default:
                     throw new IllegalStateException("Unknown format");
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new Exception("Failed to read song", e);
         } finally {
             is.close();
@@ -105,7 +108,7 @@ public class NoteBlockLib {
             } else {
                 throw new Exception("Unsupported song format for writing: " + song.getClass().getSimpleName());
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new Exception("Failed to write song", e);
         } finally {
             os.close();

@@ -26,9 +26,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 
-public class McSpIo {
+public final class McSpIo {
 
     private static final int BUFFER_SIZE = 1024 * 1024;
+
+    private McSpIo() {
+    }
 
     public static McSpSong readSong(final InputStream is, final String fileName) {
         final Scanner scanner = new Scanner(new BufferedInputStream(is, BUFFER_SIZE), StandardCharsets.ISO_8859_1.name()).useDelimiter("\\|");
@@ -48,7 +51,9 @@ public class McSpIo {
             for (int i = 0; i < noteArray.length; i++) {
                 final int instrument = noteData[i * 2] - '0';
                 final int key = noteData[i * 2 + 1] - 'A';
-                if (instrument == 0) continue;
+                if (instrument == 0) {
+                    continue;
+                }
 
                 final McSpNote note = new McSpNote();
                 note.setInstrument(instrument - 1);

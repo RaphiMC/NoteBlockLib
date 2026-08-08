@@ -17,8 +17,11 @@
  */
 package net.raphimc.noteblocklib.format.txt;
 
-public class TxtDefinitions {
+public final class TxtDefinitions {
 
     public static final int TEMPO = 20;
+
+    private TxtDefinitions() {
+    }
 
 }

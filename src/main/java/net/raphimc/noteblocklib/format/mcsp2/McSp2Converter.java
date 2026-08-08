@@ -30,7 +30,10 @@ import net.raphimc.noteblocklib.util.SongResampler;
 import java.util.List;
 import java.util.Map;
 
-public class McSp2Converter {
+public final class McSp2Converter {
+
+    private McSp2Converter() {
+    }
 
     /**
      * Fills the general data of the given song from the MCSP2 specific data.

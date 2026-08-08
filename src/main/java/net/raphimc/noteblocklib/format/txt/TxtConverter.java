@@ -28,7 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TxtConverter {
+public final class TxtConverter {
+
+    private TxtConverter() {
+    }
 
     /**
      * Fills the general data of the given song from the TXT specific data.

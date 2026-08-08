@@ -19,13 +19,17 @@ package net.raphimc.noteblocklib.util;
 
 import java.util.Locale;
 
-public class TimerHack {
+public final class TimerHack {
 
     /**
      * Set this to false (Before using the NoteBlockLib API) to disable the timer hack (Useful if you have your own way of enabling high resolution timers)
      */
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     public static boolean ENABLED = System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("windows");
     private static Thread THREAD;
+
+    private TimerHack() {
+    }
 
     /**
      * Starts a thread which indefinitely sleeps to force the JVM to enable high resolution timers on Windows.
@@ -36,7 +40,7 @@ public class TimerHack {
                 while (true) {
                     try {
                         Thread.sleep(Long.MAX_VALUE);
-                    } catch (InterruptedException ignored) {
+                    } catch (final InterruptedException ignored) {
                     }
                 }
             }, "NoteBlockLib-TimerHack");

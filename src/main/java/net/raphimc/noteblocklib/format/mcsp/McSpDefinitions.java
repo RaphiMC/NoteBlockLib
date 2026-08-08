@@ -17,9 +17,12 @@
  */
 package net.raphimc.noteblocklib.format.mcsp;
 
-public class McSpDefinitions {
+public final class McSpDefinitions {
 
     public static final int TEMPO = 10;
     public static final int NOTE_COUNT = 7;
+
+    private McSpDefinitions() {
+    }
 
 }

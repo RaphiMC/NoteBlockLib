@@ -23,7 +23,7 @@ import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class McSp2Definitions {
+public final class McSp2Definitions {
 
     public static final int MIN_TEMPO = 1;
     public static final int MAX_TEMPO = 20;
@@ -32,5 +32,8 @@ public class McSp2Definitions {
     public static final String NOTE_DATA_MAPPING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§½#£¤$%&/{[(])=}?\\+´`^~¨*'.;,:-_<µ€ÌìíÍïÏîÎóÓòÒöÖåÅäÄñÑõÕúÚùÙüûÜÛéÉèÈêÊë";
 
     public static final Set<MinecraftInstrument> SUPPORTED_INSTRUMENTS = Sets.immutableEnumSet(MinecraftInstrument.HARP, MinecraftInstrument.BASS, MinecraftInstrument.BASS_DRUM, MinecraftInstrument.SNARE, MinecraftInstrument.HAT);
+
+    private McSp2Definitions() {
+    }
 
 }

@@ -22,10 +22,13 @@ import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 
 // Thanks u3002 for the mappings (https://gist.github.com/u3002/cf4daa83bc82b5917fc86fb23815578a)
 // Also credit to OpenNoteBlockStudio (https://github.com/OpenNBS/NoteBlockStudio/blob/development/scripts/midi_instruments/midi_instruments.gml)
-public class MidiMappings {
+public final class MidiMappings {
 
     public static final InstrumentMapping[] INSTRUMENT_MAPPINGS = new InstrumentMapping[MidiDefinitions.KEY_COUNT];
     public static final PercussionMapping[] PERCUSSION_MAPPINGS = new PercussionMapping[MidiDefinitions.KEY_COUNT];
+
+    private MidiMappings() {
+    }
 
     static {
         INSTRUMENT_MAPPINGS[MidiDefinitions.INSTRUMENT_ACOUSTIC_GRAND_PIANO] = new InstrumentMapping(MinecraftInstrument.HARP, 0);

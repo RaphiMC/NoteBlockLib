@@ -20,9 +20,17 @@ package net.raphimc.noteblocklib.util;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class SongResampler {
+public final class SongResampler {
+
+    private SongResampler() {
+    }
 
     /**
      * Converts a song with dynamic tempo changes into one with a static tempo. This allows the song to be played in players which don't support dynamic tempo changes.

@@ -172,7 +172,7 @@ public class NbsLayer {
 
         NONE,
         LOCKED,
-        SOLO,
+        SOLO
 
     }
 

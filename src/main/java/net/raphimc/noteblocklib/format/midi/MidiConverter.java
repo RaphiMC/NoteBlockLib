@@ -26,7 +26,13 @@ import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.util.MathUtil;
 import net.raphimc.noteblocklib.util.SongResampler;
 
-import javax.sound.midi.*;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
+import javax.sound.midi.Track;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -35,7 +41,10 @@ import java.util.stream.IntStream;
 import static javax.sound.midi.ShortMessage.*;
 import static net.raphimc.noteblocklib.format.midi.MidiDefinitions.*;
 
-public class MidiConverter {
+public final class MidiConverter {
+
+    private MidiConverter() {
+    }
 
     /**
      * Creates a new MIDI song from a MIDI sequence.
@@ -170,10 +179,10 @@ public class MidiConverter {
                             break;
                         case META_TEXT:
                             final String text = Arrays.stream(new String(data, StandardCharsets.US_ASCII).split("\n"))
-                                    .map(String::trim)
-                                    .filter(line -> !line.isEmpty())
-                                    .map(line -> "Text: " + line)
-                                    .collect(Collectors.joining("\n"));
+                                .map(String::trim)
+                                .filter(line -> !line.isEmpty())
+                                .map(line -> "Text: " + line)
+                                .collect(Collectors.joining("\n"));
                             if (!text.isEmpty()) {
                                 if (song.getDescription() == null) {
                                     song.setDescription(text);
@@ -184,10 +193,10 @@ public class MidiConverter {
                             break;
                         case META_COPYRIGHT_NOTICE:
                             final String copyright = Arrays.stream(new String(data, StandardCharsets.US_ASCII).split("\n"))
-                                    .map(String::trim)
-                                    .filter(line -> !line.isEmpty())
-                                    .map(line -> "Copyright: " + line)
-                                    .collect(Collectors.joining("\n"));
+                                .map(String::trim)
+                                .filter(line -> !line.isEmpty())
+                                .map(line -> "Copyright: " + line)
+                                .collect(Collectors.joining("\n"));
                             if (!copyright.isEmpty()) {
                                 if (song.getDescription() == null) {
                                     song.setDescription(copyright);
@@ -198,10 +207,10 @@ public class MidiConverter {
                             break;
                         case META_TRACK_NAME:
                             final String trackName = Arrays.stream(new String(data, StandardCharsets.US_ASCII).split("\n"))
-                                    .map(String::trim)
-                                    .filter(line -> !line.isEmpty())
-                                    .map(line -> "Track Name: " + line)
-                                    .collect(Collectors.joining("\n"));
+                                .map(String::trim)
+                                .filter(line -> !line.isEmpty())
+                                .map(line -> "Track Name: " + line)
+                                .collect(Collectors.joining("\n"));
                             if (!trackName.isEmpty()) {
                                 if (song.getDescription() == null) {
                                     song.setDescription(trackName);

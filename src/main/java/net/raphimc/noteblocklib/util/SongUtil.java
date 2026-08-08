@@ -27,7 +27,10 @@ import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-public class SongUtil {
+public final class SongUtil {
+
+    private SongUtil() {
+    }
 
     /**
      * @param song The song

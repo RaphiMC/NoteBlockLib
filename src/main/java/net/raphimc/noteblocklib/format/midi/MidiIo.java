@@ -25,7 +25,10 @@ import javax.sound.midi.Sequence;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MidiIo {
+public final class MidiIo {
+
+    private MidiIo() {
+    }
 
     public static MidiSong readSong(final InputStream is, final String fileName) throws IOException, InvalidMidiDataException {
         return readSong(is, fileName, true);

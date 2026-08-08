@@ -64,15 +64,17 @@ public class FutureClientNote {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        FutureClientNote futureClientNote = (FutureClientNote) o;
-        return instrument == futureClientNote.instrument && key == futureClientNote.key;
+    public boolean equals(final Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final FutureClientNote futureClientNote = (FutureClientNote) o;
+        return this.instrument == futureClientNote.instrument && this.key == futureClientNote.key;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instrument, key);
+        return Objects.hash(this.instrument, this.key);
     }
 
 }

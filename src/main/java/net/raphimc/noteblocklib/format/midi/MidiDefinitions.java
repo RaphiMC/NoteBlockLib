@@ -17,7 +17,7 @@
  */
 package net.raphimc.noteblocklib.format.midi;
 
-public class MidiDefinitions {
+public final class MidiDefinitions {
 
     // Piano
     public static final byte INSTRUMENT_ACOUSTIC_GRAND_PIANO = 0;
@@ -262,5 +262,8 @@ public class MidiDefinitions {
     public static final byte CENTER_PAN = 64;
 
     public static final float SONG_TARGET_TEMPO = 100F;
+
+    private MidiDefinitions() {
+    }
 
 }

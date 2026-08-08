@@ -20,15 +20,24 @@ package net.raphimc.noteblocklib.format.txt;
 import net.raphimc.noteblocklib.format.txt.model.TxtNote;
 import net.raphimc.noteblocklib.format.txt.model.TxtSong;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TxtIo {
+public final class TxtIo {
 
     private static final int BUFFER_SIZE = 1024 * 1024;
+
+    private TxtIo() {
+    }
 
     public static TxtSong readSong(final InputStream is, final String fileName) throws IOException {
         final BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8), BUFFER_SIZE);
@@ -37,8 +46,12 @@ public class TxtIo {
         final Map<Integer, List<TxtNote>> notes = song.getTxtNotes();
         while (true) {
             final String line = reader.readLine();
-            if (line == null) break;
-            if (line.isEmpty()) continue;
+            if (line == null) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
 
             if (line.startsWith("// Name: ")) {
                 song.setTitle(line.substring(9));
