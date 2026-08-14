@@ -48,12 +48,6 @@ public enum SongFormat {
      */
     TXT("txt"),
     /**
-     * Future client NoteBot
-     *
-     * @see <a href="https://futureclient.net/">Future Client</a>
-     */
-    FUTURE_CLIENT("notebot"),
-    /**
      * Standard MIDI
      *
      * @see <a href="https://en.wikipedia.org/wiki/MIDI">WikiPedia</a>

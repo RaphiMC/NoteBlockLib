@@ -18,7 +18,6 @@
 package net.raphimc.noteblocklib;
 
 import net.raphimc.noteblocklib.format.SongFormat;
-import net.raphimc.noteblocklib.format.futureclient.FutureClientIo;
 import net.raphimc.noteblocklib.format.mcsp.McSpIo;
 import net.raphimc.noteblocklib.format.mcsp2.McSp2Converter;
 import net.raphimc.noteblocklib.format.mcsp2.McSp2Io;
@@ -75,8 +74,6 @@ public final class NoteBlockLib {
                     return McSp2Io.readSong(is, fileName);
                 case TXT:
                     return TxtIo.readSong(is, fileName);
-                case FUTURE_CLIENT:
-                    return FutureClientIo.readSong(is, fileName);
                 case MIDI:
                     return MidiIo.readSong(is, fileName);
                 default:
