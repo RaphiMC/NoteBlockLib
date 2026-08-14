@@ -52,7 +52,9 @@ public final class NoteBlockLib {
     }
 
     public static Song readSong(final Path path, final SongFormat format) throws Exception {
-        return readSong(Files.newInputStream(path), format, com.google.common.io.Files.getNameWithoutExtension(path.getFileName().toString()));
+        final String fileName = path.getFileName().toString();
+        final int dotIndex = fileName.lastIndexOf('.');
+        return readSong(Files.newInputStream(path), format, (dotIndex != -1) ? fileName.substring(0, dotIndex) : fileName);
     }
 
     public static Song readSong(final byte[] bytes, final SongFormat format) throws Exception {
@@ -126,7 +128,9 @@ public final class NoteBlockLib {
     }
 
     public static SongFormat getFormat(final Path path) {
-        return SongFormat.getByExtension(com.google.common.io.Files.getFileExtension(path.getFileName().toString()));
+        final String fileName = path.getFileName().toString();
+        final int dotIndex = fileName.lastIndexOf('.');
+        return SongFormat.getByExtension((dotIndex != -1) ? fileName.substring(dotIndex + 1) : "");
     }
 
 }

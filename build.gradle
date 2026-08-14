@@ -4,7 +4,3 @@ plugins {
     id "base.checkstyle"
     id "noteblocklib.publishing-conventions"
 }
-
-dependencies {
-    api "com.google.guava:guava:33.6.0-jre"
-}

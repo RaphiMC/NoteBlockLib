@@ -66,7 +66,6 @@ public enum SongFormat {
                 return format;
             }
         }
-
         return null;
     }
 
@@ -76,7 +75,6 @@ public enum SongFormat {
                 return format;
             }
         }
-
         return null;
     }
 

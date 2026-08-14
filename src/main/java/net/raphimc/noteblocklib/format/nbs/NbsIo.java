@@ -17,18 +17,19 @@
  */
 package net.raphimc.noteblocklib.format.nbs;
 
-import com.google.common.io.LittleEndianDataInputStream;
-import com.google.common.io.LittleEndianDataOutputStream;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
+import net.raphimc.noteblocklib.util.io.BinaryInputStream;
+import net.raphimc.noteblocklib.util.io.BinaryOutputStream;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteOrder;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -40,15 +41,15 @@ public final class NbsIo {
     }
 
     public static NbsSong readSong(final InputStream is, final String fileName) throws IOException {
-        final LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new BufferedInputStream(is, BUFFER_SIZE));
+        final BinaryInputStream bis = new BinaryInputStream(new BufferedInputStream(is, BUFFER_SIZE), ByteOrder.LITTLE_ENDIAN);
         final NbsSong song = new NbsSong(fileName);
 
-        final short length = dis.readShort();
+        final short length = bis.readShort();
         if (length == 0) {
-            song.setVersion(dis.readUnsignedByte());
-            song.setVanillaInstrumentCount(dis.readUnsignedByte());
+            song.setVersion(bis.readUnsignedByte());
+            song.setVanillaInstrumentCount(bis.readUnsignedByte());
             if (song.getVersion() >= 3) {
-                song.setLength(dis.readShort());
+                song.setLength(bis.readShort());
             } else {
                 song.setLength((short) -1);
             }
@@ -62,32 +63,32 @@ public final class NbsIo {
             throw new IllegalStateException("Unsupported NBS version: " + song.getVersion());
         }
 
-        song.setLayerCount(dis.readShort());
-        song.setTitle(readString(dis));
-        song.setAuthor(readString(dis));
-        song.setOriginalAuthor(readString(dis));
-        song.setDescription(readString(dis));
-        song.setTempo(dis.readShort());
-        song.setAutoSave(dis.readBoolean());
-        song.setAutoSaveInterval(dis.readUnsignedByte());
-        song.setTimeSignature(dis.readUnsignedByte());
-        song.setMinutesSpent(dis.readInt());
-        song.setLeftClicks(dis.readInt());
-        song.setRightClicks(dis.readInt());
-        song.setNoteBlocksAdded(dis.readInt());
-        song.setNoteBlocksRemoved(dis.readInt());
-        song.setSourceFileName(readString(dis));
+        song.setLayerCount(bis.readShort());
+        song.setTitle(readString(bis));
+        song.setAuthor(readString(bis));
+        song.setOriginalAuthor(readString(bis));
+        song.setDescription(readString(bis));
+        song.setTempo(bis.readShort());
+        song.setAutoSave(bis.readBoolean());
+        song.setAutoSaveInterval(bis.readUnsignedByte());
+        song.setTimeSignature(bis.readUnsignedByte());
+        song.setMinutesSpent(bis.readInt());
+        song.setLeftClicks(bis.readInt());
+        song.setRightClicks(bis.readInt());
+        song.setNoteBlocksAdded(bis.readInt());
+        song.setNoteBlocksRemoved(bis.readInt());
+        song.setSourceFileName(readString(bis));
 
         if (song.getVersion() >= 4) {
-            song.setLoop(dis.readBoolean());
-            song.setMaxLoopCount(dis.readUnsignedByte());
-            song.setLoopStartTick(dis.readShort());
+            song.setLoop(bis.readBoolean());
+            song.setMaxLoopCount(bis.readUnsignedByte());
+            song.setLoopStartTick(bis.readShort());
         }
 
         final Map<Integer, NbsLayer> layers = song.getLayers();
         int tick = -1;
         while (true) {
-            final short jumpTicks = dis.readShort();
+            final short jumpTicks = bis.readShort();
             if (jumpTicks == 0) {
                 break;
             }
@@ -95,30 +96,30 @@ public final class NbsIo {
 
             int layer = -1;
             while (true) {
-                final short jumpLayers = dis.readShort();
+                final short jumpLayers = bis.readShort();
                 if (jumpLayers == 0) {
                     break;
                 }
                 layer += jumpLayers;
 
                 final NbsNote note = new NbsNote();
-                note.setInstrument(dis.readUnsignedByte());
-                note.setKey(dis.readUnsignedByte());
+                note.setInstrument(bis.readUnsignedByte());
+                note.setKey(bis.readUnsignedByte());
                 if (song.getVersion() >= 4) {
-                    note.setVelocity(dis.readUnsignedByte());
-                    note.setPanning(dis.readUnsignedByte());
-                    note.setPitch(dis.readShort());
+                    note.setVelocity(bis.readUnsignedByte());
+                    note.setPanning(bis.readUnsignedByte());
+                    note.setPitch(bis.readShort());
                 }
                 layers.computeIfAbsent(layer, k -> new NbsLayer()).getNotes().put(tick, note);
             }
         }
 
-        if (dis.available() > 0) {
+        if (bis.available() > 0) {
             for (int i = 0; i < song.getLayerCount(); i++) {
                 final NbsLayer layer = layers.computeIfAbsent(i, k -> new NbsLayer());
-                layer.setName(readString(dis));
+                layer.setName(readString(bis));
                 if (song.getVersion() >= 4) {
-                    final int lockedByte = dis.readUnsignedByte();
+                    final int lockedByte = bis.readUnsignedByte();
                     switch (lockedByte) {
                         case 0:
                             layer.setStatus(NbsLayer.Status.NONE);
@@ -131,21 +132,21 @@ public final class NbsIo {
                             break;
                     }
                 }
-                layer.setVolume(dis.readUnsignedByte());
+                layer.setVolume(bis.readUnsignedByte());
                 if (song.getVersion() >= 2) {
-                    layer.setPanning(dis.readUnsignedByte());
+                    layer.setPanning(bis.readUnsignedByte());
                 }
             }
         }
 
-        if (dis.available() > 0) {
-            final int customInstrumentCount = dis.readUnsignedByte();
+        if (bis.available() > 0) {
+            final int customInstrumentCount = bis.readUnsignedByte();
             for (int i = 0; i < customInstrumentCount; i++) {
                 final NbsCustomInstrument customInstrument = new NbsCustomInstrument();
-                customInstrument.setName(readString(dis));
-                customInstrument.setSoundFilePath(readString(dis));
-                customInstrument.setPitch(dis.readUnsignedByte());
-                customInstrument.setPressKey(dis.readBoolean());
+                customInstrument.setName(readString(bis));
+                customInstrument.setSoundFilePath(readString(bis));
+                customInstrument.setPitch(bis.readUnsignedByte());
+                customInstrument.setPressKey(bis.readBoolean());
                 song.getCustomInstruments().add(customInstrument);
             }
         }
@@ -161,40 +162,39 @@ public final class NbsIo {
         if (song.getLayerCount() > song.getLayers().size()) {
             throw new IllegalArgumentException("Layer count must be less than or equal to the amount of layers");
         }
-
-        final LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new BufferedOutputStream(os, BUFFER_SIZE));
+        final BinaryOutputStream bos = new BinaryOutputStream(new BufferedOutputStream(os, BUFFER_SIZE), ByteOrder.LITTLE_ENDIAN);
 
         if (song.getVersion() == 0) {
-            dos.writeShort(song.getLength());
+            bos.writeShort(song.getLength());
         } else {
-            dos.writeShort(0);
-            dos.writeByte(song.getVersion());
-            dos.writeByte(song.getVanillaInstrumentCount());
+            bos.writeShort(0);
+            bos.writeUnsignedByte(song.getVersion());
+            bos.writeUnsignedByte(song.getVanillaInstrumentCount());
             if (song.getVersion() >= 3) {
-                dos.writeShort(song.getLength());
+                bos.writeShort(song.getLength());
             }
         }
 
-        dos.writeShort(song.getLayerCount());
-        writeString(dos, song.getTitleOr(""));
-        writeString(dos, song.getAuthorOr(""));
-        writeString(dos, song.getOriginalAuthorOr(""));
-        writeString(dos, song.getDescriptionOr(""));
-        dos.writeShort(song.getTempo());
-        dos.writeBoolean(song.isAutoSave());
-        dos.writeByte(song.getAutoSaveInterval());
-        dos.writeByte(song.getTimeSignature());
-        dos.writeInt(song.getMinutesSpent());
-        dos.writeInt(song.getLeftClicks());
-        dos.writeInt(song.getRightClicks());
-        dos.writeInt(song.getNoteBlocksAdded());
-        dos.writeInt(song.getNoteBlocksRemoved());
-        writeString(dos, song.getSourceFileNameOr(""));
+        bos.writeShort(song.getLayerCount());
+        writeString(bos, song.getTitleOr(""));
+        writeString(bos, song.getAuthorOr(""));
+        writeString(bos, song.getOriginalAuthorOr(""));
+        writeString(bos, song.getDescriptionOr(""));
+        bos.writeShort(song.getTempo());
+        bos.writeBoolean(song.isAutoSave());
+        bos.writeUnsignedByte(song.getAutoSaveInterval());
+        bos.writeUnsignedByte(song.getTimeSignature());
+        bos.writeInt(song.getMinutesSpent());
+        bos.writeInt(song.getLeftClicks());
+        bos.writeInt(song.getRightClicks());
+        bos.writeInt(song.getNoteBlocksAdded());
+        bos.writeInt(song.getNoteBlocksRemoved());
+        writeString(bos, song.getSourceFileNameOr(""));
 
         if (song.getVersion() >= 4) {
-            dos.writeBoolean(song.isLoop());
-            dos.writeByte(song.getMaxLoopCount());
-            dos.writeShort(song.getLoopStartTick());
+            bos.writeBoolean(song.isLoop());
+            bos.writeUnsignedByte(song.getMaxLoopCount());
+            bos.writeShort(song.getLoopStartTick());
         }
 
         final Map<Integer, Map<Integer, NbsNote>> notes = new TreeMap<>();
@@ -206,74 +206,74 @@ public final class NbsIo {
 
         int lastTick = -1;
         for (Map.Entry<Integer, Map<Integer, NbsNote>> tickEntry : notes.entrySet()) {
-            dos.writeShort(tickEntry.getKey() - lastTick);
+            bos.writeShort(tickEntry.getKey() - lastTick);
             lastTick = tickEntry.getKey();
 
             int lastLayer = -1;
             for (Map.Entry<Integer, NbsNote> layerEntry : tickEntry.getValue().entrySet()) {
-                dos.writeShort(layerEntry.getKey() - lastLayer);
+                bos.writeShort(layerEntry.getKey() - lastLayer);
                 lastLayer = layerEntry.getKey();
 
                 final NbsNote note = layerEntry.getValue();
-                dos.writeByte(note.getInstrument());
-                dos.writeByte(note.getKey());
+                bos.writeUnsignedByte(note.getInstrument());
+                bos.writeUnsignedByte(note.getKey());
                 if (song.getVersion() >= 4) {
-                    dos.writeByte(note.getVelocity());
-                    dos.writeByte(note.getPanning());
-                    dos.writeShort(note.getPitch());
+                    bos.writeUnsignedByte(note.getVelocity());
+                    bos.writeUnsignedByte(note.getPanning());
+                    bos.writeShort(note.getPitch());
                 }
             }
-            dos.writeShort(0);
+            bos.writeShort(0);
         }
-        dos.writeShort(0);
+        bos.writeShort(0);
 
         for (int i = 0; i < song.getLayerCount(); i++) {
             final NbsLayer layer = song.getLayers().get(i);
-            writeString(dos, layer.getNameOr(""));
+            writeString(bos, layer.getNameOr(""));
             if (song.getVersion() >= 4) {
                 switch (layer.getStatus()) {
                     case NONE:
-                        dos.writeByte(0);
+                        bos.writeUnsignedByte(0);
                         break;
                     case LOCKED:
-                        dos.writeByte(1);
+                        bos.writeUnsignedByte(1);
                         break;
                     case SOLO:
-                        dos.writeByte(2);
+                        bos.writeUnsignedByte(2);
                         break;
                     default:
                         throw new IllegalStateException("Unsupported layer status: " + layer.getStatus());
                 }
             }
-            dos.writeByte(layer.getVolume());
+            bos.writeUnsignedByte(layer.getVolume());
             if (song.getVersion() >= 2) {
-                dos.writeByte(layer.getPanning());
+                bos.writeUnsignedByte(layer.getPanning());
             }
         }
 
-        dos.writeByte(song.getCustomInstruments().size());
+        bos.writeUnsignedByte(song.getCustomInstruments().size());
         for (NbsCustomInstrument customInstrument : song.getCustomInstruments()) {
-            writeString(dos, customInstrument.getNameOr(""));
-            writeString(dos, customInstrument.getSoundFilePathOr(""));
-            dos.writeByte(customInstrument.getPitch());
-            dos.writeBoolean(customInstrument.isPressKey());
+            writeString(bos, customInstrument.getNameOr(""));
+            writeString(bos, customInstrument.getSoundFilePathOr(""));
+            bos.writeUnsignedByte(customInstrument.getPitch());
+            bos.writeBoolean(customInstrument.isPressKey());
         }
 
-        dos.flush();
+        bos.flush();
     }
 
-    private static String readString(final LittleEndianDataInputStream dis) throws IOException {
-        final char[] buffer = new char[dis.readInt()];
+    private static String readString(final BinaryInputStream bis) throws IOException {
+        final char[] buffer = new char[bis.readInt()];
         for (int i = 0; i < buffer.length; i++) {
-            buffer[i] = (char) dis.readUnsignedByte();
+            buffer[i] = (char) bis.readUnsignedByte();
         }
         return new String(buffer);
     }
 
-    private static void writeString(final LittleEndianDataOutputStream dos, final String string) throws IOException {
-        dos.writeInt(string.length());
+    private static void writeString(final BinaryOutputStream bos, final String string) throws IOException {
+        bos.writeInt(string.length());
         for (char c : string.toCharArray()) {
-            dos.writeByte(c);
+            bos.writeUnsignedByte(c);
         }
     }
 
