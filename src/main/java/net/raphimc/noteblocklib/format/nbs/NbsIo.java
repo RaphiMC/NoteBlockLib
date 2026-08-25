@@ -35,7 +35,7 @@ import java.util.TreeMap;
 
 public final class NbsIo {
 
-    private static final int BUFFER_SIZE = 1024 * 1024;
+    private static final int BUFFER_SIZE = 128 * 1024;
 
     private NbsIo() {
     }

@@ -28,7 +28,7 @@ import java.util.Scanner;
 
 public final class McSpIo {
 
-    private static final int BUFFER_SIZE = 1024 * 1024;
+    private static final int BUFFER_SIZE = 128 * 1024;
 
     private McSpIo() {
     }

@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 
 public final class McSp2Io {
 
-    private static final int BUFFER_SIZE = 1024 * 1024;
+    private static final int BUFFER_SIZE = 128 * 1024;
 
     private McSp2Io() {
     }
