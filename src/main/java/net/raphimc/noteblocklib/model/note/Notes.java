@@ -21,12 +21,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Notes {
 
@@ -127,10 +128,40 @@ public class Notes {
      * Useful when handling large MIDI files with a lot of duplicate notes.
      */
     public void removeDoubleNotes() {
-        for (List<Note> list : this.notes.values()) {
-            final Set<Note> set = new HashSet<>(list);
-            list.clear();
-            list.addAll(set);
+        final class NoteIdentity {
+            private final Note note;
+
+            private NoteIdentity(final Note note) {
+                this.note = note;
+            }
+
+            @Override
+            public boolean equals(final Object o) {
+                if (o == null || this.getClass() != o.getClass()) {
+                    return false;
+                }
+                final NoteIdentity other = (NoteIdentity) o;
+                return Float.compare(this.note.getMidiKey(), other.note.getMidiKey()) == 0
+                    && Float.compare(this.note.getVolume(), other.note.getVolume()) == 0
+                    && Float.compare(this.note.getPanning(), other.note.getPanning()) == 0
+                    && Objects.equals(this.note.getInstrument(), other.note.getInstrument());
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(this.note.getInstrument(), this.note.getMidiKey(), this.note.getVolume(), this.note.getPanning());
+            }
+        }
+
+        for (List<Note> notes : this.notes.values()) {
+            // noinspection Convert2MethodRef
+            final Set<Note> uniqueNotes = notes.stream()
+                .map(note -> new NoteIdentity(note))
+                .distinct()
+                .map(noteIdentity -> noteIdentity.note)
+                .collect(Collectors.toSet());
+            notes.clear();
+            notes.addAll(uniqueNotes);
         }
     }
 

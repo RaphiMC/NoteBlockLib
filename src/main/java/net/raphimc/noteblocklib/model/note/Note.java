@@ -223,12 +223,12 @@ public class Note {
             return false;
         }
         final Note note = (Note) o;
-        return Float.compare(this.midiKey, note.midiKey) == 0 && Float.compare(this.volume, note.volume) == 0 && Float.compare(this.panning, note.panning) == 0 && Objects.equals(this.instrument, note.instrument);
+        return this.groupId == note.groupId && Float.compare(this.midiKey, note.midiKey) == 0 && Float.compare(this.volume, note.volume) == 0 && Float.compare(this.panning, note.panning) == 0 && Objects.equals(this.instrument, note.instrument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.instrument, this.midiKey, this.volume, this.panning);
+        return Objects.hash(this.groupId, this.instrument, this.midiKey, this.volume, this.panning);
     }
 
 }
