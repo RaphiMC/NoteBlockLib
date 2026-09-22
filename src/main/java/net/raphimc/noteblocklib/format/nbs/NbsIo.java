@@ -35,13 +35,11 @@ import java.util.TreeMap;
 
 public final class NbsIo {
 
-    private static final int BUFFER_SIZE = 128 * 1024;
-
     private NbsIo() {
     }
 
     public static NbsSong readSong(final InputStream is, final String fileName) throws IOException {
-        final BinaryInputStream bis = new BinaryInputStream(new BufferedInputStream(is, BUFFER_SIZE), ByteOrder.LITTLE_ENDIAN);
+        final BinaryInputStream bis = new BinaryInputStream(new BufferedInputStream(is), ByteOrder.LITTLE_ENDIAN);
         final NbsSong song = new NbsSong(fileName);
 
         final short length = bis.readShort();
@@ -162,7 +160,7 @@ public final class NbsIo {
         if (song.getLayerCount() > song.getLayers().size()) {
             throw new IllegalArgumentException("Layer count must be less than or equal to the amount of layers");
         }
-        final BinaryOutputStream bos = new BinaryOutputStream(new BufferedOutputStream(os, BUFFER_SIZE), ByteOrder.LITTLE_ENDIAN);
+        final BinaryOutputStream bos = new BinaryOutputStream(new BufferedOutputStream(os), ByteOrder.LITTLE_ENDIAN);
 
         if (song.getVersion() == 0) {
             bos.writeShort(song.getLength());

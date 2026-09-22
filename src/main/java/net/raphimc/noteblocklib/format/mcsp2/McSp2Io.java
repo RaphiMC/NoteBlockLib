@@ -36,13 +36,11 @@ import java.util.regex.Matcher;
 
 public final class McSp2Io {
 
-    private static final int BUFFER_SIZE = 128 * 1024;
-
     private McSp2Io() {
     }
 
     public static McSp2Song readSong(final InputStream is, final String fileName) {
-        final Scanner scanner = new Scanner(new BufferedInputStream(is, BUFFER_SIZE), StandardCharsets.ISO_8859_1.name()).useDelimiter("[|\\n]");
+        final Scanner scanner = new Scanner(new BufferedInputStream(is), StandardCharsets.ISO_8859_1.name()).useDelimiter("[|\\n]");
         final McSp2Song song = new McSp2Song(fileName);
         final Map<Integer, McSp2Layer> layers = song.getLayers();
 
@@ -90,7 +88,7 @@ public final class McSp2Io {
     }
 
     public static void writeSong(final McSp2Song song, final OutputStream os) throws IOException {
-        final OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os, BUFFER_SIZE), StandardCharsets.ISO_8859_1);
+        final OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os), StandardCharsets.ISO_8859_1);
         writer.write("2");
         writer.write("|");
         writer.write(String.valueOf(song.getAutoSaveInterval()));

@@ -28,13 +28,11 @@ import java.util.Scanner;
 
 public final class McSpIo {
 
-    private static final int BUFFER_SIZE = 128 * 1024;
-
     private McSpIo() {
     }
 
     public static McSpSong readSong(final InputStream is, final String fileName) {
-        final Scanner scanner = new Scanner(new BufferedInputStream(is, BUFFER_SIZE), StandardCharsets.ISO_8859_1.name()).useDelimiter("\\|");
+        final Scanner scanner = new Scanner(new BufferedInputStream(is), StandardCharsets.ISO_8859_1.name()).useDelimiter("\\|");
         final McSpSong song = new McSpSong(fileName);
         final Map<Integer, McSpNote[]> notes = song.getMcSpNotes();
 

@@ -34,13 +34,11 @@ import java.util.Map;
 
 public final class TxtIo {
 
-    private static final int BUFFER_SIZE = 128 * 1024;
-
     private TxtIo() {
     }
 
     public static TxtSong readSong(final InputStream is, final String fileName) throws IOException {
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8), BUFFER_SIZE);
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         final TxtSong song = new TxtSong(fileName);
 
         final Map<Integer, List<TxtNote>> notes = song.getTxtNotes();
@@ -74,7 +72,7 @@ public final class TxtIo {
     }
 
     public static void writeSong(final TxtSong song, final OutputStream os) throws IOException {
-        final OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os, BUFFER_SIZE), StandardCharsets.UTF_8);
+        final OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os), StandardCharsets.UTF_8);
         if (song.getTitle() != null) {
             writer.write("// Name: " + song.getTitle() + "\n");
         }
