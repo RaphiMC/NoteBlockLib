@@ -79,7 +79,7 @@ public final class NoteBlockLib {
                 case MIDI:
                     return MidiIo.readSong(is, fileName);
                 default:
-                    throw new IllegalStateException("Unknown format");
+                    throw new IllegalStateException("Unknown format: " + format);
             }
         } catch (final Throwable e) {
             throw new Exception("Failed to read song", e);

@@ -166,7 +166,7 @@ public class NbsSong extends Song {
      */
     public NbsSong setVersion(final int version) {
         if (version < 0 || version > 255) {
-            throw new IllegalArgumentException("NBS version must be between 0 and 255");
+            throw new IllegalArgumentException("NBS version must be between 0 and 255: " + version);
         }
         this.version = (byte) version;
         return this;
@@ -187,7 +187,7 @@ public class NbsSong extends Song {
      */
     public NbsSong setVanillaInstrumentCount(final int vanillaInstrumentCount) {
         if (vanillaInstrumentCount < 0 || vanillaInstrumentCount > 255) {
-            throw new IllegalArgumentException("Vanilla instrument count must be between 0 and 255");
+            throw new IllegalArgumentException("Vanilla instrument count must be between 0 and 255: " + vanillaInstrumentCount);
         }
         this.vanillaInstrumentCount = (byte) vanillaInstrumentCount;
         return this;
@@ -262,7 +262,7 @@ public class NbsSong extends Song {
      */
     public NbsSong setAutoSaveInterval(final int autoSaveInterval) {
         if (autoSaveInterval < 0 || autoSaveInterval > 255) {
-            throw new IllegalArgumentException("Auto-save interval must be between 0 and 255");
+            throw new IllegalArgumentException("Auto-save interval must be between 0 and 255: " + autoSaveInterval);
         }
         this.autoSaveInterval = (byte) autoSaveInterval;
         return this;
@@ -283,7 +283,7 @@ public class NbsSong extends Song {
      */
     public NbsSong setTimeSignature(final int timeSignature) {
         if (timeSignature < 0 || timeSignature > 255) {
-            throw new IllegalArgumentException("Time signature must be between 0 and 255");
+            throw new IllegalArgumentException("Time signature must be between 0 and 255: " + timeSignature);
         }
         this.timeSignature = (byte) timeSignature;
         return this;
@@ -443,7 +443,7 @@ public class NbsSong extends Song {
      */
     public NbsSong setMaxLoopCount(final int maxLoopCount) {
         if (maxLoopCount < 0 || maxLoopCount > 255) {
-            throw new IllegalArgumentException("Max loop count must be between 0 and 255");
+            throw new IllegalArgumentException("Max loop count must be between 0 and 255: " + maxLoopCount);
         }
         this.maxLoopCount = (byte) maxLoopCount;
         return this;

@@ -109,7 +109,7 @@ public class NbsLayer {
      */
     public NbsLayer setVolume(final int volume) {
         if (volume < 0 || volume > 255) {
-            throw new IllegalArgumentException("Volume must be between 0 and 255");
+            throw new IllegalArgumentException("Volume must be between 0 and 255: " + volume);
         }
         this.volume = (byte) volume;
         return this;
@@ -130,7 +130,7 @@ public class NbsLayer {
      */
     public NbsLayer setPanning(final int panning) {
         if (panning < 0 || panning > 255) {
-            throw new IllegalArgumentException("Panning must be between 0 and 255");
+            throw new IllegalArgumentException("Panning must be between 0 and 255: " + panning);
         }
         this.panning = (byte) panning;
         return this;

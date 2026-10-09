@@ -68,7 +68,7 @@ public class NbsNote {
      */
     public NbsNote setInstrument(final int instrument) {
         if (instrument < 0 || instrument > 255) {
-            throw new IllegalArgumentException("Instrument must be between 0 and 255");
+            throw new IllegalArgumentException("Instrument must be between 0 and 255: " + instrument);
         }
         this.instrument = (byte) instrument;
         return this;
@@ -89,7 +89,7 @@ public class NbsNote {
      */
     public NbsNote setKey(final int key) {
         if (key < 0 || key > 255) {
-            throw new IllegalArgumentException("Key must be between 0 and 255");
+            throw new IllegalArgumentException("Key must be between 0 and 255: " + key);
         }
         this.key = (byte) key;
         return this;
@@ -110,7 +110,7 @@ public class NbsNote {
      */
     public NbsNote setVelocity(final int velocity) {
         if (velocity < 0 || velocity > 255) {
-            throw new IllegalArgumentException("Velocity must be between 0 and 255");
+            throw new IllegalArgumentException("Velocity must be between 0 and 255: " + velocity);
         }
         this.velocity = (byte) velocity;
         return this;
@@ -131,7 +131,7 @@ public class NbsNote {
      */
     public NbsNote setPanning(final int panning) {
         if (panning < 0 || panning > 255) {
-            throw new IllegalArgumentException("Panning must be between 0 and 255");
+            throw new IllegalArgumentException("Panning must be between 0 and 255: " + panning);
         }
         this.panning = (byte) panning;
         return this;

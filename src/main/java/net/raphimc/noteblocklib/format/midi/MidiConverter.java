@@ -67,7 +67,7 @@ public final class MidiConverter {
      */
     public static MidiSong createSong(final Sequence sequence, final String fileName, final boolean skipOutOfNbsRangeNotes) {
         if (sequence.getTickLength() > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("MIDI sequence has too many ticks");
+            throw new IllegalArgumentException("MIDI sequence has too many ticks: " + sequence.getTickLength());
         }
 
         final MidiSong song = new MidiSong(fileName);

@@ -69,7 +69,7 @@ public class Note {
      */
     public Note setInstrument(final Instrument instrument) {
         if (instrument == null) {
-            throw new IllegalArgumentException("Instrument cannot be null");
+            throw new IllegalArgumentException("Instrument must be non-null");
         }
         this.instrument = instrument;
         return this;
@@ -88,7 +88,7 @@ public class Note {
      */
     public Note setMidiKey(final float midiKey) {
         if (midiKey < MidiDefinitions.LOWEST_KEY || midiKey > MidiDefinitions.HIGHEST_KEY) {
-            throw new IllegalArgumentException("MIDI key must be between " + MidiDefinitions.LOWEST_KEY + " and " + MidiDefinitions.HIGHEST_KEY);
+            throw new IllegalArgumentException("MIDI key must be between " + MidiDefinitions.LOWEST_KEY + " and " + MidiDefinitions.HIGHEST_KEY + ": " + midiKey);
         }
         this.midiKey = midiKey;
         return this;
@@ -157,7 +157,7 @@ public class Note {
      */
     public Note setPitch(final float pitch) {
         if (pitch <= 0) {
-            throw new IllegalArgumentException("Pitch must be greater than 0");
+            throw new IllegalArgumentException("Pitch must be greater than 0: " + pitch);
         }
         return this.setMidiKey((float) (MidiDefinitions.F_SHARP_4_KEY + MidiDefinitions.KEYS_PER_OCTAVE * Math.log(pitch) / Math.log(2D)));
     }
@@ -175,7 +175,7 @@ public class Note {
      */
     public Note setVolume(final float volume) {
         if (volume < 0F || volume > 1F) {
-            throw new IllegalArgumentException("Volume must be between 0 and 1");
+            throw new IllegalArgumentException("Volume must be between 0 and 1: " + volume);
         }
         this.volume = volume;
         return this;
@@ -194,7 +194,7 @@ public class Note {
      */
     public Note setPanning(final float panning) {
         if (panning < -1F || panning > 1F) {
-            throw new IllegalArgumentException("Panning must be between -1 and 1");
+            throw new IllegalArgumentException("Panning must be between -1 and 1: " + panning);
         }
         this.panning = panning;
         return this;

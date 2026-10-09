@@ -125,7 +125,7 @@ public class NbsCustomInstrument implements Instrument {
      */
     public NbsCustomInstrument setPitch(final int pitch) {
         if (pitch < 0 || pitch > 255) {
-            throw new IllegalArgumentException("Pitch must be between 0 and 255");
+            throw new IllegalArgumentException("Pitch must be between 0 and 255: " + pitch);
         }
         this.pitch = (byte) pitch;
         return this;

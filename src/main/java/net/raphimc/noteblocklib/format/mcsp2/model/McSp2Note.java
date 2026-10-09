@@ -32,7 +32,7 @@ public class McSp2Note {
 
     public McSp2Note setInstrument(final int instrument) {
         if (instrument < 0 || instrument > 4) {
-            throw new IllegalArgumentException("Instrument must be between 0 and 4");
+            throw new IllegalArgumentException("Instrument must be between 0 and 4: " + instrument);
         }
         this.instrument = (byte) instrument;
         return this;
@@ -44,7 +44,7 @@ public class McSp2Note {
 
     public McSp2Note setKey(final int key) {
         if (key < 0 || key > 24) {
-            throw new IllegalArgumentException("Key must be between 0 and 24");
+            throw new IllegalArgumentException("Key must be between 0 and 24: " + key);
         }
         this.key = (byte) key;
         return this;

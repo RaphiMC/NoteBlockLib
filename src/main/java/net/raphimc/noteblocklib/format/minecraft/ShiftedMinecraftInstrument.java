@@ -28,7 +28,7 @@ public class ShiftedMinecraftInstrument implements Instrument {
 
     public ShiftedMinecraftInstrument(final MinecraftInstrument instrument, final int octavesShift) {
         if (instrument == null) {
-            throw new IllegalArgumentException("Instrument cannot be null");
+            throw new IllegalArgumentException("Instrument must be non-null");
         }
         this.instrument = instrument;
         this.octavesShift = octavesShift;
