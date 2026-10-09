@@ -106,7 +106,7 @@ public final class NbsConverter {
 
                     final int pitchModifier = nbsCustomInstrument.getPitch() - F_SHARP_4_KEY;
                     if (pitchModifier != 0) { // Pre-apply pitch modifier to note to make it easier for player implementations
-                        note.setNbsKey(note.getNbsKey() + pitchModifier);
+                        note.setMidiKey(MathUtil.clamp(note.getMidiKey() + pitchModifier, MidiDefinitions.LOWEST_KEY, MidiDefinitions.HIGHEST_KEY));
                         note.setInstrument(customInstrumentMap.get(nbsCustomInstrument)); // Use custom instrument with no pitch modifier, because the pitch modifier is already applied to the note
                     } else {
                         note.setInstrument(nbsCustomInstrument);
