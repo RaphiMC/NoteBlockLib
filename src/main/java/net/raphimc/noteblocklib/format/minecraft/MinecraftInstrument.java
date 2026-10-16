@@ -21,35 +21,37 @@ import net.raphimc.noteblocklib.model.note.Instrument;
 
 public enum MinecraftInstrument implements Instrument {
 
-    HARP(0, 0, "block.note_block.harp"),
-    BASS_DRUM(1, 2, "block.note_block.basedrum"),
-    SNARE(2, 3, "block.note_block.snare"),
-    HAT(3, 4, "block.note_block.hat"),
-    BASS(4, 1, "block.note_block.bass"),
-    FLUTE(5, 6, "block.note_block.flute"),
-    BELL(6, 7, "block.note_block.bell"),
-    GUITAR(7, 5, "block.note_block.guitar"),
-    CHIME(8, 8, "block.note_block.chime"),
-    XYLOPHONE(9, 9, "block.note_block.xylophone"),
-    IRON_XYLOPHONE(10, 10, "block.note_block.iron_xylophone"),
-    COW_BELL(11, 11, "block.note_block.cow_bell"),
-    DIDGERIDOO(12, 12, "block.note_block.didgeridoo"),
-    BIT(13, 13, "block.note_block.bit"),
-    BANJO(14, 14, "block.note_block.banjo"),
-    PLING(15, 15, "block.note_block.pling"),
-    TRUMPET(16, 16, "block.note_block.trumpet"),
-    TRUMPET_EXPOSED(17, 17, "block.note_block.trumpet_exposed"),
-    TRUMPET_OXIDIZED(18, 19, "block.note_block.trumpet_oxidized"),
-    TRUMPET_WEATHERED(19, 18, "block.note_block.trumpet_weathered");
+    HARP(0, 0, "block.note_block.harp", "note/harp2"),
+    BASS_DRUM(1, 2, "block.note_block.basedrum", "note/bd"),
+    SNARE(2, 3, "block.note_block.snare", "note/snare"),
+    HAT(3, 4, "block.note_block.hat", "note/hat"),
+    BASS(4, 1, "block.note_block.bass", "note/bassattack"),
+    FLUTE(5, 6, "block.note_block.flute", "note/flute"),
+    BELL(6, 7, "block.note_block.bell", "note/bell"),
+    GUITAR(7, 5, "block.note_block.guitar", "note/guitar"),
+    CHIME(8, 8, "block.note_block.chime", "note/icechime"),
+    XYLOPHONE(9, 9, "block.note_block.xylophone", "note/xylobone"),
+    IRON_XYLOPHONE(10, 10, "block.note_block.iron_xylophone", "note/iron_xylophone"),
+    COW_BELL(11, 11, "block.note_block.cow_bell", "note/cow_bell"),
+    DIDGERIDOO(12, 12, "block.note_block.didgeridoo", "note/didgeridoo"),
+    BIT(13, 13, "block.note_block.bit", "note/bit"),
+    BANJO(14, 14, "block.note_block.banjo", "note/banjo"),
+    PLING(15, 15, "block.note_block.pling", "note/pling"),
+    TRUMPET(16, 16, "block.note_block.trumpet", "note/trumpet"),
+    TRUMPET_EXPOSED(17, 17, "block.note_block.trumpet_exposed", "note/trumpet_exposed"),
+    TRUMPET_OXIDIZED(18, 19, "block.note_block.trumpet_oxidized", "note/trumpet_oxidized"),
+    TRUMPET_WEATHERED(19, 18, "block.note_block.trumpet_weathered", "note/trumpet_weathered");
 
     private final int mcId;
     private final int nbsId;
     private final String mcSoundName;
+    private final String mcSoundPath;
 
-    MinecraftInstrument(final int mcId, final int nbsId, final String mcSoundName) {
+    MinecraftInstrument(final int mcId, final int nbsId, final String mcSoundName, final String mcSoundPath) {
         this.mcId = mcId;
         this.nbsId = nbsId;
         this.mcSoundName = mcSoundName;
+        this.mcSoundPath = mcSoundPath;
     }
 
     public static MinecraftInstrument fromMcId(final int mcId) {
@@ -89,6 +91,10 @@ public enum MinecraftInstrument implements Instrument {
 
     public String mcSoundName() {
         return this.mcSoundName;
+    }
+
+    public String mcSoundPath() {
+        return this.mcSoundPath;
     }
 
     @Override
