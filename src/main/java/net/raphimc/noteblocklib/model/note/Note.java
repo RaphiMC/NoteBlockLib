@@ -217,18 +217,31 @@ public class Note {
         return copyNote;
     }
 
+    /**
+     * Compares this note to the specified object.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object is the same as the argument; false otherwise.
+     * @implNote The groupId is not checked for equality, as it is only used for events and does not affect the sound of the note.
+     */
     @Override
     public boolean equals(final Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final Note note = (Note) o;
-        return this.groupId == note.groupId && Float.compare(this.midiKey, note.midiKey) == 0 && Float.compare(this.volume, note.volume) == 0 && Float.compare(this.panning, note.panning) == 0 && Objects.equals(this.instrument, note.instrument);
+        return Float.compare(this.midiKey, note.midiKey) == 0 && Float.compare(this.volume, note.volume) == 0 && Float.compare(this.panning, note.panning) == 0 && Objects.equals(this.instrument, note.instrument);
     }
 
+    /**
+     * Returns a hash code value for the object.
+     *
+     * @return the hash code value for this object.
+     * @implNote The groupId is not included in the hash code, as it is only used for events and does not affect the sound of the note.
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(this.groupId, this.instrument, this.midiKey, this.volume, this.panning);
+        return Objects.hash(this.instrument, this.midiKey, this.volume, this.panning);
     }
 
 }
