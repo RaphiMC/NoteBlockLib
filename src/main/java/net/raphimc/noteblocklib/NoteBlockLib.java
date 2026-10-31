@@ -62,7 +62,7 @@ public final class NoteBlockLib {
     }
 
     public static Song readSong(final byte[] bytes, final SongFormat format, final String fileName) throws Exception {
-        return readSong(new ByteArrayInputStream(bytes), format);
+        return readSong(new ByteArrayInputStream(bytes), format, fileName);
     }
 
     public static Song readSong(final InputStream is, final SongFormat format) throws Exception {
