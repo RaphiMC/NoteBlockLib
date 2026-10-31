@@ -32,6 +32,7 @@ public abstract class Song {
     private Events events = new Events();
     private TempoEvents tempoEvents = new TempoEvents();
     private final String fileName;
+    private final String baseFileName;
     private String title;
     private String author;
     private String originalAuthor;
@@ -40,6 +41,8 @@ public abstract class Song {
     protected Song(final SongFormat format, final String fileName) {
         this.format = format;
         this.fileName = fileName;
+        final int dotIndex = fileName != null ? fileName.lastIndexOf('.') : -1;
+        this.baseFileName = (dotIndex != -1) ? fileName.substring(0, dotIndex) : fileName;
     }
 
     public int getLengthInMilliseconds() {
@@ -124,6 +127,14 @@ public abstract class Song {
         return this.fileName == null ? fallback : this.fileName;
     }
 
+    public String getBaseFileName() {
+        return this.baseFileName;
+    }
+
+    public String getBaseFileNameOr(final String fallback) {
+        return this.baseFileName == null ? fallback : this.baseFileName;
+    }
+
     public String getTitle() {
         return this.title;
     }
@@ -193,7 +204,7 @@ public abstract class Song {
     }
 
     public String getTitleOrFileName() {
-        return this.title == null ? this.fileName : this.title;
+        return this.title == null ? this.baseFileName : this.title;
     }
 
     public String getTitleOrFileNameOr(final String fallback) {

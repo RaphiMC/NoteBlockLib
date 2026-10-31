@@ -52,9 +52,7 @@ public final class NoteBlockLib {
     }
 
     public static Song readSong(final Path path, final SongFormat format) throws Exception {
-        final String fileName = path.getFileName().toString();
-        final int dotIndex = fileName.lastIndexOf('.');
-        return readSong(Files.newInputStream(path), format, (dotIndex != -1) ? fileName.substring(0, dotIndex) : fileName);
+        return readSong(Files.newInputStream(path), format, path.getFileName().toString());
     }
 
     public static Song readSong(final byte[] bytes, final SongFormat format) throws Exception {
