@@ -1,5 +1,5 @@
 # NoteBlockLib
-Library for reading, writing, manipulating and playing Minecraft note block songs.
+Library for reading, writing, manipulating and playing Minecraft Note Block songs.
 
 To use NoteBlockLib in your application, check out the [Usage](#usage) section.  
 For a reference implementation of NoteBlockLib, check out [NoteBlockTool](https://github.com/RaphiMC/NoteBlockTool).
