@@ -19,6 +19,7 @@ package net.raphimc.noteblocklib.util;
 
 import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
+import net.raphimc.noteblocklib.model.note.Instrument;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 
@@ -38,6 +39,18 @@ public final class SongUtil {
      */
     public static boolean hasOutsideMinecraftOctaveRangeNotes(final Song song) {
         return song.getNotes().testEach(Note::isOutsideMinecraftOctaveRange);
+    }
+
+    /**
+     * Returns a list of all used instruments in a song.
+     *
+     * @param song The song
+     * @return The used instruments
+     */
+    public static Set<Instrument> getUsedInstruments(final Song song) {
+        final Set<Instrument> usedInstruments = Collections.newSetFromMap(new IdentityHashMap<>());
+        song.getNotes().forEach(note -> usedInstruments.add(note.getInstrument()));
+        return usedInstruments;
     }
 
     /**
