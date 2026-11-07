@@ -154,6 +154,22 @@ public abstract class SongPlayer {
     }
 
     /**
+     * @return The current playback position as a percentage (0-100).
+     */
+    public float getProgress() {
+        return ((float) this.tick / this.song.getNotes().getLengthInTicks()) * 100F;
+    }
+
+    /**
+     * Sets the current playback position as a percentage (0-100).
+     *
+     * @param progress The percentage to set the playback position to.
+     */
+    public void setProgress(final float progress) {
+        this.tick = Math.round((progress / 100F) * this.song.getNotes().getLengthInTicks());
+    }
+
+    /**
      * @return The current playback position in milliseconds.
      */
     public int getMillisecondPosition() {
