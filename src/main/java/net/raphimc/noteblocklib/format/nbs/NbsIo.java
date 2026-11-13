@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -261,18 +262,13 @@ public final class NbsIo {
     }
 
     private static String readString(final BinaryInputStream bis) throws IOException {
-        final char[] buffer = new char[bis.readInt()];
-        for (int i = 0; i < buffer.length; i++) {
-            buffer[i] = (char) bis.readUnsignedByte();
-        }
-        return new String(buffer);
+        return new String(bis.readBytes(bis.readInt()), StandardCharsets.ISO_8859_1);
     }
 
     private static void writeString(final BinaryOutputStream bos, final String string) throws IOException {
-        bos.writeInt(string.length());
-        for (char c : string.toCharArray()) {
-            bos.writeUnsignedByte(c);
-        }
+        final byte[] bytes = string.getBytes(StandardCharsets.ISO_8859_1);
+        bos.writeInt(bytes.length);
+        bos.write(bytes);
     }
 
 }
