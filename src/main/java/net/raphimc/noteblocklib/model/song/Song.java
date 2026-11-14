@@ -21,6 +21,7 @@ import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.model.event.Events;
 import net.raphimc.noteblocklib.model.event.TempoEvents;
 import net.raphimc.noteblocklib.model.note.Notes;
+import net.raphimc.noteblocklib.util.StringUtil;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -54,8 +55,7 @@ public abstract class Song {
     }
 
     public String getHumanReadableLength() {
-        final int length = this.getLengthInSeconds();
-        return String.format("%02d:%02d:%02d", length / 3600, (length / 60) % 60, length % 60);
+        return StringUtil.formatDuration(this.getLengthInMilliseconds());
     }
 
     public int tickToMilliseconds(final int tick) {

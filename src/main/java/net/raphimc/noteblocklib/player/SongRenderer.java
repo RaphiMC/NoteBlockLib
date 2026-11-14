@@ -20,6 +20,7 @@ package net.raphimc.noteblocklib.player;
 import net.raphimc.noteblocklib.model.event.Event;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
+import net.raphimc.noteblocklib.util.StringUtil;
 
 public abstract class SongRenderer<B> {
 
@@ -123,6 +124,13 @@ public abstract class SongRenderer<B> {
      */
     public void setMillisecondPosition(final int milliseconds) {
         this.tick = this.song.millisecondsToTick(milliseconds);
+    }
+
+    /**
+     * @return The current render position formatted as mm:ss or h:mm:ss.
+     */
+    public String getHumanReadablePosition() {
+        return StringUtil.formatDuration(this.getMillisecondPosition());
     }
 
 }
