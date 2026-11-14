@@ -49,7 +49,7 @@ public class BinaryOutputStream extends FilterOutputStream {
 
     public void writeByte(final int v) throws IOException {
         if (v < Byte.MIN_VALUE || v > Byte.MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for byte: " + v);
+            throw new IllegalArgumentException("Value must be in [" + Byte.MIN_VALUE + ", " + Byte.MAX_VALUE + "]: " + v);
         }
         this.writeByte((byte) v);
     }
@@ -60,14 +60,14 @@ public class BinaryOutputStream extends FilterOutputStream {
 
     public void writeUnsignedByte(final int v) throws IOException {
         if (v < 0 || v > UNSIGNED_BYTE_MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for unsigned byte: " + v);
+            throw new IllegalArgumentException("Value must be in [0, " + UNSIGNED_BYTE_MAX_VALUE + "]: " + v);
         }
         this.writeByte((byte) v);
     }
 
     public void writeShort(final int v) throws IOException {
         if (v < Short.MIN_VALUE || v > Short.MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for short: " + v);
+            throw new IllegalArgumentException("Value must be in [" + Short.MIN_VALUE + ", " + Short.MAX_VALUE + "]: " + v);
         }
         this.writeShort((short) v);
     }
@@ -95,7 +95,7 @@ public class BinaryOutputStream extends FilterOutputStream {
 
     public void writeUnsignedShort(final int v, final ByteOrder byteOrder) throws IOException {
         if (v < 0 || v > UNSIGNED_SHORT_MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for unsigned short: " + v);
+            throw new IllegalArgumentException("Value must be in [0, " + UNSIGNED_SHORT_MAX_VALUE + "]: " + v);
         }
         this.writeShort((short) v, byteOrder);
     }
@@ -106,7 +106,7 @@ public class BinaryOutputStream extends FilterOutputStream {
 
     public void writeMedium(final int v, final ByteOrder byteOrder) throws IOException {
         if (v < MEDIUM_MIN_VALUE || v > MEDIUM_MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for medium: " + v);
+            throw new IllegalArgumentException("Value must be in [" + MEDIUM_MIN_VALUE + ", " + MEDIUM_MAX_VALUE + "]: " + v);
         }
         if (byteOrder == ByteOrder.BIG_ENDIAN) {
             this.primitiveBuffer[0] = (byte) (v >>> 16);
@@ -128,7 +128,7 @@ public class BinaryOutputStream extends FilterOutputStream {
 
     public void writeUnsignedMedium(final int v, final ByteOrder byteOrder) throws IOException {
         if (v < 0 || v > UNSIGNED_MEDIUM_MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for unsigned medium: " + v);
+            throw new IllegalArgumentException("Value must be in [0, " + UNSIGNED_MEDIUM_MAX_VALUE + "]: " + v);
         }
         if (byteOrder == ByteOrder.BIG_ENDIAN) {
             this.primitiveBuffer[0] = (byte) (v >>> 16);
@@ -171,7 +171,7 @@ public class BinaryOutputStream extends FilterOutputStream {
 
     public void writeUnsignedInt(final long v, final ByteOrder byteOrder) throws IOException {
         if (v < 0 || v > UNSIGNED_INT_MAX_VALUE) {
-            throw new IllegalArgumentException("Value out of range for unsigned int: " + v);
+            throw new IllegalArgumentException("Value must be in [0, " + UNSIGNED_INT_MAX_VALUE + "]: " + v);
         }
         this.writeInt((int) v, byteOrder);
     }

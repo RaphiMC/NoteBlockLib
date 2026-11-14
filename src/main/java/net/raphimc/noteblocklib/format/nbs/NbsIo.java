@@ -159,7 +159,7 @@ public final class NbsIo {
             throw new IllegalArgumentException("Unsupported NBS version: " + song.getVersion());
         }
         if (song.getLayerCount() > song.getLayers().size()) {
-            throw new IllegalArgumentException("Layer count must be less than or equal to the amount of layers");
+            throw new IllegalArgumentException("Layer count must be <= layer list size: " + song.getLayerCount() + " > " + song.getLayers().size());
         }
         final BinaryOutputStream bos = new BinaryOutputStream(new BufferedOutputStream(os), ByteOrder.LITTLE_ENDIAN);
 
