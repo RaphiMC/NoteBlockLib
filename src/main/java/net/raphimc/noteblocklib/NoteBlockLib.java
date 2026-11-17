@@ -48,7 +48,7 @@ public final class NoteBlockLib {
     }
 
     public static Song readSong(final Path path) throws Exception {
-        return readSong(path, getFormat(path));
+        return readSong(path, getFormat(path.getFileName().toString()));
     }
 
     public static Song readSong(final Path path, final SongFormat format) throws Exception {
@@ -129,10 +129,14 @@ public final class NoteBlockLib {
         }
     }
 
-    public static SongFormat getFormat(final Path path) {
-        final String fileName = path.getFileName().toString();
+    public static SongFormat getFormat(final String fileName) {
         final int dotIndex = fileName.lastIndexOf('.');
         return SongFormat.getByExtension((dotIndex != -1) ? fileName.substring(dotIndex + 1) : "");
+    }
+
+    @Deprecated
+    public static SongFormat getFormat(final Path path) {
+        return getFormat(path.getFileName().toString());
     }
 
 }
